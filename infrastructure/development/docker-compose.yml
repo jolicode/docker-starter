@@ -1,0 +1,63 @@
+version: '3'
+
+volumes:
+    database-data: {}
+
+services:
+    php-base:
+        build:
+            context: services/php-base
+            args:
+                MYAPP_UID: ${MYAPP_UID}
+        image: myapp_basephp
+        command: echo 'Base php container'
+        dns: 8.8.8.8
+        labels:
+            - "traefik.enable=false"
+
+    router:
+        build: services/router
+        ports:
+            - "443:443"
+            - "8080:8080"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        networks:
+            default:
+                aliases:
+                    - myapp.joli
+        labels:
+            - "traefik.enable=false"
+
+    frontend:
+        build: services/frontend
+        depends_on:
+            - php-base
+        volumes:
+            - "../..:/var/www:cached"
+        dns: 8.8.8.8
+        labels:
+            - "traefik.port=80"
+            - "traefik.frontend.entryPoints=https"
+            - "traefik.frontend.rule=Host:myapp.joli"
+
+    database:
+        build: services/database
+        environment:
+            MYSQL_ROOT_PASSWORD: 'myapp'
+        volumes:
+            - "database-data:/var/lib/mysql"
+        labels:
+            - "traefik.enable=false"
+
+    builder:
+        build: services/builder
+        depends_on:
+            - php-base
+        volumes:
+            - "../..:/home/myapp/app:cached"
+        depends_on:
+            - php-base
+        dns: 8.8.8.8
+        labels:
+            - "traefik.enable=false"

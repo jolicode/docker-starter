@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec php-fpm7 -y /etc/php7/php-fpm.conf -O

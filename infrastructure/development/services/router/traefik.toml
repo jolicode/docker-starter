@@ -1,0 +1,17 @@
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+       [[entryPoints.https.tls.certificates]]
+       CertFile = "/etc/ssl/myapp/myapp.joli-cert.pem"
+       KeyFile = "/etc/ssl/myapp/myapp.joli-key.pem"
+
+[web]
+address = ":8080"
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "myapp.joli"
+watch = true
