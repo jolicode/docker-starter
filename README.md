@@ -7,7 +7,15 @@ you will need to (in this order):
     - find and replace all mentions of myapp.joli with the domain of your choice
     - find and replace all mentions of MYAPP_UID with the constant name of your choice
     - find and replace all mentions of myapp with the name of the project
-    
+
+Example CLI commands for a project `toto` available on local.toto.com:
+
+```bash
+find ./ -type f -exec sed -i -e 's/myapp.joli/local.toto.com/g' {} \;
+find ./ -type f -exec sed -i -e 's/TOTO_UID/TOTO_UID/g' {} \;
+find ./ -type f -exec sed -i -e 's/myapp/toto/g' {} \;
+```
+
 >*Note*: The name of your project will be used as a prefix for docker container
 > names, as the user inside the container, the password of your root database user
 > and many other small things.
