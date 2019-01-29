@@ -93,7 +93,7 @@ def builder():
 def docker_compose(command_name):
     local('PROJECT_UID=%s docker-compose -p myapp %s %s' % (
         env.uid,
-        ' '.join('-f infrastructure/development/' + file for file in env.compose_files),
+        ' '.join('-f infrastructure/docker/' + file for file in env.compose_files),
         command_name
     ))
 
