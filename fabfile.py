@@ -95,7 +95,7 @@ def down():
     """
     Clean the infrastructure (remove container, volume, networks)
     """
-    docker_compose('down --volumes')
+    docker_compose('down --volumes --rmi=local')
 
 
 def docker_compose(command_name):
