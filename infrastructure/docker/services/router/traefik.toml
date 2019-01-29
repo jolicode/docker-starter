@@ -13,5 +13,5 @@ address = ":8080"
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
-domain = "myapp.joli"
+domain = "app.test"
 watch = true

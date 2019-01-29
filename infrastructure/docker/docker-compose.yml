@@ -22,7 +22,7 @@ services:
         networks:
             default:
                 aliases:
-                    - myapp.joli
+                    - app.test
         labels:
             - "traefik.enable=false"
 
@@ -35,7 +35,7 @@ services:
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
-            - "traefik.frontend.rule=Host:myapp.joli"
+            - "traefik.frontend.rule=Host:app.test"
 
     database:
         build: services/database

@@ -20,5 +20,5 @@ basicConstraints=CA:true
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = myapp.joli
-DNS.2 = www.myapp.joli
+DNS.1 = app.test
+DNS.2 = www.app.test

@@ -6,12 +6,12 @@ After copy/pasting this starter kit to your project and before first launch
 you will need to (in this order):
 
  * edit `env.project_name` in [fabfile.py](fabfile.py) to match your project name
- * find and replace all mentions of myapp.joli with the domain of your choice
+ * find and replace all mentions of `app.test` with the domain of your choice
 
 Example CLI commands make your project locally available on https://local.toto.com:
 
 ```bash
-find ./ -type f -exec sed -i -e 's/myapp.joli/local.toto.com/g' {} \;
+grep -lri app.test | xargs sed -i 's/app.test/local.toto.com/g'
 ```
 
 >*Note*: The name of your project will be used as a prefix for docker container
@@ -29,7 +29,7 @@ You are ready to go!
 
 >*Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
 > the tasks `install`, `migrate` and `cache_clear` to your project
-    
+
 ## Running the app locally
 
 ### Requirements
@@ -55,13 +55,13 @@ pipenv shell
 
 ### Domain configuration (first time only)
 
-Before running the app for the first time, ensure the domain name `myapp.joli`
+Before running the app for the first time, ensure the domain name `app.test`
 point the IP of your Docker deamon by editing your `/etc/hosts` file.
 
 This IP is probably 127.0.0.1 unless you run Docker in a special VM (docker-machine, dinghy, etc).
 
 ```
-echo '127.0.0.1 myapp.joli' | sudo tee -a /etc/hosts
+echo '127.0.0.1 app.test' | sudo tee -a /etc/hosts
 ```
 
 Using dinghy? Run `dinghy ip` to get the IP of the VM.
@@ -76,7 +76,7 @@ fab start
 
 > Note: the first start of the stack should take a few minutes.
 
-The site is now accessible at [https://myapp.joli](https://myapp.joli)
+The site is now accessible at [https://app.test](https://app.test)
 (you may need to accept self-signed SSL certificate).
 
 ### Running tests (unit & functional)
