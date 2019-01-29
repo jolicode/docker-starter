@@ -35,10 +35,8 @@ def up():
     command += ' --build-arg USER_ID=%s' % env.user_id
     command += ' --build-arg USER_NAME=%s' % env.user_name
 
-    prefix = 'PROJECT_NAME=%s USER_NAME=%s ' % (env.project_name, env.user_name)
-
-    docker_compose(command, prefix)
-    docker_compose('up --remove-orphans -d', prefix)
+    docker_compose(command)
+    docker_compose('up --remove-orphans -d')
 
 
 @task
@@ -99,7 +97,9 @@ def down():
     docker_compose('down --volumes')
 
 
-def docker_compose(command_name, prefix=''):
+def docker_compose(command_name):
+    prefix = 'PROJECT_NAME=%s USER_NAME=%s ' % (env.project_name, env.user_name)
+
     local('%sdocker-compose -p %s %s %s' % (
         prefix,
         env.project_name,
