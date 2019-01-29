@@ -5,10 +5,8 @@ volumes:
 
 services:
     php-base:
-        build:
-            context: services/php-base
+        build: services/php-base
         image: "${PROJECT_NAME}_basephp"
-        command: echo 'Base php container'
         labels:
             - "traefik.enable=false"
 
