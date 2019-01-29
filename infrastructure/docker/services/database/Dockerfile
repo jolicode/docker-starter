@@ -8,8 +8,6 @@ VOLUME ["/var/lib/mysql"]
 
 WORKDIR /usr/local/mysql
 
-EXPOSE 3306
-
 COPY config/my.cnf /etc/mysql/my.cnf
 COPY entrypoint.sh /entrypoint.sh
 

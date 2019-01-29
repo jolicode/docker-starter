@@ -5,14 +5,13 @@
 After copy/pasting this starter kit to your project and before first launch
 you will need to (in this order):
 
+ * edit `env.project_name` in [fabfile.py](fabfile.py) to match your project name
  * find and replace all mentions of myapp.joli with the domain of your choice
- * find and replace all mentions of myapp with the name of the project
 
-Example CLI commands for a project `toto` available on local.toto.com:
+Example CLI commands make your project locally available on https://local.toto.com:
 
 ```bash
 find ./ -type f -exec sed -i -e 's/myapp.joli/local.toto.com/g' {} \;
-find ./ -type f -exec sed -i -e 's/myapp/toto/g' {} \;
 ```
 
 >*Note*: The name of your project will be used as a prefix for docker container
@@ -23,9 +22,7 @@ find ./ -type f -exec sed -i -e 's/myapp/toto/g' {} \;
 Generate the SSL certificate to use in the local stack:
 
 ```bash
-cd infrastructure/development/services/router
-./generate-ssl.sh
-cd -
+infrastructure/docker/services/router/generate-ssl.sh
 ```
 
 You are ready to go!

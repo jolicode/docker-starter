@@ -5,6 +5,8 @@ import os
 import re
 from sys import platform
 
+env.project_name = 'app'
+env.user_name = env.project_name
 
 @task
 def start():
@@ -28,8 +30,15 @@ def up():
     """
     Ensure infrastructure is sync and running
     """
-    docker_compose('build')
-    docker_compose('up --remove-orphans -d')
+    command = 'build'
+    command += ' --build-arg PROJECT_NAME=%s' % env.project_name
+    command += ' --build-arg USER_ID=%s' % env.user_id
+    command += ' --build-arg USER_NAME=%s' % env.user_name
+
+    prefix = 'PROJECT_NAME=%s USER_NAME=%s ' % (env.project_name, env.user_name)
+
+    docker_compose(command, prefix)
+    docker_compose('up --remove-orphans -d', prefix)
 
 
 @task
@@ -53,8 +62,8 @@ def install():
     """
     Install frontend application (composer, yarn, assets)
     """
-    #docker_compose_run('composer install -n --prefer-dist', 'builder', 'myapp')
-    #docker_compose_run('yarn', 'builder', 'myapp')
+    #docker_compose_run('composer install -n --prefer-dist')
+    #docker_compose_run('yarn')
 
 
 @task
@@ -62,7 +71,7 @@ def cache_clear():
     """
     Clear cache of the frontend application
     """
-    #docker_compose_run('rm -rf var/cache/', 'builder', 'myapp', no_deps=True)
+    #docker_compose_run('rm -rf var/cache/', no_deps=True)
 
 
 @task
@@ -70,16 +79,8 @@ def migrate():
     """
     Migrate database schema
     """
-    #docker_compose_run('php bin/console doctrine:database:create --if-not-exists', 'builder', 'myapp', no_deps=True)
-    #docker_compose_run('php bin/console doctrine:migration:migrate -n', 'builder', 'myapp', no_deps=True)
-
-
-@task
-def ssh():
-    """
-    Ssh into frontend container
-    """
-    docker_compose('exec --user=myapp --index=1 frontend /bin/bash')
+    #docker_compose_run('php bin/console doctrine:database:create --if-not-exists', no_deps=True)
+    #docker_compose_run('php bin/console doctrine:migration:migrate -n', no_deps=True)
 
 
 @task
@@ -87,18 +88,27 @@ def builder():
     """
     Bash into a builder container
     """
-    docker_compose_run('bash', 'builder', 'myapp')
+    docker_compose_run('bash')
 
 
-def docker_compose(command_name):
-    local('PROJECT_UID=%s docker-compose -p myapp %s %s' % (
-        env.uid,
-        ' '.join('-f infrastructure/development/' + file for file in env.compose_files),
+@task
+def down():
+    """
+    Clean the infrastructure (remove container, volume, networks)
+    """
+    docker_compose('down --volumes')
+
+
+def docker_compose(command_name, prefix=''):
+    local('%sdocker-compose -p %s %s %s' % (
+        prefix,
+        env.project_name,
+        ' '.join('-f infrastructure/docker/' + file for file in env.compose_files),
         command_name
     ))
 
 
-def docker_compose_run(command_name, service, user="myapp", no_deps=False):
+def docker_compose_run(command_name, service="builder", user=env.user_name, no_deps=False):
     args = [
         'run '
         '--rm '
@@ -117,11 +127,11 @@ def docker_compose_run(command_name, service, user="myapp", no_deps=False):
 
 def set_local_configuration():
     env.compose_files = ['docker-compose.yml']
-    env.uid = int(local('id -u', capture=True))
+    env.user_id = int(local('id -u', capture=True))
     env.root_dir = os.path.dirname(os.path.abspath(__file__))
 
-    if env.uid > 256000:
-        env.uid = 1000
+    if env.user_id > 256000:
+        env.user_id = 1000
 
     with quiet():
         try:
