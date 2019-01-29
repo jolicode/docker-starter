@@ -39,8 +39,6 @@ services:
 
     database:
         build: services/database
-        environment:
-            MYSQL_ROOT_PASSWORD: '${USER_NAME}'
         volumes:
             - "database-data:/var/lib/mysql"
         labels:
@@ -51,7 +49,7 @@ services:
         depends_on:
             - database
         volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/$USER_NAME/app:cached"
-            - "~/.composer/cache:/home/$USER_NAME/.composer/cache"
+            - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
+            - "~/.composer/cache:/home/app/.composer/cache"
         labels:
             - "traefik.enable=false"

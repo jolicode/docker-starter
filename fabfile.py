@@ -9,8 +9,6 @@ from sys import platform
 env.project_name = 'app'
 # This is the host directory where you install your PHP application
 env.project_directory = env.project_name
-# This will be the user of PHP container
-env.user_name = env.project_name
 
 @task
 def start():
@@ -37,7 +35,6 @@ def up():
     command = 'build'
     command += ' --build-arg PROJECT_NAME=%s' % env.project_name
     command += ' --build-arg USER_ID=%s' % env.user_id
-    command += ' --build-arg USER_NAME=%s' % env.user_name
 
     docker_compose(command)
     docker_compose('up --remove-orphans -d')
@@ -102,10 +99,9 @@ def down():
 
 
 def docker_compose(command_name):
-    prefix = 'PROJECT_NAME=%s PROJECT_DIRECTORY=%s USER_NAME=%s ' % (
+    prefix = 'PROJECT_NAME=%s PROJECT_DIRECTORY=%s ' % (
         env.project_name,
         env.project_directory,
-        env.user_name
     )
 
     local('%sdocker-compose -p %s %s %s' % (
@@ -116,7 +112,7 @@ def docker_compose(command_name):
     ))
 
 
-def docker_compose_run(command_name, service="builder", user=env.user_name, no_deps=False):
+def docker_compose_run(command_name, service="builder", user="app", no_deps=False):
     args = [
         'run '
         '--rm '
