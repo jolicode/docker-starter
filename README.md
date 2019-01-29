@@ -13,7 +13,7 @@ Example CLI commands for a project `toto` available on local.toto.com:
 
 ```bash
 find ./ -type f -exec sed -i -e 's/myapp.joli/local.toto.com/g' {} \;
-find ./ -type f -exec sed -i -e 's/TOTO_UID/TOTO_UID/g' {} \;
+find ./ -type f -exec sed -i -e 's/MYAPP_UID/TOTO_UID/g' {} \;
 find ./ -type f -exec sed -i -e 's/myapp/toto/g' {} \;
 ```
 
