@@ -4,10 +4,10 @@ FROM alpine:3.8
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/main" > /etc/apk/repositories && \
     echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/community" >> /etc/apk/repositories
 
-RUN apk --update upgrade -q -U -a && rm -rf /var/cache/apk/*
+RUN apk upgrade --no-cache --quiet --available
 
 # Php
-RUN apk --no-cache add \
+RUN apk add --no-cache \
     bash \
     php7 \
     php7-apcu \
@@ -34,10 +34,14 @@ RUN apk --no-cache add \
     php7-zip \
     pcre
 
-# Install fake user myapp
-ARG PROJECT_UID=1000
-RUN addgroup -g 1000 myapp && \
-    adduser -S -u $PROJECT_UID -h /home/myapp -s /bin/bash myapp myapp
+# Install fake user app
+ARG USER_ID
+ARG USER_NAME
+
+ENV USER_NAME $USER_NAME
+
+RUN addgroup -g 1000 $USER_NAME && \
+    adduser -S -u $USER_ID -h /home/$USER_NAME -s /bin/bash $USER_NAME
 
 # Configuration
-COPY app.ini /etc/php7/conf.d/app.ini
+COPY *.ini /etc/php7/conf.d/

@@ -1,25 +1,32 @@
-FROM myapp_basephp
+ARG PROJECT_NAME
 
-RUN apk --no-cache add curl python py2-pip mariadb-client nodejs make g++ php7-phar git yarn
+FROM ${PROJECT_NAME}_basephp
 
-RUN chown -R myapp /usr/local /usr/bin /usr/lib
+RUN apk add --no-cache \
+    curl \
+    g++ \
+    git \
+    make \
+    mariadb-client \
+    nodejs \
+    npm \
+    php7-phar \
+    py2-pip \
+    python \
+    yarn
 
-USER myapp
-
-# Install pycodestyle
 RUN pip install pycodestyle
 
-# Install composer
-RUN curl https://getcomposer.org/composer.phar > /usr/local/bin/composer && \
+RUN curl https://getcomposer.org/composer.phar -o /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer
 
-RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative \
-&& composer clear-cache
+USER $USER_NAME
 
-# Add composer global binaries to $PATH
-ENV PATH $PATH:/home/myapp/.composer/vendor/bin/
+RUN mkdir -p ~/.composer
+
+ENV PATH $PATH:/home/$USER_NAME/.composer/vendor/bin/
 ENV TERM xterm
 
-WORKDIR /home/myapp/app
+WORKDIR /home/$USER_NAME/app
 
 CMD ["echo"]

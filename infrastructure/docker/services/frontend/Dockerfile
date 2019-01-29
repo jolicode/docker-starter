@@ -1,7 +1,12 @@
-FROM myapp_basephp
+ARG PROJECT_NAME
+
+FROM ${PROJECT_NAME}_basephp
 
 # Extra
-RUN apk --no-cache add nginx php7-fpm runit
+RUN apk add --no-cache \
+    nginx \
+    php7-fpm \
+    runit
 
 # Service
 COPY nginx/run   /etc/service/nginx/run
@@ -11,7 +16,7 @@ COPY php-fpm/run /etc/service/php-fpm/run
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY php-fpm/fpm.conf /etc/php7/php-fpm.conf
 
-RUN chown -R myapp:myapp /var/lib/nginx
+RUN touch /etc/nginx/environments
 
 EXPOSE 80
 

@@ -7,11 +7,8 @@ services:
     php-base:
         build:
             context: services/php-base
-            args:
-                PROJECT_UID: ${PROJECT_UID}
-        image: myapp_basephp
+        image: "${PROJECT_NAME}_basephp"
         command: echo 'Base php container'
-        dns: 8.8.8.8
         labels:
             - "traefik.enable=false"
 
@@ -35,7 +32,6 @@ services:
             - php-base
         volumes:
             - "../..:/var/www:cached"
-        dns: 8.8.8.8
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
@@ -44,7 +40,7 @@ services:
     database:
         build: services/database
         environment:
-            MYSQL_ROOT_PASSWORD: 'myapp'
+            MYSQL_ROOT_PASSWORD: '${USER_NAME}'
         volumes:
             - "database-data:/var/lib/mysql"
         labels:
@@ -55,9 +51,9 @@ services:
         depends_on:
             - php-base
         volumes:
-            - "../..:/home/myapp/app:cached"
+            - "../..:/home/$USER_NAME/app:cached"
+            - "~/.composer/cache:/home/$USER_NAME/.composer/cache"
         depends_on:
             - php-base
-        dns: 8.8.8.8
         labels:
             - "traefik.enable=false"
