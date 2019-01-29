@@ -35,9 +35,9 @@ RUN apk --no-cache add \
     pcre
 
 # Install fake user myapp
-ARG MYAPP_UID=1000
+ARG PROJECT_UID=1000
 RUN addgroup -g 1000 myapp && \
-    adduser -S -u $MYAPP_UID -h /home/myapp -s /bin/bash myapp myapp
+    adduser -S -u $PROJECT_UID -h /home/myapp -s /bin/bash myapp myapp
 
 # Configuration
 COPY app.ini /etc/php7/conf.d/app.ini

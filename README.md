@@ -6,20 +6,19 @@ After copy/pasting this starter kit to your project and before first launch
 you will need to (in this order):
 
  * find and replace all mentions of myapp.joli with the domain of your choice
- * find and replace all mentions of MYAPP_UID with the constant name of your choice
  * find and replace all mentions of myapp with the name of the project
 
 Example CLI commands for a project `toto` available on local.toto.com:
 
 ```bash
 find ./ -type f -exec sed -i -e 's/myapp.joli/local.toto.com/g' {} \;
-find ./ -type f -exec sed -i -e 's/MYAPP_UID/TOTO_UID/g' {} \;
 find ./ -type f -exec sed -i -e 's/myapp/toto/g' {} \;
 ```
 
 >*Note*: The name of your project will be used as a prefix for docker container
 > names, as the user inside the container, as the password of your root database
-> user and for some other small things.
+> user and for some other small things. A perfect name would not contain a dash
+> to avoid any side effects.
 
 Generate the SSL certificate to use in the local stack:
 
