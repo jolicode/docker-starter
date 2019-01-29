@@ -29,7 +29,7 @@ services:
     frontend:
         build: services/frontend
         depends_on:
-            - php-base
+            - database
         volumes:
             - "../..:/var/www:cached"
         labels:
@@ -49,11 +49,9 @@ services:
     builder:
         build: services/builder
         depends_on:
-            - php-base
+            - database
         volumes:
             - "../..:/home/$USER_NAME/app:cached"
             - "~/.composer/cache:/home/$USER_NAME/.composer/cache"
-        depends_on:
-            - php-base
         labels:
             - "traefik.enable=false"
