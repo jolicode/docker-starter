@@ -1,4 +1,4 @@
-from fabric.api import task, env
+from fabric.api import task, env, shell_env
 from fabric.operations import local, _shell_escape, settings
 from fabric.context_managers import quiet
 import os
@@ -99,17 +99,17 @@ def down():
 
 
 def docker_compose(command_name):
-    prefix = 'PROJECT_NAME=%s PROJECT_DIRECTORY=%s ' % (
-        env.project_name,
-        env.project_directory,
-    )
+    localEnv = {
+        'PROJECT_NAME': env.project_name,
+        'PROJECT_DIRECTORY': env.project_directory,
+    }
 
-    local('%sdocker-compose -p %s %s %s' % (
-        prefix,
-        env.project_name,
-        ' '.join('-f infrastructure/docker/' + file for file in env.compose_files),
-        command_name
-    ))
+    with shell_env(**localEnv):
+        local('docker-compose -p %s %s %s' % (
+            env.project_name,
+            ' '.join('-f infrastructure/docker/' + file for file in env.compose_files),
+            command_name
+        ))
 
 
 def docker_compose_run(command_name, service="builder", user="app", no_deps=False):
