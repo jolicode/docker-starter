@@ -5,7 +5,11 @@ import os
 import re
 from sys import platform
 
+# This will be used to prefix all docker objects
 env.project_name = 'app'
+# This is the host directory where you install your PHP application
+env.project_directory = env.project_name
+# This will be the user of PHP container
 env.user_name = env.project_name
 
 @task
@@ -98,7 +102,11 @@ def down():
 
 
 def docker_compose(command_name):
-    prefix = 'PROJECT_NAME=%s USER_NAME=%s ' % (env.project_name, env.user_name)
+    prefix = 'PROJECT_NAME=%s PROJECT_DIRECTORY=%s USER_NAME=%s ' % (
+        env.project_name,
+        env.project_directory,
+        env.user_name
+    )
 
     local('%sdocker-compose -p %s %s %s' % (
         prefix,

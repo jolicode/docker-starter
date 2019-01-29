@@ -31,7 +31,7 @@ services:
         depends_on:
             - database
         volumes:
-            - "../../app:/var/www:cached"
+            - "../../${PROJECT_DIRECTORY}:/var/www:cached"
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
@@ -51,7 +51,7 @@ services:
         depends_on:
             - database
         volumes:
-            - "../../app:/home/$USER_NAME/app:cached"
+            - "../../${PROJECT_DIRECTORY}:/home/$USER_NAME/app:cached"
             - "~/.composer/cache:/home/$USER_NAME/.composer/cache"
         labels:
             - "traefik.enable=false"
