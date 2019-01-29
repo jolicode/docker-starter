@@ -62,7 +62,7 @@ def install():
     """
     Install frontend application (composer, yarn, assets)
     """
-    #docker_compose_run('composer install -n --prefer-dist')
+    #docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
     #docker_compose_run('yarn')
 
 
@@ -79,8 +79,8 @@ def migrate():
     """
     Migrate database schema
     """
-    #docker_compose_run('php bin/console doctrine:database:create --if-not-exists', no_deps=True)
-    #docker_compose_run('php bin/console doctrine:migration:migrate -n', no_deps=True)
+    #docker_compose_run('bin/console doctrine:database:create --if-not-exists', no_deps=True)
+    #docker_compose_run('bin/console doctrine:migration:migrate -n', no_deps=True)
 
 
 @task
