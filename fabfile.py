@@ -5,10 +5,12 @@ import os
 import re
 from sys import platform
 
+
 # This will be used to prefix all docker objects
 env.project_name = 'app'
 # This is the host directory containing your PHP application
 env.project_directory = 'app'
+
 
 @task
 def start():
