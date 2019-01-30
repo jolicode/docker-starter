@@ -1,14 +1,12 @@
 version: '3'
 
 volumes:
-    database-data: {}
+    mysql-data: {}
 
 services:
     php-base:
-        build:
-            context: services/php-base
+        build: services/php-base
         image: "${PROJECT_NAME}_basephp"
-        command: echo 'Base php container'
         labels:
             - "traefik.enable=false"
 
@@ -22,38 +20,34 @@ services:
         networks:
             default:
                 aliases:
-                    - myapp.joli
+                    - app.test
         labels:
             - "traefik.enable=false"
 
     frontend:
         build: services/frontend
         depends_on:
-            - php-base
+            - mysql
         volumes:
-            - "../..:/var/www:cached"
+            - "../../${PROJECT_DIRECTORY}:/var/www:cached"
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
-            - "traefik.frontend.rule=Host:myapp.joli"
+            - "traefik.frontend.rule=Host:app.test"
 
-    database:
-        build: services/database
-        environment:
-            MYSQL_ROOT_PASSWORD: '${USER_NAME}'
+    mysql:
+        build: services/mysql
         volumes:
-            - "database-data:/var/lib/mysql"
+            - "mysql-data:/var/lib/mysql"
         labels:
             - "traefik.enable=false"
 
     builder:
         build: services/builder
         depends_on:
-            - php-base
+            - mysql
         volumes:
-            - "../..:/home/$USER_NAME/app:cached"
-            - "~/.composer/cache:/home/$USER_NAME/.composer/cache"
-        depends_on:
-            - php-base
+            - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
+            - "~/.composer/cache:/home/app/.composer/cache"
         labels:
             - "traefik.enable=false"

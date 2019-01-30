@@ -36,12 +36,9 @@ RUN apk add --no-cache \
 
 # Install fake user app
 ARG USER_ID
-ARG USER_NAME
 
-ENV USER_NAME $USER_NAME
-
-RUN addgroup -g 1000 $USER_NAME && \
-    adduser -S -u $USER_ID -h /home/$USER_NAME -s /bin/bash $USER_NAME
+RUN addgroup -g 1000 app && \
+    adduser -S -u $USER_ID -h /home/app -s /bin/bash app
 
 # Configuration
 COPY *.ini /etc/php7/conf.d/

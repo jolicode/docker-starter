@@ -20,13 +20,11 @@ RUN pip install pycodestyle
 RUN curl https://getcomposer.org/composer.phar -o /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer
 
-USER $USER_NAME
-
 RUN mkdir -p ~/.composer
 
-ENV PATH $PATH:/home/$USER_NAME/.composer/vendor/bin/
+ENV PATH $PATH:/home/app/.composer/vendor/bin/
 ENV TERM xterm
 
-WORKDIR /home/$USER_NAME/app
+WORKDIR /home/app/app
 
 CMD ["echo"]

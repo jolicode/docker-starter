@@ -1,12 +1,14 @@
-from fabric.api import task, env
+from fabric.api import task, env, shell_env
 from fabric.operations import local, _shell_escape, settings
 from fabric.context_managers import quiet
 import os
 import re
 from sys import platform
 
+# This will be used to prefix all docker objects
 env.project_name = 'app'
-env.user_name = env.project_name
+# This is the host directory where you install your PHP application
+env.project_directory = env.project_name
 
 @task
 def start():
@@ -33,12 +35,9 @@ def up():
     command = 'build'
     command += ' --build-arg PROJECT_NAME=%s' % env.project_name
     command += ' --build-arg USER_ID=%s' % env.user_id
-    command += ' --build-arg USER_NAME=%s' % env.user_name
 
-    prefix = 'PROJECT_NAME=%s USER_NAME=%s ' % (env.project_name, env.user_name)
-
-    docker_compose(command, prefix)
-    docker_compose('up --remove-orphans -d', prefix)
+    docker_compose(command)
+    docker_compose('up --remove-orphans -d')
 
 
 @task
@@ -62,7 +61,7 @@ def install():
     """
     Install frontend application (composer, yarn, assets)
     """
-    #docker_compose_run('composer install -n --prefer-dist')
+    #docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
     #docker_compose_run('yarn')
 
 
@@ -79,8 +78,8 @@ def migrate():
     """
     Migrate database schema
     """
-    #docker_compose_run('php bin/console doctrine:database:create --if-not-exists', no_deps=True)
-    #docker_compose_run('php bin/console doctrine:migration:migrate -n', no_deps=True)
+    #docker_compose_run('bin/console doctrine:database:create --if-not-exists', no_deps=True)
+    #docker_compose_run('bin/console doctrine:migration:migrate -n', no_deps=True)
 
 
 @task
@@ -96,19 +95,24 @@ def down():
     """
     Clean the infrastructure (remove container, volume, networks)
     """
-    docker_compose('down --volumes')
+    docker_compose('down --volumes --rmi=local')
 
 
-def docker_compose(command_name, prefix=''):
-    local('%sdocker-compose -p %s %s %s' % (
-        prefix,
-        env.project_name,
-        ' '.join('-f infrastructure/docker/' + file for file in env.compose_files),
-        command_name
-    ))
+def docker_compose(command_name):
+    localEnv = {
+        'PROJECT_NAME': env.project_name,
+        'PROJECT_DIRECTORY': env.project_directory,
+    }
+
+    with shell_env(**localEnv):
+        local('docker-compose -p %s %s %s' % (
+            env.project_name,
+            ' '.join('-f infrastructure/docker/' + file for file in env.compose_files),
+            command_name
+        ))
 
 
-def docker_compose_run(command_name, service="builder", user=env.user_name, no_deps=False):
+def docker_compose_run(command_name, service="builder", user="app", no_deps=False):
     args = [
         'run '
         '--rm '
