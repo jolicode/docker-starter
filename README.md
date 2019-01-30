@@ -14,10 +14,8 @@ Example CLI commands make your project locally available on https://local.toto.c
 grep -lri app.test | xargs sed -i 's/app.test/local.toto.com/g'
 ```
 
-*Note*: The name of your project will be used as a prefix for docker container
-names, as the user inside the container, as the password of your root database
-user and for some other small things. A perfect name would not contain a dash
-to avoid any side effects.
+*Note*: The project name will be used as a prefix for docker container name,
+and for some other small things.
 
 Generate the SSL certificate to use in the local stack:
 
@@ -27,8 +25,8 @@ infrastructure/docker/services/router/generate-ssl.sh
 
 You are ready to go!
 
->*Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
-> the tasks `install`, `migrate` and `cache_clear` to your project
+*Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
+the tasks `install`, `migrate` and `cache_clear` to your project
 
 ## Running the application locally
 
@@ -78,12 +76,6 @@ fab start
 
 The site is now accessible at [https://app.test](https://app.test)
 (you may need to accept self-signed SSL certificate).
-
-### Running tests (unit & functional)
-
-```bash
-fab tests
-```
 
 ### Builder
 
