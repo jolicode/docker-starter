@@ -1,5 +1,6 @@
 from fabric.api import task, env, shell_env
 from fabric.operations import local, _shell_escape, settings
+from functools import wraps
 from fabric.context_managers import quiet
 from fabric.colors import green, yellow
 import os
@@ -13,6 +14,17 @@ env.project_name = 'app'
 env.project_directory = 'app'
 # This will be all your domain name, separated with comma
 env.projet_hostnames = 'app.test'
+
+def with_builder(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        compose_files = env.compose_files[:]
+        env.compose_files += ['docker-compose.builder.yml']
+        ret = func(*args, **kwargs)
+        env.compose_files = compose_files
+
+        return ret
+    return decorated
 
 
 @task
@@ -32,16 +44,24 @@ def start():
     migrate()
 
 
-@task
-def up():
+@with_builder
+def build():
     """
-    Ensure infrastructure is sync and running
+    Build the infrastructure
     """
     command = 'build'
     command += ' --build-arg PROJECT_NAME=%s' % env.project_name
     command += ' --build-arg USER_ID=%s' % env.user_id
 
     docker_compose(command)
+
+
+@task
+def up():
+    """
+    Ensure infrastructure is sync and running
+    """
+    build()
     docker_compose('up --remove-orphans -d')
 
     print green('You can now browse:')
@@ -66,6 +86,7 @@ def logs():
 
 
 @task
+@with_builder
 def install():
     """
     Install frontend application (composer, yarn, assets)
@@ -75,6 +96,7 @@ def install():
 
 
 @task
+@with_builder
 def cache_clear():
     """
     Clear cache of the frontend application
@@ -83,6 +105,7 @@ def cache_clear():
 
 
 @task
+@with_builder
 def migrate():
     """
     Migrate database schema
@@ -92,6 +115,7 @@ def migrate():
 
 
 @task
+@with_builder
 def builder():
     """
     Bash into a builder container
@@ -100,6 +124,7 @@ def builder():
 
 
 @task
+@with_builder
 def down():
     """
     Clean the infrastructure (remove container, volume, networks)

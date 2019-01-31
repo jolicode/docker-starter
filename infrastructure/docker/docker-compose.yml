@@ -4,12 +4,6 @@ volumes:
     mysql-data: {}
 
 services:
-    php-base:
-        build: services/php-base
-        image: "${PROJECT_NAME}_basephp"
-        labels:
-            - "traefik.enable=false"
-
     router:
         build: services/router
         ports:
@@ -42,15 +36,5 @@ services:
         build: services/mysql
         volumes:
             - "mysql-data:/var/lib/mysql"
-        labels:
-            - "traefik.enable=false"
-
-    builder:
-        build: services/builder
-        depends_on:
-            - mysql
-        volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
-            - "~/.composer/cache:/home/app/.composer/cache"
         labels:
             - "traefik.enable=false"
