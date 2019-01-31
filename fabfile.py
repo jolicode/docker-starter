@@ -15,6 +15,7 @@ env.project_directory = 'app'
 # This will be all your domain name, separated with comma
 env.projet_hostnames = 'app.test'
 
+
 def with_builder(func):
     @wraps(func)
     def decorated(*args, **kwargs):
@@ -25,23 +26,6 @@ def with_builder(func):
 
         return ret
     return decorated
-
-
-@task
-def start():
-    """
-    Be sure that everything is started and installed
-    """
-    if env.dinghy:
-        machine_running = local('dinghy status', capture=True)
-        if machine_running.splitlines()[0].strip() != 'VM: running':
-            local('dinghy up --no-proxy')
-            local('docker-machine ssh dinghy "echo \'nameserver 8.8.8.8\' | sudo tee -a /etc/resolv.conf && sudo /etc/init.d/docker restart"')
-
-    up()
-    cache_clear()
-    install()
-    migrate()
 
 
 @with_builder
@@ -70,19 +54,20 @@ def up():
 
 
 @task
-def stop():
+def start():
     """
-    Stop the infrastructure
+    Be sure that everything is started and installed
     """
-    docker_compose('stop')
+    if env.dinghy:
+        machine_running = local('dinghy status', capture=True)
+        if machine_running.splitlines()[0].strip() != 'VM: running':
+            local('dinghy up --no-proxy')
+            local('docker-machine ssh dinghy "echo \'nameserver 8.8.8.8\' | sudo tee -a /etc/resolv.conf && sudo /etc/init.d/docker restart"')
 
-
-@task
-def logs():
-    """
-    Show logs of infrastructure
-    """
-    docker_compose('logs -f --tail=150')
+    up()
+    cache_clear()
+    install()
+    migrate()
 
 
 @task
@@ -121,6 +106,22 @@ def builder():
     Bash into a builder container
     """
     docker_compose_run('bash')
+
+
+@task
+def logs():
+    """
+    Show logs of infrastructure
+    """
+    docker_compose('logs -f --tail=150')
+
+
+@task
+def stop():
+    """
+    Stop the infrastructure
+    """
+    docker_compose('stop')
 
 
 @task
