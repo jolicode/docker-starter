@@ -18,10 +18,12 @@ services:
             - "8080:8080"
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock"
-        networks:
-            default:
-                aliases:
-                    - app.test
+        # # Use network alias if you need to access a container via a specific
+        # # host by using the routing from another container
+        # networks:
+        #     default:
+        #         aliases:
+        #             - api.app.test
         labels:
             - "traefik.enable=false"
 
@@ -34,7 +36,7 @@ services:
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
-            - "traefik.frontend.rule=Host:app.test"
+            - "traefik.frontend.rule=Host:${PROJET_HOSTNAMES}"
 
     mysql:
         build: services/mysql

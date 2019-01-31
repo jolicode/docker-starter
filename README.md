@@ -2,28 +2,33 @@
 
 ## Before using the stack (remove this chapter once done)
 
-After copy/pasting this starter kit to your project and before first launch
-you will need to (in this order):
+### Project configuration
 
- * edit `env.project_name` in [fabfile.py](fabfile.py) to match your project name
- * find and replace all mentions of `app.test` with the domain of your choice
+Before executing any command, you need to configure few parameters in the
+`fabfile.py` file:
 
-Example CLI commands make your project locally available on https://local.toto.com:
+* `env.project_name`: This will be used to prefix all docker objects (network,
+ images, containers) and the domain will be `https://<value>.test`
+* `env.project_directory`: This is the host directory containing your PHP
+  application
+* `projet_hostnames`: This will be all your domain name, separated with comma
 
-```bash
-grep -lri app.test | xargs sed -i 's/app.test/local.toto.com/g'
-```
+### SSL certificate
 
-*Note*: The project name will be used as a prefix for docker container name,
-and for some other small things.
+To save your time with certificate generation, this project already embed a
+basic certificate. However, it is auto-signed and does not use the domain name
+that you will use. While it will work if you accept this auto-signed
+certificate, it's recommended to use more powerful tool like
+[mkcert](https://github.com/FiloSottile/mkcert). As mkcert uses a CA root, you
+will need to generate a certificate on each host using this stack and so add
+`/infrastructure/services/router/certs/` to the `.gitignore` file.
 
-Generate the SSL certificate to use in the local stack:
+Alternatively, you can configure
+`infrastructure/docker/services/router/openssl.cnf` then use
+`infrastructure/docker/services/router/generate-ssl.sh` to create your own
+certificate. Then you will have to add it to your computer CA store.
 
-```bash
-infrastructure/docker/services/router/generate-ssl.sh
-```
-
-You are ready to go!
+---
 
 *Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project
@@ -53,13 +58,15 @@ pipenv shell
 
 ### Domain configuration (first time only)
 
-Before running the app for the first time, ensure the domain name `app.test`
-point the IP of your Docker deamon by editing your `/etc/hosts` file.
+Before running the application for the first time, ensure your domain names
+point the IP of your Docker daemon by editing your `/etc/hosts` file.
 
-This IP is probably 127.0.0.1 unless you run Docker in a special VM (docker-machine, dinghy, etc).
+This IP is probably `127.0.0.1` unless you run Docker in a special VM (docker-machine, dinghy, etc).
+
+Note: The router binds port 80 and 443, that's why it will work with `127.0.0.1`
 
 ```
-echo '127.0.0.1 app.test' | sudo tee -a /etc/hosts
+echo '127.0.0.1 <your hostnames>' | sudo tee -a /etc/hosts
 ```
 
 Using dinghy? Run `dinghy ip` to get the IP of the VM.
@@ -74,7 +81,7 @@ fab start
 
 > Note: the first start of the stack should take a few minutes.
 
-The site is now accessible at [https://app.test](https://app.test)
+The site is now accessible at the hostnames your have configured over HTTPS
 (you may need to accept self-signed SSL certificate).
 
 ### Builder
