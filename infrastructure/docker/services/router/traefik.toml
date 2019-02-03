@@ -1,6 +1,11 @@
 [entryPoints]
   [entryPoints.http]
   address = ":80"
+    [entryPoints.http.redirect]
+      entryPoint = "https"
+      regex = "^http://.*"
+      replacement = "https://$1"
+      permanent = false
   [entryPoints.https]
   address = ":443"
     [entryPoints.https.tls]
