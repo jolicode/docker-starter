@@ -2,10 +2,12 @@
 
 BASE=$(dirname $0)/
 
-mkdir $BASE/certs
+CERTS_DIR=$BASE/etc/ssl/certs
+
+mkdir -p $CERTS_DIR
 
 openssl req -x509 -sha256 -newkey rsa:4096 \
-    -keyout $BASE/certs/key.pem \
-    -out $BASE/certs/cert.pem \
+    -keyout $CERTS_DIR/key.pem \
+    -out $CERTS_DIR/cert.pem \
     -days 3650 -nodes -config \
     $BASE/openssl.cnf
