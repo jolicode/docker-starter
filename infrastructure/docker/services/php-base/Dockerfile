@@ -12,7 +12,6 @@ RUN apk add --no-cache \
     php7 \
     php7-apcu \
     php7-bcmath \
-    php7-calendar \
     php7-ctype \
     php7-curl \
     php7-dom \
