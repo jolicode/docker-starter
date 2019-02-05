@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-BASE=$(dirname $0)/
+# Script used in dev to generate a basic SSL cert
+
+BASE=$(dirname $0)
+
+rm -rf mkdir $BASE/certs/
 
 CERTS_DIR=$BASE/etc/ssl/certs
 

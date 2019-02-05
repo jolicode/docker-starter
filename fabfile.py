@@ -6,11 +6,12 @@ import re
 from sys import platform
 
 
-# This will be used to prefix all docker objects
+# This will be used to prefix all docker objects (network, images, containers)
 env.project_name = 'app'
 # This is the host directory containing your PHP application
 env.project_directory = 'app'
-
+# This will be all your domain name, separated with comma
+env.projet_hostnames = 'app.test'
 
 @task
 def start():
@@ -104,6 +105,7 @@ def docker_compose(command_name):
     localEnv = {
         'PROJECT_NAME': env.project_name,
         'PROJECT_DIRECTORY': env.project_directory,
+        'PROJET_HOSTNAMES': env.projet_hostnames,
     }
 
     with shell_env(**localEnv):

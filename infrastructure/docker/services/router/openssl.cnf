@@ -1,3 +1,4 @@
+# Configuration used in dev to generate a basic SSL cert
 [req]
 default_bits = 2048
 prompt = no
@@ -5,20 +6,14 @@ default_md = sha256
 distinguished_name = dn
 x509_extensions	= v3_req
 
-[dn]
-C=FR
-ST=Paris
-L=Paris
-O=MyApp
-OU=IT
-CN=*.myapp.joli
-
 [v3_req]
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 basicConstraints=CA:true
 subjectAltName = @alt_names
 
+[dn]
+CN=app.test
+
 [alt_names]
 DNS.1 = app.test
-DNS.2 = www.app.test
