@@ -1,7 +1,7 @@
 from fabric.api import task, env, shell_env
 from fabric.operations import local, _shell_escape, settings
 from fabric.context_managers import quiet
-from fabric.colors import green
+from fabric.colors import green, yellow
 import os
 import re
 from sys import platform
@@ -45,7 +45,7 @@ def up():
 
     print green('You can now browse:')
     for domain in env.projet_hostnames.split(','):
-        print("* https://" + domain)
+        print yellow("* https://" + domain)
 
 
 @task
