@@ -8,10 +8,10 @@ Before executing any command, you need to configure few parameters in the
 `fabfile.py` file:
 
 * `env.project_name`: This will be used to prefix all docker objects (network,
- images, containers) and the domain will be `https://<value>.test`
+ images, containers)
 * `env.project_directory`: This is the host directory containing your PHP
   application
-* `projet_hostnames`: This will be all your domain name, separated with comma
+* `env.projet_hostnames`: This will be all your domain names, separated with comma
 
 ### SSL certificate
 
