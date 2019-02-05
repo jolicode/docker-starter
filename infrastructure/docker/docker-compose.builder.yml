@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+    php-base:
+        build: services/php-base
+        image: "${PROJECT_NAME}_basephp"
+        labels:
+            - "traefik.enable=false"
+
+    builder:
+        build: services/builder
+        depends_on:
+            - mysql
+        volumes:
+            - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
+            - "~/.composer/cache:/home/app/.composer/cache"
+        labels:
+            - "traefik.enable=false"

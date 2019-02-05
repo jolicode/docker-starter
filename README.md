@@ -28,10 +28,10 @@ Alternatively, you can configure
 `infrastructure/docker/services/router/generate-ssl.sh` to create your own
 certificate. Then you will have to add it to your computer CA store.
 
----
-
 *Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project
+
+---
 
 ## Running the application locally
 
@@ -92,6 +92,10 @@ tools available:
 ```bash
 fab builder
 ```
+
+Note: You can add as many fabric command as you want. But the command should be
+ran by the builder, don't forget to add `@with_builder` annotation to the
+function.
 
 ### Other tasks
 
