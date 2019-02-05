@@ -37,11 +37,10 @@ the tasks `install`, `migrate` and `cache_clear` to your project
 
 ### Requirements
 
-A docker environment is provided and requires you to have these tools available:
+A Docker environment is provided and requires you to have these tools available:
 
- * docker
- * docker-compose
- * fabric
+ * Docker
+ * pipenv
 
 Install and run `pipenv` to install the required tools:
 
