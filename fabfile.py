@@ -1,6 +1,7 @@
 from fabric.api import task, env, shell_env
 from fabric.operations import local, _shell_escape, settings
 from fabric.context_managers import quiet
+from fabric.colors import green, yellow
 import os
 import re
 from sys import platform
@@ -41,6 +42,10 @@ def up():
 
     docker_compose(command)
     docker_compose('up --remove-orphans -d')
+
+    print green('You can now browse:')
+    for domain in env.projet_hostnames.split(','):
+        print yellow("* https://" + domain)
 
 
 @task
