@@ -17,8 +17,7 @@ RUN apk add --no-cache \
 
 RUN pip install pycodestyle
 
-RUN curl https://getcomposer.org/composer.phar -o /usr/local/bin/composer && \
-    chmod +x /usr/local/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN mkdir -p ~/.composer
 
