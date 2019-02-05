@@ -1,0 +1,112 @@
+version: 2
+
+jobs:
+    #check-php-cs:
+    #    docker:
+    #        - image: circleci/php:7.1-node-browsers
+    #    steps:
+    #        - checkout
+    #        - run:
+    #              name: Install PHP CS Fixer
+    #              command: wget https://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -O php-cs-fixer
+    #        - run:
+    #              name: Check PHP CS
+    #              command: cd app && php php-cs-fixer fix --dry-run --allow-risky yes --diff --config=.php_cs
+
+    check-python-cs:
+        docker:
+            - image: circleci/python:2.7
+        steps:
+            - checkout
+            - run: sudo pip install pycodestyle
+            - run:
+                  name: Check cs
+                  command: pycodestyle fabfile.py --ignore=E501,W605,E722
+
+    #check-lint:
+    #    docker:
+    #        - image: circleci/php:7.1-node-browsers
+    #    working_directory: ~/docker-starter
+    #    steps:
+    #        - checkout
+    #        - restore_cache:
+    #            keys:
+    #                - composer-cache-app-{{ checksum "~/docker-starter/app/composer.lock" }}
+    #                - composer-cache-
+    #        - run: sudo docker-php-ext-install bcmath pcntl pdo_mysql sockets
+    #        - run:
+    #            name: Composer install
+    #            command: cd app && composer install --no-scripts
+    #        - save_cache:
+    #            key: composer-cache-app-{{ checksum "~/docker-starter/app/composer.lock" }}
+    #            paths:
+    #               - ~/.composer
+    #        - run:
+    #            name: Lint YAML
+    #            command: cd app && php bin/console lint:yaml --parse-tags config/
+    #            when: always
+    #        - run:
+    #            name: Lint Twig
+    #            command: cd app && php bin/console lint:twig templates/
+    #            when: always
+
+    tests:
+        machine:
+            docker_layer_caching: true
+        working_directory: ~/docker-starter
+        steps:
+            - checkout
+            #- restore_cache:
+            #      keys:
+            #          - func-cache-{{ checksum "~/docker-starter/app/composer.lock" }}-{{ checksum "~/docker-starter/app/yarn.lock" }}
+            #          - func-cache-
+
+            #- run:
+            #    name: Prepare cache
+            #    command: |
+            #        set -x
+            #        mkdir -p ~/.composer
+            #        mkdir -p ~/.cache/yarn
+            #        mkdir -p ~/.yarn-cache
+
+            - run:
+                name: Install Requirements
+                command: |
+                    set -x
+                    pip install pipenv==11.1.4
+                    pipenv install
+
+            - run:
+                name: Install everything
+                command: |
+                    set -x
+                    pipenv run fab start
+                    sleep 5
+
+            - run:
+                name: Test the infrastructure is working
+                command: |
+                    set -x
+                    set -o pipefail
+                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
+
+            #- run:
+            #    name: Run PHPUnit tests
+            #    command: pipenv run fab tests
+
+            #- save_cache:
+            #    key: func-cache-{{ checksum "~/docker-starter/app/composer.lock" }}-{{ checksum "~/docker-starter/app/yarn.lock" }}
+            #    paths:
+            #        - ~/.composer
+            #        - ~/.cache/yarn
+            #        - ~/.yarn-cache
+            #        - ~/docker-starter/app/node_modules
+
+workflows:
+    version: 2
+    check_and_tests:
+        jobs:
+            #- check-php-cs
+            - check-python-cs
+            #- check-lint
+            - tests
