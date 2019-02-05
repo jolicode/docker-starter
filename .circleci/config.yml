@@ -1,0 +1,44 @@
+version: 2
+
+jobs:
+    check-python-cs:
+        docker:
+            - image: circleci/python:2.7
+        steps:
+            - checkout
+            - run: sudo pip install pycodestyle
+            - run:
+                  name: Check cs
+                  command: pycodestyle fabfile.py --ignore=E501,W605,E722
+
+    tests:
+        machine:
+            docker_layer_caching: true
+        working_directory: ~/docker-starter
+        steps:
+            - checkout
+            - run:
+                name: Install Requirements
+                command: |
+                    set -x
+                    pip install pipenv==11.1.4
+                    pipenv install
+            - run:
+                name: Install everything
+                command: |
+                    set -x
+                    pipenv run fab start
+                    sleep 5
+            - run:
+                name: Test the infrastructure is working
+                command: |
+                    set -x
+                    set -o pipefail
+                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
+
+workflows:
+    version: 2
+    check_and_tests:
+        jobs:
+            - check-python-cs
+            - tests

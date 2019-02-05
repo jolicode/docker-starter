@@ -14,6 +14,7 @@ env.project_directory = 'app'
 # This will be all your domain name, separated with comma
 env.projet_hostnames = 'app.test'
 
+
 @task
 def start():
     """
@@ -69,8 +70,8 @@ def install():
     """
     Install frontend application (composer, yarn, assets)
     """
-    #docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
-    #docker_compose_run('yarn')
+    # docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
+    # docker_compose_run('yarn')
 
 
 @task
@@ -78,7 +79,7 @@ def cache_clear():
     """
     Clear cache of the frontend application
     """
-    #docker_compose_run('rm -rf var/cache/', no_deps=True)
+    # docker_compose_run('rm -rf var/cache/', no_deps=True)
 
 
 @task
@@ -86,8 +87,8 @@ def migrate():
     """
     Migrate database schema
     """
-    #docker_compose_run('bin/console doctrine:database:create --if-not-exists', no_deps=True)
-    #docker_compose_run('bin/console doctrine:migration:migrate -n', no_deps=True)
+    # docker_compose_run('bin/console doctrine:database:create --if-not-exists', no_deps=True)
+    # docker_compose_run('bin/console doctrine:migration:migrate -n', no_deps=True)
 
 
 @task
