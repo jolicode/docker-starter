@@ -38,3 +38,5 @@ services:
             - "mysql-data:/var/lib/mysql"
         labels:
             - "traefik.enable=false"
+        ports:
+          - 3306:3306
