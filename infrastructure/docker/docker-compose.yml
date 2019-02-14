@@ -39,4 +39,4 @@ services:
         labels:
             - "traefik.enable=false"
         ports:
-          - 3306:3306
+          - "3306:3306"
