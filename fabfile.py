@@ -13,7 +13,7 @@ env.project_name = 'app'
 # This is the host directory containing your PHP application
 env.project_directory = 'app'
 # This will be all your domain name, separated with comma
-env.projet_hostnames = 'app.test'
+env.project_hostnames = 'app.test'
 
 
 def with_builder(func):
