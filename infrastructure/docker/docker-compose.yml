@@ -30,7 +30,7 @@ services:
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
-            - "traefik.frontend.rule=Host:${PROJET_HOSTNAMES}"
+            - "traefik.frontend.rule=Host:${PROJECT_HOSTNAMES}"
 
     mysql:
         build: services/mysql

@@ -49,7 +49,7 @@ def up():
     docker_compose('up --remove-orphans -d')
 
     print green('You can now browse:')
-    for domain in env.projet_hostnames.split(','):
+    for domain in env.project_hostnames.split(','):
         print yellow("* https://" + domain)
 
 
@@ -137,7 +137,7 @@ def docker_compose(command_name):
     localEnv = {
         'PROJECT_NAME': env.project_name,
         'PROJECT_DIRECTORY': env.project_directory,
-        'PROJET_HOSTNAMES': env.projet_hostnames,
+        'PROJECT_HOSTNAMES': env.project_hostnames,
     }
 
     with shell_env(**localEnv):

@@ -11,7 +11,7 @@ Before executing any command, you need to configure few parameters in the
  images, containers)
 * `env.project_directory`: This is the host directory containing your PHP
   application
-* `env.projet_hostnames`: This will be all your domain names, separated with comma
+* `env.project_hostnames`: This will be all your domain names, separated with comma
 
 ### SSL certificate
 
