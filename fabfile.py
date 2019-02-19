@@ -64,7 +64,7 @@ def start():
     cache_clear()
     install()
     migrate()
-    
+
     print green('You can now browse:')
     for domain in env.project_hostnames.split(','):
         print yellow("* https://" + domain)
