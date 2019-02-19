@@ -48,10 +48,6 @@ def up():
     build()
     docker_compose('up --remove-orphans -d')
 
-    print green('You can now browse:')
-    for domain in env.project_hostnames.split(','):
-        print yellow("* https://" + domain)
-
 
 @task
 def start():
@@ -68,6 +64,10 @@ def start():
     cache_clear()
     install()
     migrate()
+    
+    print green('You can now browse:')
+    for domain in env.project_hostnames.split(','):
+        print yellow("* https://" + domain)
 
 
 @task
