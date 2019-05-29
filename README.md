@@ -13,23 +13,29 @@ Before executing any command, you need to configure few parameters in the
   application
 * `env.project_hostnames`: This will be all your domain names, separated with comma
 
+*Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
+the tasks `install`, `migrate` and `cache_clear` to your project
+
 ### SSL certificate
 
 To save your time with certificate generation, this project already embed a
-basic certificate. However, it is auto-signed and does not use the domain name
-that you will use. While it will work if you accept this auto-signed
-certificate, it's recommended to use more powerful tool like
-[mkcert](https://github.com/FiloSottile/mkcert). As mkcert uses a CA root, you
-will need to generate a certificate on each host using this stack and so add
-`/infrastructure/services/router/certs/` to the `.gitignore` file.
+basic self-signed certificate. So *HTTPS will work out of the box* in your browser
+as soon as you accept this self-signed certificate.
+
+However, if you prefere to have valid certificate in local (some tools do not
+necessarily let you work with invalid certificates), you will have to:
+- generate a certificate valid for your domain name
+- sign this certificate with a locally trusted CA
+
+In this case, it's recommended to use more powerful tool like [mkcert](https://github.com/FiloSottile/mkcert).
+As mkcert uses a CA root, you will need to generate a certificate on each host
+using this stack and so add `/infrastructure/services/router/certs/` to the
+`.gitignore` file.
 
 Alternatively, you can configure
 `infrastructure/docker/services/router/openssl.cnf` then use
 `infrastructure/docker/services/router/generate-ssl.sh` to create your own
 certificate. Then you will have to add it to your computer CA store.
-
-*Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
-the tasks `install`, `migrate` and `cache_clear` to your project
 
 ---
 
