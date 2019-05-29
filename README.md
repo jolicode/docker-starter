@@ -22,13 +22,13 @@ To save your time with certificate generation, this project already embed a
 basic self-signed certificate. So *HTTPS will work out of the box* in your browser
 as soon as you accept this self-signed certificate.
 
-However, if you prefere to have valid certificate in local (some tools do not
+However, if you prefer to have valid certificate in local (some tools do not
 necessarily let you work with invalid certificates), you will have to:
 - generate a certificate valid for your domain name
 - sign this certificate with a locally trusted CA
 
 In this case, it's recommended to use more powerful tool like [mkcert](https://github.com/FiloSottile/mkcert).
-As mkcert uses a CA root, you will need to generate a certificate on each host
+As mkcert uses a CA root, you will need to generate a certificate on each computer
 using this stack and so add `/infrastructure/services/router/certs/` to the
 `.gitignore` file.
 
