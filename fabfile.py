@@ -77,7 +77,7 @@ def install():
     Install frontend application (composer, yarn, assets)
     """
     # docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
-    # docker_compose_run('yarn')
+    # run_in_docker_or_locally_for_dinghy('yarn')
 
 
 @task
@@ -131,6 +131,16 @@ def down():
     Clean the infrastructure (remove container, volume, networks)
     """
     docker_compose('down --volumes --rmi=local')
+
+
+def run_in_docker_or_locally_for_dinghy(command):
+    """
+    Mac users have a lot of problems running Yarn / Webpack on the Docker stack so this func allow them to run these tools on their host
+    """
+    if env.dinghy:
+        local(command)
+    else:
+        docker_compose_run(command)
 
 
 def docker_compose(command_name):
