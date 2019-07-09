@@ -61,6 +61,18 @@ You can configure your current shell to be able to use fabric commands directly
 pipenv shell
 ```
 
+### Docker environment
+
+The Docker infrastructure provides a web stack with:
+ - NGINX
+ - MariaDB
+ - PHP
+ - Traefik
+ - A container with some tooling:
+   - Composer
+   - Node
+   - Yarn / NPM
+
 ### Domain configuration (first time only)
 
 Before running the application for the first time, ensure your domain names
