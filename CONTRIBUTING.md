@@ -49,7 +49,6 @@ Then get the upstream changes:
 
 ```shell
 git checkout master
-git pull --rebase origin master
 git pull --rebase upstream master
 git checkout <your-branch>
 git rebase master
@@ -62,6 +61,5 @@ git push -f origin <your-branch>
 ```
 
 Your pull request will be automatically updated.
-
 
 Thank you!
