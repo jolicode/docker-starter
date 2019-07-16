@@ -22,7 +22,7 @@ RUN apk add --no-cache \
     php7-opcache \
     php7-openssl \
     php7-pdo \
-    php7-pdo_mysql \
+    php7-pdo_pgsql \
     php7-pcntl \
     php7-posix \
     php7-session \
