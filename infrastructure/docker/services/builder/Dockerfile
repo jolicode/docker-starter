@@ -7,7 +7,6 @@ RUN apk add --no-cache \
     g++ \
     git \
     make \
-    mariadb-client \
     nodejs \
     npm \
     php7-phar \

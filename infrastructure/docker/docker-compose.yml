@@ -1,7 +1,7 @@
 version: '3'
 
 volumes:
-    mysql-data: {}
+    postgres-data: {}
 
 services:
     router:
@@ -24,7 +24,7 @@ services:
     frontend:
         build: services/frontend
         depends_on:
-            - mysql
+            - postgres
         volumes:
             - "../../${PROJECT_DIRECTORY}:/var/www:cached"
         labels:
@@ -32,11 +32,12 @@ services:
             - "traefik.frontend.entryPoints=https"
             - "traefik.frontend.rule=Host:${PROJECT_HOSTNAMES}"
 
-    mysql:
-        build: services/mysql
+    postgres:
+        build: services/postgres
+        environment:
+            - POSTGRES_USER=app
+            - POSTGRES_PASSWORD=app
         volumes:
-            - "mysql-data:/var/lib/mysql"
+            - postgres-data:/var/lib/postgresql/data
         labels:
             - "traefik.enable=false"
-        ports:
-          - "3306:3306"

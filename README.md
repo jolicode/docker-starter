@@ -65,7 +65,7 @@ pipenv shell
 
 The Docker infrastructure provides a web stack with:
  - NGINX
- - MariaDB
+ - PostgreSQL
  - PHP
  - Traefik
  - A container with some tooling:
@@ -118,3 +118,152 @@ function.
 ### Other tasks
 
 Checkout `fab -l` to have the list of available fabric tasks.
+
+## Cookbooks
+
+### Use MySQL instead of PostgreSQL
+
+I order to use MySQL, you will need to revert this diff:
+
+```diff
+diff --git a/infrastructure/docker/docker-compose.builder.yml b/infrastructure/docker/docker-compose.builder.yml
+index 39198ca..dc5fce1 100644
+--- a/infrastructure/docker/docker-compose.builder.yml
++++ b/infrastructure/docker/docker-compose.builder.yml
+@@ -10,7 +10,7 @@ services:
+     builder:
+         build: services/builder
+         depends_on:
+-            - mysql
++            - postgres
+         volumes:
+             - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
+             - "~/.composer/cache:/home/app/.composer/cache"
+diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
+index 0dffe3a..0ae36cd 100644
+--- a/infrastructure/docker/docker-compose.yml
++++ b/infrastructure/docker/docker-compose.yml
+@@ -1,7 +1,7 @@
+ version: '3'
+
+ volumes:
+-    mysql-data: {}
++    postgres-data: {}
+
+ services:
+     router:
+@@ -24,7 +24,7 @@ services:
+     frontend:
+         build: services/frontend
+         depends_on:
+-            - mysql
++            - postgres
+         volumes:
+             - "../../${PROJECT_DIRECTORY}:/var/www:cached"
+         labels:
+@@ -32,11 +32,12 @@ services:
+             - "traefik.frontend.entryPoints=https"
+             - "traefik.frontend.rule=Host:${PROJECT_HOSTNAMES}"
+
+-    mysql:
+-        build: services/mysql
++    postgres:
++        build: services/postgres
++        environment:
++            - POSTGRES_USER=app
++            - POSTGRES_PASSWORD=app
+         volumes:
+-            - "mysql-data:/var/lib/mysql"
++            - postgres-data:/var/lib/postgresql/data
+         labels:
+             - "traefik.enable=false"
+-        ports:
+-          - "3306:3306"
+diff --git a/infrastructure/docker/services/builder/Dockerfile b/infrastructure/docker/services/builder/Dockerfile
+index 173c1a6..87424f7 100644
+--- a/infrastructure/docker/services/builder/Dockerfile
++++ b/infrastructure/docker/services/builder/Dockerfile
+@@ -7,7 +7,6 @@ RUN apk add --no-cache \
+     g++ \
+     git \
+     make \
+-    mariadb-client \
+     nodejs \
+     npm \
+     php7-phar \
+diff --git a/infrastructure/docker/services/mysql/Dockerfile b/infrastructure/docker/services/mysql/Dockerfile
+deleted file mode 100644
+index e9e0245..0000000
+--- a/infrastructure/docker/services/mysql/Dockerfile
++++ /dev/null
+@@ -1,3 +0,0 @@
+-FROM mariadb:10.4
+-
+-ENV MYSQL_ALLOW_EMPTY_PASSWORD=1
+diff --git a/infrastructure/docker/services/php-base/Dockerfile b/infrastructure/docker/services/php-base/Dockerfile
+index ea6fc5e..316cbde 100644
+--- a/infrastructure/docker/services/php-base/Dockerfile
++++ b/infrastructure/docker/services/php-base/Dockerfile
+@@ -22,7 +22,7 @@ RUN apk add --no-cache \
+     php7-opcache \
+     php7-openssl \
+     php7-pdo \
+-    php7-pdo_mysql \
++    php7-pdo_pgsql \
+     php7-pcntl \
+     php7-posix \
+     php7-session \
+diff --git a/infrastructure/docker/services/postgres/Dockerfile b/infrastructure/docker/services/postgres/Dockerfile
+new file mode 100644
+index 0000000..998fda8
+--- /dev/null
++++ b/infrastructure/docker/services/postgres/Dockerfile
+@@ -0,0 +1 @@
++FROM postgres:11
+```
+
+
+### How to use with Symfony
+
+If you want to create a new Symfony project, you need to:
+
+1. Remove the `app` folder:
+
+    ```bash
+    rm -rf app/
+    ```
+
+1. Create a new project:
+
+    ```bash
+    composer create-project symfony/website-skeleton app
+    ```
+
+1. Configure the `.env`
+
+    ```bash
+    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" app/.env
+    ```
+
+1. Configure doctrine
+
+    By default, Symfony and Doctrine are configured to use MySQL. Since MySQL
+    has bad default configuration, Doctrine is forced to configure MySQL
+    explicitly. PostgreSQL does not have this issue. So **update the following
+    configuration** in `app/config/packages/doctrine.yaml`:
+
+    ```yaml
+    doctrine:
+        dbal:
+            # configure these for your database server
+            driver: 'pdo_pgsql'
+            server_version: '11'
+            charset: UTF8
+            default_table_options:
+                charset: UTF8
+                # Adapt the collate according to the content of your DB.
+                # For example, if your content is mainly in French:
+                # collate: fr_FR.UTF8
+
+            url: '%env(resolve:DATABASE_URL)%'
+    ```

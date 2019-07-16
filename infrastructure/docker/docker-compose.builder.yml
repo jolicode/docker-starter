@@ -10,7 +10,7 @@ services:
     builder:
         build: services/builder
         depends_on:
-            - mysql
+            - postgres
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
             - "~/.composer/cache:/home/app/.composer/cache"
