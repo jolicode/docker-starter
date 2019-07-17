@@ -4,8 +4,8 @@
 
 ### Introduction
 
-Read [in English](https://jolicode.com/blog/introducing-our-docker-starter-kit)
-or [in French](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker)
+Read [in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit)
+or [in French 🇫🇷](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker)
 why we created and open-sourced this starter-kit.
 
 ### Project configuration
