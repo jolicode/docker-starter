@@ -20,7 +20,7 @@ def with_builder(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         compose_files = env.compose_files[:]
-        env.compose_files += ['docker-compose.builder.yml']
+        env.compose_files = ['docker-compose.builder.yml'] + env.compose_files
         ret = func(*args, **kwargs)
         env.compose_files = compose_files
 
