@@ -26,7 +26,7 @@ services:
         depends_on:
             - postgres
         volumes:
-            - "../../${PROJECT_DIRECTORY}:/var/www:cached"
+            - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
         labels:
             - "traefik.port=80"
             - "traefik.frontend.entryPoints=https"
