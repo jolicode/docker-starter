@@ -138,7 +138,7 @@ def run_in_docker_or_locally_for_dinghy(command):
     Mac users have a lot of problems running Yarn / Webpack on the Docker stack so this func allow them to run these tools on their host
     """
     if env.dinghy:
-        local(command)
+        local('cd %s && %s' % (env.project_directory, command))
     else:
         docker_compose_run(command)
 
