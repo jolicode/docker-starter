@@ -168,7 +168,7 @@ def docker_compose_run(command_name, service="builder", user="app", no_deps=Fals
     if no_deps:
         args.append('--no-deps ')
 
-    docker_compose('%s %s /bin/bash -c "%s"' % (
+    docker_compose('%s %s /bin/bash -c "exec %s"' % (
         ' '.join(args),
         _shell_escape(service),
         _shell_escape(command_name)
