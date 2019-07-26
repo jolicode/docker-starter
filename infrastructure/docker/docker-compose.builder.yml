@@ -11,6 +11,8 @@ services:
         build: services/builder
         depends_on:
             - postgres
+        environment:
+            - COMPOSER_MEMORY_LIMIT=-1
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
             - "~/.composer/cache:/home/app/.composer/cache"
