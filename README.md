@@ -129,7 +129,7 @@ Checkout `fab -l` to have the list of available fabric tasks.
 
 ### Use MySQL instead of PostgreSQL
 
-I order to use MySQL, you will need to revert this diff:
+In order to use MySQL, you will need to revert this diff:
 
 ```diff
 diff --git a/infrastructure/docker/docker-compose.builder.yml b/infrastructure/docker/docker-compose.builder.yml
