@@ -127,6 +127,17 @@ Checkout `fab -l` to have the list of available fabric tasks.
 
 ## Cookbooks
 
+### Solves build dependencies
+
+Docker-compose is not a tool to build images. This is why you can hit the
+following bug:
+
+> ERROR: Service 'frontend' failed to build: pull access denied for app_basephp, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+
+In order to fix this issue, you can update the `services_to_build_first` variable
+in the `fabfile.py` file. This will force docker-compose to build theses
+services first.
+
 ### Use MySQL instead of PostgreSQL
 
 In order to use MySQL, you will need to revert this diff:

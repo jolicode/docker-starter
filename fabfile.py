@@ -15,6 +15,11 @@ env.project_directory = 'app'
 # This will be all your domain name, separated with comma
 env.project_hostnames = 'app.test'
 
+services_to_build_first = [
+    'php-base',
+    'builder',
+]
+
 
 def with_builder(func):
     @wraps(func)
@@ -36,6 +41,10 @@ def build():
     command = 'build'
     command += ' --build-arg PROJECT_NAME=%s' % env.project_name
     command += ' --build-arg USER_ID=%s' % env.user_id
+
+    for service in services_to_build_first:
+        commandForService = '%s %s' % (command, service)
+        docker_compose(commandForService)
 
     docker_compose(command)
 
