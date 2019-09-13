@@ -95,7 +95,7 @@ def cache_clear():
     """
     Clear cache of the frontend application
     """
-    # docker_compose_run('rm -rf var/cache/', no_deps=True)
+    # docker_compose_run('rm -rf var/cache/ && bin/console cache:warmup', no_deps=True)
 
 
 @task
