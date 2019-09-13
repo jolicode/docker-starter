@@ -1,6 +1,6 @@
 ARG PROJECT_NAME
 
-FROM ${PROJECT_NAME}_basephp
+FROM ${PROJECT_NAME}_php-base
 
 RUN apk add --no-cache \
     curl \
