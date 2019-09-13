@@ -135,7 +135,7 @@ def stop():
 
 @task
 @with_builder
-def down():
+def destroy():
     """
     Clean the infrastructure (remove container, volume, networks)
     """
