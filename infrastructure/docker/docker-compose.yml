@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 volumes:
     postgres-data: {}
@@ -6,12 +6,9 @@ volumes:
 services:
     router:
         build: services/router
-        ports:
-            - "80:80"
-            - "443:443"
-            - "8080:8080"
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock"
+        network_mode: "host"
         # # Use network alias if you need to access a container via a specific
         # # host by using the routing from another container
         # networks:
@@ -27,11 +24,11 @@ services:
             - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.frontend.rule=Host(${PROJECT_HOSTNAMES})"
-            - "traefik.http.routers.frontend.tls=true"
-            - "traefik.http.routers.frontend-unsecure.rule=Host(${PROJECT_HOSTNAMES})"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.rule=Host(${PROJECT_HOSTNAMES})"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend.tls=true"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.rule=Host(${PROJECT_HOSTNAMES})"
             # Comment the next line to be able to access frontend via HTTP instead of HTTPS
-            - "traefik.http.routers.frontend-unsecure.middlewares=redirect-to-https@file"
+            - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
 
     postgres:
         build: services/postgres
