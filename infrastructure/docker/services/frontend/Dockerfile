@@ -9,4 +9,6 @@ RUN apk add --no-cache \
 
 COPY etc/. /etc/
 
+EXPOSE 80
+
 CMD ["runsvdir", "-P", "/etc/service"]

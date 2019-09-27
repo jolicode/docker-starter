@@ -1,0 +1,12 @@
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/ssl/certs/cert.pem
+        keyFile: /etc/ssl/certs/key.pem
+
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
