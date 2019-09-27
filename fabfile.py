@@ -12,8 +12,8 @@ from sys import platform
 env.project_name = 'app'
 # This is the host directory containing your PHP application
 env.project_directory = 'app'
-# This will be all your domain name, separated with comma
-env.project_hostnames = 'app.test'
+# This will be all your domain names
+env.project_hostnames = ['app.test']
 
 services_to_build_first = [
     'php-base',
@@ -75,7 +75,7 @@ def start():
     migrate()
 
     print green('You can now browse:')
-    for domain in env.project_hostnames.split(','):
+    for domain in env.project_hostnames:
         print yellow("* https://" + domain)
 
 
@@ -156,7 +156,7 @@ def docker_compose(command_name):
     localEnv = {
         'PROJECT_NAME': env.project_name,
         'PROJECT_DIRECTORY': env.project_directory,
-        'PROJECT_HOSTNAMES': env.project_hostnames,
+        'PROJECT_HOSTNAMES': '`' + '`,`'.join(env.project_hostnames) + '`',
     }
 
     with shell_env(**localEnv):

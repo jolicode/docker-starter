@@ -1,0 +1,28 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    filename: /etc/traefik/dynamic_conf.yaml
+
+# # Uncomment get all DEBUG logs
+# log:
+#   level: "DEBUG"
+
+# # Uncomment to view all access logs
+# accessLog: {}
+
+api:
+  dashboard: true
+  insecure: true # No authentication are required
+
+entryPoints:
+  http:
+   address: ":80"
+  https:
+   address: ":443"
+  traefik: # this one exists by default
+   address: ":8080"
