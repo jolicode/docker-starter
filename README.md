@@ -20,10 +20,10 @@ objects (network, images, containers);
 root domain where the application will be available;
 
 * `env.extra_domains` (optional): This contains extra domains where the
-application will be available
+application will be available;
 
 * `env.project_directory` (optional, default: `application`): This is the host
-directory containing your PHP application
+directory containing your PHP application.
 
 *Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project
