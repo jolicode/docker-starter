@@ -11,5 +11,5 @@ services:
         environment:
             - COMPOSER_MEMORY_LIMIT=-1
         volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
+            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
             - "~/.composer/cache:/home/app/.composer/cache"

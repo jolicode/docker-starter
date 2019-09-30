@@ -13,11 +13,17 @@ why we created and open-sourced this starter-kit.
 Before executing any command, you need to configure few parameters in the
 `fabfile.py` file:
 
-* `env.project_name`: This will be used to prefix all docker objects (network,
- images, containers)
-* `env.project_directory`: This is the host directory containing your PHP
-  application
-* `env.project_hostnames`: This will be all your domain names, separated with comma
+* `env.project_name` (**required**): This will be used to prefix all docker
+objects (network, images, containers);
+
+* `env.root_domain` (optional, default: `project_name + '.test'`): This is the
+root domain where the application will be available;
+
+* `env.extra_domains` (optional): This contains extra domains where the
+application will be available;
+
+* `env.project_directory` (optional, default: `application`): This is the host
+directory containing your PHP application.
 
 *Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project
@@ -127,18 +133,105 @@ Checkout `fab -l` to have the list of available fabric tasks.
 
 ## Cookbooks
 
-### Solves build dependencies
+### How to use with Symfony
 
-Docker-compose is not a tool to build images. This is why you can hit the
-following bug:
+<details>
 
-> ERROR: Service 'frontend' failed to build: pull access denied for app_basephp, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+<summary>Read the cookbook</summary>
 
-In order to fix this issue, you can update the `services_to_build_first` variable
-in the `fabfile.py` file. This will force docker-compose to build theses
-services first.
+If you want to create a new Symfony project, you need to:
 
-### Use MySQL instead of PostgreSQL
+1. Remove the `application` folder:
+
+    ```bash
+    rm -rf application/
+    ```
+
+1. Create a new project:
+
+    ```bash
+    composer create-project symfony/website-skeleton application
+    ```
+
+1. Configure the `.env`
+
+    ```bash
+    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" app/.env
+    ```
+
+1. Configure doctrine
+
+    By default, Symfony and Doctrine are configured to use MySQL. Since MySQL
+    has bad default configuration, Doctrine is forced to configure MySQL
+    explicitly. PostgreSQL does not have this issue. So **update the following
+    configuration** in `application/config/packages/doctrine.yaml`:
+
+    ```yaml
+    doctrine:
+        dbal:
+            # configure these for your database server
+            driver: 'pdo_pgsql'
+            server_version: '11'
+            charset: UTF8
+            default_table_options:
+                charset: UTF8
+                # Adapt the collate according to the content of your DB.
+                # For example, if your content is mainly in French:
+                # collate: fr_FR.UTF8
+
+            url: '%env(resolve:DATABASE_URL)%'
+    ```
+
+</details>
+
+### How to add Elasticsearch and Kibana
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use Elasticsearch and Kibana, you should add the following content
+to the `docker-compose.yml` file:
+
+```yaml
+volumes:
+    elasticsearch-data: {}
+
+services:
+    elasticsearch:
+        image: elasticsearch:7.3.2
+        volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data
+        environment:
+            - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+            - "discovery.type=single-node"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.rule=Host(`elasticsearch.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.tls=true"
+
+    kibana:
+        image: kibana:7.3.2
+        depends_on:
+            - elasticsearch
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-kibana.rule=Host(`kibana.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-kibana.tls=true"
+```
+
+Then, you will be able to browse:
+
+* `https://kibana.<root_domain>`
+* `https://elasticsearch.<root_domain>`
+
+</details>
+
+### How to use MySQL instead of PostgreSQL
+
+<details>
+
+<summary>Read the cookbook</summary>
 
 In order to use MySQL, you will need to revert this diff:
 
@@ -154,7 +247,7 @@ index 39198ca..dc5fce1 100644
 -            - mysql
 +            - postgres
          volumes:
-             - "../../${PROJECT_DIRECTORY}:/home/app/app:cached"
+             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
              - "~/.composer/cache:/home/app/.composer/cache"
 diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
 index 0dffe3a..0ae36cd 100644
@@ -239,48 +332,20 @@ index 0000000..998fda8
 +FROM postgres:11
 ```
 
+</details>
 
-### How to use with Symfony
+### How to solves build dependencies
 
-If you want to create a new Symfony project, you need to:
+<details>
 
-1. Remove the `app` folder:
+<summary>Read the cookbook</summary>
 
-    ```bash
-    rm -rf app/
-    ```
+Docker-compose is not a tool to build images. This is why you can hit the
+following bug:
 
-1. Create a new project:
+> ERROR: Service 'frontend' failed to build: pull access denied for app_basephp, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
 
-    ```bash
-    composer create-project symfony/website-skeleton app
-    ```
-
-1. Configure the `.env`
-
-    ```bash
-    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" app/.env
-    ```
-
-1. Configure doctrine
-
-    By default, Symfony and Doctrine are configured to use MySQL. Since MySQL
-    has bad default configuration, Doctrine is forced to configure MySQL
-    explicitly. PostgreSQL does not have this issue. So **update the following
-    configuration** in `app/config/packages/doctrine.yaml`:
-
-    ```yaml
-    doctrine:
-        dbal:
-            # configure these for your database server
-            driver: 'pdo_pgsql'
-            server_version: '11'
-            charset: UTF8
-            default_table_options:
-                charset: UTF8
-                # Adapt the collate according to the content of your DB.
-                # For example, if your content is mainly in French:
-                # collate: fr_FR.UTF8
-
-            url: '%env(resolve:DATABASE_URL)%'
-    ```
+In order to fix this issue, you can update the `services_to_build_first` variable
+in the `fabfile.py` file. This will force docker-compose to build theses
+services first.
+</details>

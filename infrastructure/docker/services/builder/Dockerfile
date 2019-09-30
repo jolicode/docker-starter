@@ -23,6 +23,6 @@ RUN mkdir -p ~/.composer
 ENV PATH $PATH:/home/app/.composer/vendor/bin/
 ENV TERM xterm
 
-WORKDIR /home/app/app
+WORKDIR /home/app/application
 
 CMD ["echo"]

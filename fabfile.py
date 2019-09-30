@@ -10,10 +10,14 @@ from sys import platform
 
 # This will be used to prefix all docker objects (network, images, containers)
 env.project_name = 'app'
+# This is the root domain where the app will be available
+# The "frontend" container will receive all the traffic
+env.root_domain = env.project_name + '.test'
+# This contains extra domains where the app will be available
+# The "frontend" container will receive all the traffic
+env.extra_domains = []
 # This is the host directory containing your PHP application
-env.project_directory = 'app'
-# This will be all your domain names
-env.project_hostnames = ['app.test']
+env.project_directory = 'application'
 
 services_to_build_first = [
     'php-base',
@@ -75,7 +79,7 @@ def start():
     migrate()
 
     print green('You can now browse:')
-    for domain in env.project_hostnames:
+    for domain in [env.root_domain] + env.extra_domains:
         print yellow("* https://" + domain)
 
 
@@ -153,10 +157,14 @@ def run_in_docker_or_locally_for_dinghy(command):
 
 
 def docker_compose(command_name):
+
+    domains = '`' + '`, `'.join([env.root_domain] + env.extra_domains) + '`'
+
     localEnv = {
         'PROJECT_NAME': env.project_name,
         'PROJECT_DIRECTORY': env.project_directory,
-        'PROJECT_HOSTNAMES': '`' + '`,`'.join(env.project_hostnames) + '`',
+        'PROJECT_ROOT_DOMAIN': env.root_domain,
+        'PROJECT_DOMAINS': domains,
     }
 
     with shell_env(**localEnv):
