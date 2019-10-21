@@ -1,3 +1,7 @@
+<p align="center">
+    <img width="500" height="180" src="/art/logo.png" alt="Docker starter kit logo" />
+</p>
+
 # JoliCode's Docker starter kit
 
 ## Before using the stack (remove this chapter once done)
@@ -349,3 +353,9 @@ In order to fix this issue, you can update the `services_to_build_first` variabl
 in the `fabfile.py` file. This will force docker-compose to build theses
 services first.
 </details>
+
+
+### Credits
+
+- Created by (Gregoire Pineau)[https://twitter.com/lyrixx]
+- Logo by (Caneco)[https://twitter.com/caneco]
