@@ -355,7 +355,7 @@ services first.
 </details>
 
 
-### Credits
+## Credits
 
-- Created by (Gregoire Pineau)[https://twitter.com/lyrixx]
+- Created at (JoliCode)[https://jolicode.com/]
 - Logo by (Caneco)[https://twitter.com/caneco]
