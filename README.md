@@ -357,5 +357,5 @@ services first.
 
 ## Credits
 
-- Created at (JoliCode)[https://jolicode.com/]
-- Logo by (Caneco)[https://twitter.com/caneco]
+- Created at [JoliCode](https://jolicode.com/)
+- Logo by [Caneco](https://twitter.com/caneco)
