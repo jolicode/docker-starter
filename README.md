@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="500" height="180" src="/art/logo.png" alt="Docker starter kit logo" />
+    <img width="500" height="180" src="https://jolicode.com/media/original/docker-starter-logo.png" alt="Docker starter kit logo" />
 </p>
 
 # JoliCode's Docker starter kit
@@ -52,6 +52,11 @@ Alternatively, you can configure
 `infrastructure/docker/services/router/openssl.cnf` then use
 `infrastructure/docker/services/router/generate-ssl.sh` to create your own
 certificate. Then you will have to add it to your computer CA store.
+
+### Credits
+
+- Created at [JoliCode](https://jolicode.com/)
+- Logo by [Caneco](https://twitter.com/caneco)
 
 ---
 
@@ -353,9 +358,3 @@ In order to fix this issue, you can update the `services_to_build_first` variabl
 in the `fabfile.py` file. This will force docker-compose to build theses
 services first.
 </details>
-
-
-## Credits
-
-- Created at [JoliCode](https://jolicode.com/)
-- Logo by [Caneco](https://twitter.com/caneco)
