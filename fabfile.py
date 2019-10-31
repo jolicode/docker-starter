@@ -114,7 +114,7 @@ def migrate():
 
 @task
 @with_builder
-def builder():
+def shell():
     """
     Open a shell (bash) into a builder container
     """
