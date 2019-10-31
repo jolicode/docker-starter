@@ -56,7 +56,7 @@ def build():
 @task
 def up():
     """
-    Ensure infrastructure is sync and running
+    Build and start the infrastructure
     """
     build()
     docker_compose('up --remove-orphans -d')
@@ -65,7 +65,7 @@ def up():
 @task
 def start():
     """
-    Be sure that everything is started and installed
+    Build and start the infrastructure, then install the application (composer, yarn, ...)
     """
     if env.dinghy:
         machine_running = local('dinghy status', capture=True)
@@ -87,7 +87,7 @@ def start():
 @with_builder
 def install():
     """
-    Install frontend application (composer, yarn, assets)
+    Install the application (composer, yarn, ...)
     """
     # docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
     # run_in_docker_or_locally_for_dinghy('yarn')
@@ -97,7 +97,7 @@ def install():
 @with_builder
 def cache_clear():
     """
-    Clear cache of the frontend application
+    Clear the application cache
     """
     # docker_compose_run('rm -rf var/cache/ && bin/console cache:warmup', no_deps=True)
 
@@ -116,7 +116,7 @@ def migrate():
 @with_builder
 def builder():
     """
-    Bash into a builder container
+    Open a shell (bash) into a builder container
     """
     docker_compose_run('bash')
 
@@ -124,7 +124,7 @@ def builder():
 @task
 def logs():
     """
-    Show logs of infrastructure
+    Display infrastructure logs
     """
     docker_compose('logs -f --tail=150')
 
