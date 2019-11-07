@@ -175,15 +175,18 @@ def docker_compose(command_name):
         ))
 
 
-def docker_compose_run(command_name, service="builder", user="app", no_deps=False):
+def docker_compose_run(command_name, service="builder", user="app", no_deps=False, workdir=None):
     args = [
-        'run '
-        '--rm '
-        '-u %s ' % _shell_escape(user)
+        'run ',
+        '--rm ',
+        '-u %s ' % _shell_escape(user),
     ]
 
     if no_deps:
         args.append('--no-deps ')
+
+    if workdir is not None:
+        args.append('-w %s ' % _shell_escape(workdir))
 
     docker_compose('%s %s /bin/bash -c "exec %s"' % (
         ' '.join(args),
