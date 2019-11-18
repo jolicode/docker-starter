@@ -175,7 +175,7 @@ def docker_compose(command_name):
         ))
 
 
-def docker_compose_run(command_name, service="builder", user="app", no_deps=False, workdir=None):
+def docker_compose_run(command_name, service="builder", user="app", no_deps=False, workdir=None, port_mapping=False):
     args = [
         'run ',
         '--rm ',
@@ -184,6 +184,9 @@ def docker_compose_run(command_name, service="builder", user="app", no_deps=Fals
 
     if no_deps:
         args.append('--no-deps ')
+
+    if port_mapping:
+        args.append('--service-ports ')
 
     if workdir is not None:
         args.append('-w %s ' % _shell_escape(workdir))
