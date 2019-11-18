@@ -1,5 +1,8 @@
 version: '3.7'
 
+volumes:
+    builder-data: {}
+
 services:
     php-base:
         build: services/php-base
@@ -13,3 +16,4 @@ services:
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
             - "~/.composer/cache:/home/app/.composer/cache"
+            - "builder-data:/home/app"
