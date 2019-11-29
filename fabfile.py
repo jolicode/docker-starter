@@ -128,12 +128,13 @@ def logs():
     """
     docker_compose('logs -f --tail=150')
 
+
 @task
 def ps():
     """
     List containers status
     """
-    local('docker ps -a --filter "Name=^%s_" --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}\\t{{.Status}}"' % env.project_name)
+    docker_compose('ps')
 
 
 @task
