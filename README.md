@@ -236,6 +236,43 @@ Then, you will be able to browse:
 
 </details>
 
+
+### How to add RabbitMQ and its dashboard
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use RabbitMQ and its dashboard, you should add the following content
+to the `docker-compose.yml` file:
+
+```yaml
+volumes:
+    rabbitmq-data: {}
+
+services:
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
+        environment:
+            - "RABBITMQ_VM_MEMORY_HIGH_WATERMARK=1024MiB"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.rule=Host(`rabbitmq.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.tls=true"
+            - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+```
+
+In order to publish and consume messages with PHP, you need to install the
+`php7-amqp` in the `php-base` image.
+
+Then, you will be able to browse:
+
+* `https://rabbitmq.<root_domain>`
+
+</details>
+
 ### How to use MySQL instead of PostgreSQL
 
 <details>
