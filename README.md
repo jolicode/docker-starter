@@ -4,15 +4,13 @@
 
 # JoliCode's Docker starter kit
 
-## Before using the stack (remove this chapter once done)
-
-### Introduction
+## Introduction
 
 Read [in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit)
 or [in French 🇫🇷](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker)
 why we created and open-sourced this starter-kit.
 
-### Project configuration
+## Project configuration
 
 Before executing any command, you need to configure few parameters in the
 `fabfile.py` file:
@@ -32,7 +30,7 @@ directory containing your PHP application.
 *Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project
 
-### SSL certificate
+## SSL certificate
 
 To save your time with certificate generation, this project already embed a
 basic self-signed certificate. So *HTTPS will work out of the box* in your browser
@@ -53,92 +51,14 @@ Alternatively, you can configure
 `infrastructure/docker/services/router/generate-ssl.sh` to create your own
 certificate. Then you will have to add it to your computer CA store.
 
-### Credits
+## Final documentation
 
-- Created at [JoliCode](https://jolicode.com/)
-- Logo by [Caneco](https://twitter.com/caneco)
-
----
-
-## Running the application locally
-
-### Requirements
-
-A Docker environment is provided and requires you to have these tools available:
-
- * Docker
- * pipenv (see [these instructions](https://pipenv.readthedocs.io/en/latest/install/) for how to install)
-
-Install and run `pipenv` to install the required tools:
+This starter-kit embeds a [README.dist.md](./README.dist.md) you can use as the
+base of the final README.md of your project:
 
 ```bash
-pipenv install
+mv README.{dist.md,md}
 ```
-
-You can configure your current shell to be able to use fabric commands directly
-(without having to prefix everything by `pipenv run`)
-
-```bash
-pipenv shell
-```
-
-### Docker environment
-
-The Docker infrastructure provides a web stack with:
- - NGINX
- - PostgreSQL
- - PHP
- - Traefik
- - A container with some tooling:
-   - Composer
-   - Node
-   - Yarn / NPM
-
-### Domain configuration (first time only)
-
-Before running the application for the first time, ensure your domain names
-point the IP of your Docker daemon by editing your `/etc/hosts` file.
-
-This IP is probably `127.0.0.1` unless you run Docker in a special VM (docker-machine, dinghy, etc).
-
-Note: The router binds port 80 and 443, that's why it will work with `127.0.0.1`
-
-```
-echo '127.0.0.1 <your hostnames>' | sudo tee -a /etc/hosts
-```
-
-Using dinghy? Run `dinghy ip` to get the IP of the VM.
-
-### Starting the stack
-
-Launch the stack by running this command:
-
-```bash
-fab start
-```
-
-> Note: the first start of the stack should take a few minutes.
-
-The site is now accessible at the hostnames your have configured over HTTPS
-(you may need to accept self-signed SSL certificate).
-
-### Builder
-
-Having some composer, yarn or another modifications to make on the project?
-Start the builder which will give you access to a container with all these
-tools available:
-
-```bash
-fab builder
-```
-
-Note: You can add as many fabric command as you want. But the command should be
-ran by the builder, don't forget to add `@with_builder` annotation to the
-function.
-
-### Other tasks
-
-Checkout `fab -l` to have the list of available fabric tasks.
 
 ## Cookbooks
 
@@ -394,4 +314,10 @@ following bug:
 In order to fix this issue, you can update the `services_to_build_first` variable
 in the `fabfile.py` file. This will force docker-compose to build theses
 services first.
+
 </details>
+
+## Credits
+
+- Created at [JoliCode](https://jolicode.com/)
+- Logo by [Caneco](https://twitter.com/caneco)
