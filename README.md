@@ -344,6 +344,20 @@ services first.
 
 </details>
 
+### Windows support (experimental)
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+This starter kit is compatible with Docker for Windows, so you can enjoy native Docker experience on Windows. You will have to keep in mind some differences:
+
+- Composer cache can't be set to the relative home path in `infrastructure/docker/docker-compose.builder.yml`: remove `- "~/.composer/cache:/home/app/.composer/cache"`;
+- Python 2.7.17 is broken, do not use it: https://github.com/pypa/pipenv/issues/4016;
+- You will be prompted to run the env vars manually if you use PowerShell.
+
+</details>
+
 ## Credits
 
 - Created at [JoliCode](https://jolicode.com/)

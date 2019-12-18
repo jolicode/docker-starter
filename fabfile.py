@@ -99,7 +99,7 @@ def cache_clear():
     """
     Clear the application cache
     """
-    # docker_compose_run('rm -rf var/cache/ && bin/console cache:warmup', no_deps=True)
+    # docker_compose_run('rm -rf var/cache/ && php bin/console cache:warmup', no_deps=True)
 
 
 @task
@@ -108,8 +108,8 @@ def migrate():
     """
     Migrate database schema
     """
-    # docker_compose_run('bin/console doctrine:database:create --if-not-exists', no_deps=True)
-    # docker_compose_run('bin/console doctrine:migration:migrate -n', no_deps=True)
+    # docker_compose_run('php bin/console doctrine:database:create --if-not-exists', no_deps=True)
+    # docker_compose_run('php bin/console doctrine:migration:migrate -n', no_deps=True)
 
 
 @task
@@ -208,11 +208,9 @@ def docker_compose_run(command_name, service="builder", user="app", no_deps=Fals
 
 def set_local_configuration():
     env.compose_files = ['docker-compose.yml']
-    env.user_id = int(local('id -u', capture=True))
-    env.root_dir = os.path.dirname(os.path.abspath(__file__))
-
-    if env.user_id > 256000:
-        env.user_id = 1000
+    env.dinghy = False
+    env.power_shell = False
+    env.user_id = 1000
 
     with quiet():
         try:
@@ -220,10 +218,28 @@ def set_local_configuration():
         except:
             docker_kernel = ''
 
-    if platform == "linux" or platform == "linux2" or docker_kernel.endswith('linuxkit-aufs'):
-        env.dinghy = False
-    elif platform == "darwin":
+    if platform == "darwin" and docker_kernel.find('linuxkit') != -1:
         env.dinghy = True
+    elif platform in ["win32", "win64"]:
+        env.power_shell = True
+        # Python can't set the vars correctly on PowerShell and local() always calls cmd.exe
+        shellProjectName = local('echo %PROJECT_NAME%', capture=True)
+        if (shellProjectName != env.project_name):
+            domains = '`' + '`, `'.join([env.root_domain] + env.extra_domains) + '`'
+            print 'You must manually set environment variables on Windows:'
+            print '$Env:PROJECT_NAME="%s"' % env.project_name
+            print '$Env:PROJECT_DIRECTORY="%s"' % env.project_directory
+            print '$Env:PROJECT_HOSTNAMES="%s"' % env.project_hostnames
+            print '$Env:PROJECT_DOMAINS="%s"' % domains
+            raise SystemError('Env vars not set (Windows detected)')
+
+    if not env.power_shell:
+        env.user_id = int(local('id -u', capture=True))
+
+    if env.user_id > 256000:
+        env.user_id = 1000
+
+    env.root_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 set_local_configuration()
