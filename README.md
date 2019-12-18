@@ -193,6 +193,33 @@ Then, you will be able to browse:
 
 </details>
 
+### How to add Maildev
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use Maildev and its dashboard, you should add the following content
+to the `docker-compose.yml` file:
+
+```yaml
+services:
+    maildev:
+        image: djfarrelly/maildev
+        command: ["bin/maildev", "--web", "80", "--smtp", "25", "--hide-extensions", "STARTTLS"]
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-maildev.rule=Host(`maildev.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-maildev.tls=true"
+            - "traefik.http.services.maildev.loadbalancer.server.port=80"
+```
+
+Then, you will be able to browse:
+
+* `https://maildev.<root_domain>`
+
+</details>
+
 ### How to use MySQL instead of PostgreSQL
 
 <details>
