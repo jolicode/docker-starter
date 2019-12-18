@@ -9,12 +9,6 @@ services:
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock"
         network_mode: "host"
-        # # Use network alias if you need to access a container via a specific
-        # # host by using the routing from another container
-        # networks:
-        #     default:
-        #         aliases:
-        #             - api.app.test
 
     frontend:
         build: services/frontend
