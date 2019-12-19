@@ -1,0 +1,1 @@
+* * * * * php /home/app/application/bin/console app:cron >> /home/app/application/var/log/cron.log

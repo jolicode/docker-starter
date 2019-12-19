@@ -10,6 +10,7 @@ RUN apk upgrade --no-cache --quiet --available
 RUN apk add --no-cache \
     bash \
     php7 \
+    php7-amqp \
     php7-apcu \
     php7-bcmath \
     php7-ctype \
@@ -21,10 +22,11 @@ RUN apk add --no-cache \
     php7-mbstring \
     php7-opcache \
     php7-openssl \
+    php7-pcntl \
     php7-pdo \
     php7-pdo_pgsql \
-    php7-pcntl \
     php7-posix \
+    php7-redis \
     php7-session \
     php7-simplexml \
     php7-sockets \

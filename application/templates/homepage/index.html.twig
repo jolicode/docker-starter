@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello world{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+
+    <div class="example-wrapper">
+        <h1>Hello world</h1>
+
+        <ul>
+            <li>
+                We have sent an email. Check it on <a href="https://maildev.app.test">maildev.app.test</a>
+            </li>
+            <li>
+                It was sent asynchronously with <a href="https://rabbitmq.app.test">rabbitmq</a> (<code>guest</code> / <code>guest</code>)
+            </li>
+            <li>
+                The cache is stored in <a href="https://redis.app.test">redis</a>
+                <br />
+                You have visited this page <code>{{ visitCount }}</code> times since the last cache clear.
+                <br />
+                Clear it with <code>bin/console  cache:pool:clear cache.app</code>
+            </li>
+            <li>
+                You can also access to <a href="https://kibana.app.test">kibana</a>, an Elasticsearch dashboard
+                <br />
+                Elasticsearch Status:
+                <pre>{{ esStatus|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

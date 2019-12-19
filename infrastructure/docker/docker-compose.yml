@@ -2,6 +2,23 @@ version: '3.7'
 
 volumes:
     postgres-data: {}
+    elasticsearch-data: {}
+    rabbitmq-data: {}
+    redis-data: {}
+    redis-insight-data: {}
+
+x-services-templates:
+    worker_base: &worker_base
+        build: services/frontend
+        depends_on:
+            - postgres
+            - redis
+            - elasticsearch
+            - rabbitmq
+        volumes:
+            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+        user: app
+        restart: unless-stopped
 
 services:
     router:
@@ -14,6 +31,9 @@ services:
         build: services/frontend
         depends_on:
             - postgres
+            - redis
+            - elasticsearch
+            - rabbitmq
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
         labels:
@@ -31,3 +51,68 @@ services:
             - POSTGRES_PASSWORD=app
         volumes:
             - postgres-data:/var/lib/postgresql/data
+
+    elasticsearch:
+        image: elasticsearch:7.3.2
+        volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data
+        environment:
+            - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+            - "discovery.type=single-node"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.rule=Host(`elasticsearch.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.tls=true"
+
+    kibana:
+        image: kibana:7.3.2
+        depends_on:
+            - elasticsearch
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-kibana.rule=Host(`kibana.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-kibana.tls=true"
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
+        environment:
+            - "RABBITMQ_VM_MEMORY_HIGH_WATERMARK=1024MiB"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.rule=Host(`rabbitmq.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.tls=true"
+            - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+
+    redis:
+        image: redis:5
+        volumes:
+            - "redis-data:/data"
+
+    redis-insight:
+        image: redislabs/redisinsight
+        volumes:
+            - "redis-insight-data:/db"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-redis.rule=Host(`redis.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
+
+    maildev:
+        image: djfarrelly/maildev
+        command: ["bin/maildev", "--web", "80", "--smtp", "25", "--hide-extensions", "STARTTLS"]
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-maildev.rule=Host(`maildev.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-maildev.tls=true"
+            - "traefik.http.services.maildev.loadbalancer.server.port=80"
+
+    cron:
+        build: services/cron
+        volumes:
+            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+
+    worker_worker:
+        <<: *worker_base
+        command: /home/app/application/bin/console bin/console messenger:consume async

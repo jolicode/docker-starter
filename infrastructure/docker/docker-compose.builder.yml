@@ -11,6 +11,9 @@ services:
         build: services/builder
         depends_on:
             - postgres
+            - redis
+            - elasticsearch
+            - rabbitmq
         environment:
             - COMPOSER_MEMORY_LIMIT=-1
         volumes:

@@ -89,7 +89,7 @@ def install():
     """
     Install the application (composer, yarn, ...)
     """
-    # docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
+    docker_compose_run('composer install -n --prefer-dist --optimize-autoloader')
     # run_in_docker_or_locally_for_dinghy('yarn')
 
 
@@ -99,7 +99,7 @@ def cache_clear():
     """
     Clear the application cache
     """
-    # docker_compose_run('rm -rf var/cache/ && php bin/console cache:warmup', no_deps=True)
+    docker_compose_run('rm -rf var/cache/ && php bin/console cache:warmup', no_deps=True)
 
 
 @task
@@ -108,8 +108,8 @@ def migrate():
     """
     Migrate database schema
     """
-    # docker_compose_run('php bin/console doctrine:database:create --if-not-exists', no_deps=True)
-    # docker_compose_run('php bin/console doctrine:migration:migrate -n', no_deps=True)
+    docker_compose_run('php bin/console doctrine:database:create --if-not-exists', no_deps=True)
+    docker_compose_run('php bin/console doctrine:migration:migrate -n', no_deps=True)
 
 
 @task
