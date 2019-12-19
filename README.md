@@ -220,6 +220,41 @@ Then, you will be able to browse:
 
 </details>
 
+### How to add support for crons?
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to setup crontab, you should add a new container:
+
+```Dockerfile
+# services/cron/Dockerfile
+ARG PROJECT_NAME
+
+FROM ${PROJECT_NAME}_php-base
+
+COPY crontab /etc/crontabs/app
+
+CMD ["crond", "-l", "0", "-f"]
+```
+
+And you can add all your crons in the `services/cron/crontab` file:
+```crontab
+* * * * * php /home/app/application/my-command >> /path/to/log
+```
+
+Finally, add the following content to the `docker-compose.yml` file:
+```yaml
+services:
+    cron:
+        build: services/cron
+        volumes:
+            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+```
+
+</details>
+
 ### How to use MySQL instead of PostgreSQL
 
 <details>
