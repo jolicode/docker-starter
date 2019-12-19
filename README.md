@@ -358,6 +358,37 @@ This starter kit is compatible with Docker for Windows, so you can enjoy native 
 
 </details>
 
+### How to access a container via a custom hostname from another container
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+Let's say you have a container (`frontend`) that responds to many hostname:
+`app.test`, `api.app.test`, `admin.app.test`. And you have another container
+(`builder`) that need to call the `frontend` with a specific hostname - or with
+HTTPS. This is usually the case when you have a functional test suite.
+
+To enable this feature, you need to add `extra_hosts` to the `builder` container
+like following:
+
+```yaml
+services:
+    builder:
+        # [...]
+        extra_hosts:
+            - "app.test:172.17.0.1"
+            - "api.app.test:172.17.0.1"
+            - "admin.app.test:172.17.0.1"
+```
+
+Note: `172.17.0.1` is the default IP of the `docker0` interface. It can be
+different on some installations. You can see this IP thanks to the following
+command `ip address show docker0`. Since `docker-compose.yml` file supports
+environnement variables you may script this with fabric.
+
+</details>
+
 ## Credits
 
 - Created at [JoliCode](https://jolicode.com/)
