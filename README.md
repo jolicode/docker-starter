@@ -264,7 +264,7 @@ services:
 In order to setup workers, you should add the following content to the `docker-compose.yml` file:
 
 ```yaml
-# this a template to factorize the service definitions
+# this is a template to factorize the service definitions
 x-services-templates:
     worker_base: &worker_base
         build: services/frontend
