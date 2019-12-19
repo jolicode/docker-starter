@@ -255,6 +255,37 @@ services:
 
 </details>
 
+### How to run workers?
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to setup workers, you should add the following content to the `docker-compose.yml` file:
+
+```yaml
+# this a template to factorize the service definitions
+x-services-templates:
+    worker_base: &worker_base
+        build: services/frontend
+        depends_on:
+            - postgres
+        volumes:
+            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+        user: app
+        restart: unless-stopped
+
+services:
+    worker_date:
+        <<: *worker_base
+        command: watch -n 1 date
+    worker_my_worker:
+        <<: *worker_base
+        command: /home/app/application/my-worker
+```
+
+</details>
+
 ### How to use MySQL instead of PostgreSQL
 
 <details>
