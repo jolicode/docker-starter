@@ -156,7 +156,6 @@ Then, you will be able to browse:
 
 </details>
 
-
 ### How to add RabbitMQ and its dashboard
 
 <details>
@@ -190,6 +189,43 @@ In order to publish and consume messages with PHP, you need to install the
 Then, you will be able to browse:
 
 * `https://rabbitmq.<root_domain>`
+
+</details>
+
+### How to add Redis and its dashboard
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use Redis and its dashboard, you should add the following content to
+the `docker-compose.yml` file:
+
+```yaml
+volumes:
+    redis-data: {}
+    redis-insight-data: {}
+
+services:
+    redis:
+        image: redis:5
+        volumes:
+            - "redis-data:/data"
+
+    redis-insight:
+        image: redislabs/redisinsight
+        volumes:
+            - "redis-insight-data:/db"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-redis.rule=Host(`redis.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
+
+```
+
+Then, you will be able to browse:
+
+* `https://redis.<root_domain>`
 
 </details>
 
