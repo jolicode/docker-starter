@@ -85,7 +85,7 @@ If you want to create a new Symfony project, you need to:
 1. Configure the `.env`
 
     ```bash
-    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" app/.env
+    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" application/.env
     ```
 
 1. Configure doctrine
