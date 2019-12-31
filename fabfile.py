@@ -178,7 +178,7 @@ def docker_compose(command_name):
     with shell_env(**localEnv):
         local('docker-compose -p %s %s %s' % (
             env.project_name,
-            ' '.join('-f ' + env.root_dir + '/infrastructure/docker/' + file for file in env.compose_files),
+            ' '.join('-f \'' + env.root_dir + '/infrastructure/docker/' + file + '\'' for file in env.compose_files),
             command_name
         ))
 
