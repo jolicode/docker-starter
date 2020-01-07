@@ -297,28 +297,21 @@ services:
 
 <summary>Read the cookbook</summary>
 
-In order to setup workers, you should add the following content to the `docker-compose.yml` file:
+In order to setup workers, you should define their service in the `docker-compose.worker.yml` file:
 
 ```yaml
-# this is a template to factorize the service definitions
-x-services-templates:
-    worker_base: &worker_base
-        build: services/frontend
-        depends_on:
-            - postgres
-        volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
-        user: app
-        restart: unless-stopped
-
 services:
-    worker_date:
-        <<: *worker_base
-        command: watch -n 1 date
     worker_my_worker:
         <<: *worker_base
         command: /home/app/application/my-worker
+
+    worker_date:
+        <<: *worker_base
+        command: watch -n 1 date
 ```
+
+You also need to fill the `fabfile.py` to fill the tasks `start_workers` and `stop_workers`.
+These tasks currently propose default examples to use with Symfony Messenger.
 
 </details>
 

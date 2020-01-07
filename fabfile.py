@@ -59,7 +59,13 @@ def up():
     Build and start the infrastructure
     """
     build()
-    docker_compose('up --remove-orphans -d')
+
+    compose_files = env.compose_files
+    env.compose_files = [file for file in compose_files if file != 'docker-compose.worker.yml']
+
+    docker_compose('up -d')
+
+    env.compose_files = compose_files
 
 
 @task
@@ -73,10 +79,12 @@ def start():
             local('dinghy up --no-proxy')
             local('docker-machine ssh dinghy "echo \'nameserver 8.8.8.8\' | sudo tee -a /etc/resolv.conf && sudo /etc/init.d/docker restart"')
 
+    stop_workers()
     up()
     cache_clear()
     install()
     migrate()
+    start_workers()
 
     print green('You can now browse:')
     for domain in [env.root_domain] + env.extra_domains:
@@ -142,7 +150,29 @@ def stop():
     """
     Stop the infrastructure
     """
+    stop_workers()
     docker_compose('stop')
+
+
+@task
+def start_workers():
+    """
+    Start the workers
+    """
+    # docker_compose('up -d --no-deps')
+
+
+@task
+@with_builder
+def stop_workers():
+    """
+    Stop the workers
+    """
+    # local('docker update --restart=no $(docker ps -a --filter "Name=%s_worker" --quiet)' % (env.project_name))
+    #
+    # if os.path.exists(env.root_dir + "/" + env.project_directory + "/vendor/symfony/messenger"):
+    #     with quiet():
+    #         docker_compose_run('bin/console messenger:stop-workers')
 
 
 @task
@@ -207,7 +237,7 @@ def docker_compose_run(command_name, service="builder", user="app", no_deps=Fals
 
 
 def set_local_configuration():
-    env.compose_files = ['docker-compose.yml']
+    env.compose_files = ['docker-compose.yml', 'docker-compose.worker.yml']
     env.dinghy = False
     env.power_shell = False
     env.user_id = 1000
