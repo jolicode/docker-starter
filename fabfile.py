@@ -168,10 +168,9 @@ def stop_workers():
     """
     Stop the workers
     """
-    # local('docker update --restart=no $(docker ps -a --filter "Name=%s_worker" --quiet)' % (env.project_name))
-    #
-    # if os.path.exists(env.root_dir + "/" + env.project_directory + "/vendor/symfony/messenger"):
-    #     with quiet():
+    # with quiet():
+    #     local('docker update --restart=no $(docker ps -a --filter "Name=%s_worker" --quiet)' % (env.project_name))
+    #     if os.path.exists(env.root_dir + "/" + env.project_directory + "/vendor/symfony/messenger"):
     #         docker_compose_run('bin/console messenger:stop-workers')
 
 
