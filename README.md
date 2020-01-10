@@ -51,10 +51,12 @@ Alternatively, you can configure
 `infrastructure/docker/services/router/generate-ssl.sh` to create your own
 certificate. Then you will have to add it to your computer CA store.
 
-## Final documentation
+## Usage documentation
 
-This starter-kit embeds a [README.dist.md](./README.dist.md) you can use as the
-base of the final README.md of your project:
+We provide a [README.dist.md](./README.dist.md) to explain what anyone need
+to know to start and interact with the infrastructure.
+
+You should probably use this README.dist.md as a base for your project's README.md:
 
 ```bash
 mv README.{dist.md,md}
