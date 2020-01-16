@@ -9,11 +9,11 @@ providers:
     filename: /etc/traefik/dynamic_conf.yaml
 
 # # Uncomment get all DEBUG logs
-# log:
-#   level: "DEBUG"
+#log:
+#    level: "DEBUG"
 
 # # Uncomment to view all access logs
-# accessLog: {}
+#accessLog: {}
 
 api:
   dashboard: true
