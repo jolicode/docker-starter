@@ -13,4 +13,4 @@ Fabric = ">=1.13.1,<2.0"
 colorama = {version = ">=0.4, <1", markers = "sys_platform == 'win32'"}
 
 [requires]
-python_version = "2.7"
+python_version = "3.7"
