@@ -37,7 +37,7 @@ RUN apk add --no-cache \
 # Install fake user app
 ARG USER_ID
 
-RUN addgroup -g 1000 app && \
+RUN addgroup --gid 1000 app && \
     adduser -S -u $USER_ID -h /home/app -s /bin/bash app
 
 # Configuration
