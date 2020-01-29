@@ -159,6 +159,7 @@ def start_workers():
     """
     Start the workers
     """
+    # local('docker update --restart=unless-stopped $(docker ps -a --filter "Name=%s_worker" --quiet)' % (env.project_name))
     # docker_compose('up -d --no-deps')
 
 
