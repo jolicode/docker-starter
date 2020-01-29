@@ -38,7 +38,7 @@ RUN apk add --no-cache \
 ARG USER_ID
 
 RUN addgroup --gid 1000 app && \
-    adduser -S -u $USER_ID -h /home/app -s /bin/bash app
+    adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app
 
 # Configuration
 COPY *.ini /etc/php7/conf.d/
