@@ -16,7 +16,7 @@ RUN apk add --no-cache \
 
 RUN pip install pycodestyle
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:1.9.3 /usr/bin/composer /usr/bin/composer
 
 RUN mkdir -p ~/.composer
 
