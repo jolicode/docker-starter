@@ -63,7 +63,7 @@ def up():
     compose_files = env.compose_files
     env.compose_files = [file for file in compose_files if file != 'docker-compose.worker.yml']
 
-    docker_compose('up -d')
+    docker_compose('up --remove-orphans -d')
 
     env.compose_files = compose_files
 
