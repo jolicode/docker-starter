@@ -3,17 +3,18 @@ version: 2
 jobs:
     check-python-cs:
         docker:
-            - image: circleci/python:2.7
+            - image: circleci/python:3.7
         steps:
             - checkout
             - run: sudo pip install pycodestyle
             - run:
                   name: Check cs
-                  command: pycodestyle fabfile.py --ignore=E501,W605,E722
+                  command: pycodestyle --ignore=E501,W605,E722 invoke.py tasks.py
 
     tests:
         machine:
             docker_layer_caching: true
+            image: ubuntu-1604:201903-01
         working_directory: ~/docker-starter
         steps:
             - checkout
@@ -21,13 +22,13 @@ jobs:
                 name: Install Requirements
                 command: |
                     set -x
-                    pip install pipenv==11.1.4
-                    pipenv install
+                    pip install --user pipenv
+                    ~/.local/bin/pipenv install
             - run:
                 name: Install everything
                 command: |
                     set -x
-                    pipenv run fab start
+                    ~/.local/bin/pipenv run inv start
                     sleep 5
             - run:
                 name: Test the infrastructure is working
