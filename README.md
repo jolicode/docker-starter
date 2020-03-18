@@ -312,8 +312,8 @@ services:
         command: watch -n 1 date
 ```
 
-You also need to fill the `fabfile.py` to fill the tasks `start_workers` and `stop_workers`.
-These tasks currently propose default examples to use with Symfony Messenger.
+You can also customize how the workers are stopped by editing the `stop_workers` task in `fabfile.py`.
+This task currently propose a default examples to use with Symfony Messenger.
 
 </details>
 

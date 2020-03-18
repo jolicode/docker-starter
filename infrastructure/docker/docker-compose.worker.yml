@@ -10,7 +10,8 @@ x-services-templates:
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
         user: app
-        restart: unless-stopped
+        labels:
+            - "docker-starter.worker.${PROJECT_NAME}"
 
 #services:
 #    # Worker service names must start by "worker_"
