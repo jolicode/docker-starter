@@ -59,13 +59,7 @@ def up():
     Build and start the infrastructure
     """
     build()
-
-    compose_files = env.compose_files
-    env.compose_files = [file for file in compose_files if file != 'docker-compose.worker.yml']
-
-    docker_compose('up -d')
-
-    env.compose_files = compose_files
+    docker_compose('up --remove-orphans -d')
 
 
 @task
@@ -159,8 +153,14 @@ def start_workers():
     """
     Start the workers
     """
-    # local('docker update --restart=unless-stopped $(docker ps -a --filter "Name=%s_worker" --quiet)' % (env.project_name))
-    # docker_compose('up -d --no-deps')
+    workers = get_workers()
+
+    if (len(workers) == 0):
+        return
+
+    env.start_workers = True
+    local('docker update --restart=unless-stopped %s' % (' '.join(workers)))
+    docker_compose('up --remove-orphans -d --no-deps')
 
 
 @task
@@ -169,10 +169,17 @@ def stop_workers():
     """
     Stop the workers
     """
-    # with quiet():
-    #     local('docker update --restart=no $(docker ps -a --filter "Name=%s_worker" --quiet)' % (env.project_name))
-    #     if os.path.exists(env.root_dir + "/" + env.project_directory + "/vendor/symfony/messenger"):
-    #         docker_compose_run('bin/console messenger:stop-workers')
+    workers = get_workers()
+
+    if (len(workers) == 0):
+        return
+
+    env.start_workers = False
+    with quiet():
+        local('docker update --restart=no %s' % (' '.join(workers)))
+#         if os.path.exists(env.root_dir + "/" + env.project_directory + "/vendor/symfony/messenger"):
+#             docker_compose_run('bin/console messenger:stop-workers')
+        local('docker stop %s' % (' '.join(workers)))
 
 
 @task
@@ -182,6 +189,14 @@ def destroy():
     Clean the infrastructure (remove container, volume, networks)
     """
     docker_compose('down --volumes --rmi=local')
+
+
+def get_workers():
+    """
+    Find worker containers for the current project
+    """
+    with quiet():
+        return list(filter(None, local('docker ps -a --filter "label=docker-starter.worker.%s" --quiet' % (env.project_name), capture=True).rsplit("\n")))
 
 
 def run_in_docker_or_locally_for_dinghy(command):
@@ -203,6 +218,7 @@ def docker_compose(command_name):
         'PROJECT_DIRECTORY': env.project_directory,
         'PROJECT_ROOT_DOMAIN': env.root_domain,
         'PROJECT_DOMAINS': domains,
+        'PROJECT_START_WORKERS': str(env.start_workers),
     }
 
     with shell_env(**localEnv):
@@ -238,6 +254,7 @@ def docker_compose_run(command_name, service="builder", user="app", no_deps=Fals
 
 def set_local_configuration():
     env.compose_files = ['docker-compose.yml', 'docker-compose.worker.yml']
+    env.start_workers = False
     env.dinghy = False
     env.power_shell = False
     env.user_id = 1000
@@ -261,6 +278,7 @@ def set_local_configuration():
             print '$Env:PROJECT_DIRECTORY="%s"' % env.project_directory
             print '$Env:PROJECT_HOSTNAMES="%s"' % env.project_hostnames
             print '$Env:PROJECT_DOMAINS="%s"' % domains
+            print '$Env:PROJECT_START_WORKERS="%s"' % env.start_workers
             raise SystemError('Env vars not set (Windows detected)')
 
     if not env.power_shell:
