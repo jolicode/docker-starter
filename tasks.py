@@ -205,7 +205,7 @@ def docker_compose(c, command_name):
         command_name
     )
 
-    c.run(cmd, pty=True, env=env)
+    c.run(cmd, pty=not c.power_shell, env=env)
 
 
 def get_workers(c):

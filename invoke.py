@@ -47,7 +47,8 @@ def __extract_runtime_configuration(config):
         config['power_shell'] = True
         # # Python can't set the vars correctly on PowerShell and local() always calls cmd.exe
         shellProjectName = run('echo %PROJECT_NAME%', hide=True).stdout
-        if (shellProjectName != config['project_name']):
+
+        if (shellProjectName.rstrip() != config['project_name']):
             domains = '`' + '`, `'.join([config['root_domain']] + config['extra_domains']) + '`'
             print(Fore.RED + 'Env vars not set (Windows detected)')
             print(Fore.YELLOW + 'You must manually set environment variables on Windows:')
@@ -55,7 +56,7 @@ def __extract_runtime_configuration(config):
             print('$Env:PROJECT_DIRECTORY="%s"' % config['project_directory'])
             print('$Env:PROJECT_ROOT_DOMAIN="%s"' % config['root_domain'])
             print('$Env:PROJECT_DOMAINS="%s"' % domains)
-            sys.exit(0)
+            sys.exit(1)
 
     if not config['power_shell']:
         config['user_id'] = int(run('id --user', hide=True).stdout)
