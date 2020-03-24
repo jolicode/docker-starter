@@ -111,7 +111,6 @@ def stop(c):
     """
     Stop the infrastructure
     """
-    stop_workers(c)
     docker_compose(c, 'stop')
 
 
@@ -201,7 +200,7 @@ def docker_compose(c, command_name):
 
     cmd = 'docker-compose -p %s %s %s' % (
         c.project_name,
-        ' '.join('-f \'' + c.root_dir + '/infrastructure/docker/' + file + '\'' for file in c.docker_compose_files),
+        ' '.join('-f "' + c.root_dir + '/infrastructure/docker/' + file + '"' for file in c.docker_compose_files),
         command_name
     )
 

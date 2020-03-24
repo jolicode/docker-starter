@@ -19,9 +19,3 @@ x-services-templates:
 #    worker_messenger:
 #        <<: *worker_base
 #        command: php -d memory_limit=1G /home/app/application/bin/console messenger:consume async --memory-limit=128M
-
-
-services:
-    worker_date:
-        <<: *worker_base
-        command: watch -n 1 date
