@@ -1,7 +1,7 @@
 How to upgrade from 2.x to 3.0
 ==============================
 
-This guide will cover the migration from fabric to invoke.
+This guide will cover the migration from Fabric to Invoke.
 At anytime, you can refer the final form of the starter kit by looking
 at the [main repository](https://github.com/jolicode/docker-starter)
 

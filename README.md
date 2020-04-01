@@ -4,7 +4,7 @@
 
 # JoliCode's Docker starter kit
 
-**WARNING**: You are reading the README of version 3 that use invoke.
+**WARNING**: You are reading the README of version 3 that uses invoke.
 
 * If you are using Fabric, you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v2.0.0);
 
