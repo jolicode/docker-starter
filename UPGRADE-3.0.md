@@ -5,6 +5,14 @@ This guide will cover the migration from Fabric to Invoke.
 At anytime, you can refer the final form of the starter kit by looking
 at the [main repository](https://github.com/jolicode/docker-starter)
 
+**WARNING**: Migrating from 2.x to 3.0 can be a fastidious task since lot of
+parts have changed. More over, this project is a started kit. It means you
+usually start with it, then you make your own choices and implementations. So if
+you are confortable with your current project **we recommend you to stick on
+2.x**. But if you want to migrate from 2.x to 3.0 here is the tasks you will have
+to perform.
+
+## Fabric to Invoke
 
 1. Rename the `fabfile.py` to `tasks.py`:
 
@@ -276,3 +284,9 @@ at the [main repository](https://github.com/jolicode/docker-starter)
         for domain in [c.root_domain] + c.extra_domains:
             print(Fore.YELLOW + "* https://" + domain)
         ```
+
+## Alpine to Debian
+
+We have changed PHP base images from Alpine to Debian. The best guide to process
+this migration is to replicate what have been done in following pull request:
+https://github.com/jolicode/docker-starter/pull/67

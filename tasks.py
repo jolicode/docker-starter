@@ -83,12 +83,12 @@ def migrate(c):
 
 
 @task
-def builder(c):
+def builder(c, user="app"):
     """
     Open a shell (bash) into a builder container
     """
     with Builder(c):
-        docker_compose_run(c, 'bash')
+        docker_compose_run(c, 'bash', user=user)
 
 
 @task
@@ -104,7 +104,7 @@ def ps(c):
     """
     List containers status
     """
-    docker_compose(c, 'ps')
+    docker_compose(c, 'ps --all')
 
 
 @task

@@ -1,44 +1,34 @@
-FROM alpine:3.10
+FROM debian:buster-slim
 
-# mirrors in france
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/main" > /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/community" >> /etc/apk/repositories
+RUN apt-get update \
+    && apt install -y --no-install-recommends \
+        ca-certificates \
+        gnupg \
+    && echo "deb https://packages.sury.org/php buster main" > /etc/apt/sources.list.d/sury.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B188E2B695BD4743 \
+    && apt-get update
 
-RUN apk upgrade --no-cache --quiet --available
+RUN apt-get install -y --no-install-recommends \
+        procps
 
-# Php
-RUN apk add --no-cache \
-    bash \
-    php7 \
-    php7-apcu \
-    php7-bcmath \
-    php7-ctype \
-    php7-curl \
-    php7-dom \
-    php7-iconv \
-    php7-intl \
-    php7-json \
-    php7-mbstring \
-    php7-opcache \
-    php7-openssl \
-    php7-pdo \
-    php7-pdo_pgsql \
-    php7-pcntl \
-    php7-posix \
-    php7-session \
-    php7-simplexml \
-    php7-sockets \
-    php7-tokenizer \
-    php7-xml \
-    php7-xmlwriter \
-    php7-zip \
-    pcre
+ARG PHP_VERSION=7.4
+RUN apt-get install -y --no-install-recommends \
+        php${PHP_VERSION}-apcu \
+        php${PHP_VERSION}-common \
+        php${PHP_VERSION}-curl \
+        php${PHP_VERSION}-iconv \
+        php${PHP_VERSION}-intl \
+        php${PHP_VERSION}-mbstring \
+        php${PHP_VERSION}-pgsql \
+        php${PHP_VERSION}-xml \
+        php${PHP_VERSION}-zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Install fake user app
+# Fake user to maps with the one on the host
 ARG USER_ID
-
 RUN addgroup --gid 1000 app && \
     adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app
 
 # Configuration
-COPY *.ini /etc/php7/conf.d/
+COPY etc/. /etc/
