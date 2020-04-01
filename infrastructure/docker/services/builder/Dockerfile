@@ -2,27 +2,27 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-RUN apk add --no-cache \
-    curl \
-    g++ \
-    git \
-    make \
-    nodejs \
-    npm \
-    php7-phar \
-    py2-pip \
-    python \
-    yarn
+# Default toys
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        curl \
+        git \
+        make \
+        nodejs \
+        sudo \
+        yarnpkg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-RUN pip install pycodestyle
+# Config
+RUN adduser app sudo \
+    && ln -s /usr/bin/yarnpkg /usr/bin/yarn \
+    && phpenmod app-default
 
+# Configuration
+COPY etc/. /etc/
+
+# Composer
 COPY --from=composer:1.10.1 /usr/bin/composer /usr/bin/composer
 
-RUN mkdir -p ~/.composer
-
-ENV PATH $PATH:/home/app/.composer/vendor/bin/
-ENV TERM xterm
-
 WORKDIR /home/app/application
-
-CMD ["echo"]
