@@ -2,6 +2,10 @@
 
 ## 3.0.0 (not released yet)
 
+ * Migrate from Fabric to Invoke
+ * Migrate from Alpine to Debian for PHP images
+ * Add a confirmation when calling `inv destroy`
+
 ## 2.0.0 (2020-01-08)
 
 * Better Docker for Windows support
