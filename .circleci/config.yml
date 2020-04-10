@@ -21,21 +21,39 @@ jobs:
             - run:
                 name: Install Requirements
                 command: |
-                    set -x
+                    set -e
                     pip install --user pipenv
                     ~/.local/bin/pipenv install
             - run:
                 name: Install everything
                 command: |
-                    set -x
+                    set -e
                     ~/.local/bin/pipenv run inv start
                     sleep 5
             - run:
                 name: Test the infrastructure is working
                 command: |
-                    set -x
+                    set -e
                     set -o pipefail
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
+            - run:
+                name: Test communication with DB
+                command: |
+                    set -e
+                    set -o pipefail
+
+                    # Need to mount (replace the old one) the new directories layout to the web container
+                    ~/.local/bin/pipenv run inv up
+
+                    cat > application/public/index.php <<'EOPHP'
+                    <?php
+                    $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
+                    $pdo->exec('CREATE TABLE test (id integer NOT NULL)');
+                    $pdo->exec('INSERT INTO test VALUES (1)');
+                    echo $pdo->query('SELECT * from test')->fetchAll() ? 'database OK' : 'database KO';
+                    EOPHP
+
+                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "database OK"
 
 workflows:
     version: 2

@@ -6,6 +6,7 @@
  * Migrate from Alpine to Debian for PHP images
  * Add a confirmation when calling `inv destroy`
  * Tweaked the PHP Configuration
+ * Upgraded PostgreSQL from 11 to 12
 
 ## 2.0.0 (2020-01-08)
 
