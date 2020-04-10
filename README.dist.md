@@ -15,7 +15,7 @@ Install and run `pipenv` to install the required tools:
 pipenv install
 ```
 
-You can configure your current shell to be able to use fabric commands directly
+You can configure your current shell to be able to use Invoke commands directly
 (without having to prefix everything by `pipenv run`)
 
 ```bash
@@ -54,7 +54,7 @@ Using dinghy? Run `dinghy ip` to get the IP of the VM.
 Launch the stack by running this command:
 
 ```bash
-fab start
+inv start
 ```
 
 > Note: the first start of the stack should take a few minutes.
@@ -69,13 +69,13 @@ Start the builder which will give you access to a container with all these
 tools available:
 
 ```bash
-fab builder
+inv builder
 ```
 
-Note: You can add as many fabric command as you want. But the command should be
+Note: You can add as many Invoke command as you want. But the command should be
 ran by the builder, don't forget to add `@with_builder` annotation to the
 function.
 
 ### Other tasks
 
-Checkout `fab -l` to have the list of available fabric tasks.
+Checkout `inv -l` to have the list of available Invoke tasks.

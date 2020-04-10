@@ -4,6 +4,12 @@
 
 # JoliCode's Docker starter kit
 
+**WARNING**: You are reading the README of version 3 that uses invoke.
+
+* If you are using Fabric, you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v2.0.0);
+
+* If you want to migrate from docker-starter v2.x to v3.0, you can read the [dedicated guide](./UPGRADE-3.0.md);
+
 ## Introduction
 
 Read [in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit)
@@ -13,22 +19,22 @@ why we created and open-sourced this starter-kit.
 ## Project configuration
 
 Before executing any command, you need to configure few parameters in the
-`fabfile.py` file:
+`invoke.py` file:
 
-* `env.project_name` (**required**): This will be used to prefix all docker
+* `project_name` (**required**): This will be used to prefix all docker
 objects (network, images, containers);
 
-* `env.root_domain` (optional, default: `project_name + '.test'`): This is the
+* `root_domain` (optional, default: `project_name + '.test'`): This is the
 root domain where the application will be available;
 
-* `env.extra_domains` (optional): This contains extra domains where the
+* `extra_domains` (optional): This contains extra domains where the
 application will be available;
 
-* `env.project_directory` (optional, default: `application`): This is the host
+* `project_directory` (optional, default: `application`): This is the host
 directory containing your PHP application.
 
-*Note*: Some Fabric tasks have been added for DX purposes. Checkout and adapt
-the tasks `install`, `migrate` and `cache_clear` to your project
+*Note*: Some Invoke tasks have been added for DX purposes. Checkout and adapt
+the tasks `install`, `migrate` and `cache_clear` to your project.
 
 ## SSL certificate
 
@@ -312,9 +318,6 @@ services:
         command: watch -n 1 date
 ```
 
-You can also customize how the workers are stopped by editing the `stop_workers` task in `fabfile.py`.
-This task currently propose a default examples to use with Symfony Messenger.
-
 </details>
 
 ### How to use MySQL instead of PostgreSQL
@@ -358,11 +361,11 @@ index 49a2661..1804a01 100644
 +++ b/infrastructure/docker/docker-compose.yml
 @@ -1,7 +1,7 @@
  version: '3.7'
- 
+
  volumes:
 -    postgres-data: {}
 +    mysql-data: {}
- 
+
  services:
      router:
 @@ -13,7 +13,7 @@ services:
@@ -377,7 +380,7 @@ index 49a2661..1804a01 100644
 @@ -24,10 +24,7 @@ services:
              # Comment the next line to be able to access frontend via HTTP instead of HTTPS
              - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
- 
+
 -    postgres:
 -        build: services/postgres
 -        environment:
@@ -435,7 +438,7 @@ following bug:
 > ERROR: Service 'frontend' failed to build: pull access denied for app_basephp, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
 
 In order to fix this issue, you can update the `services_to_build_first` variable
-in the `fabfile.py` file. This will force docker-compose to build theses
+in the `invoke.py` file. This will force docker-compose to build theses
 services first.
 
 </details>
@@ -449,7 +452,6 @@ services first.
 This starter kit is compatible with Docker for Windows, so you can enjoy native Docker experience on Windows. You will have to keep in mind some differences:
 
 - Composer cache can't be set to the relative home path in `infrastructure/docker/docker-compose.builder.yml`: remove `- "~/.composer/cache:/home/app/.composer/cache"`;
-- Python 2.7.17 is broken, do not use it: https://github.com/pypa/pipenv/issues/4016;
 - You will be prompted to run the env vars manually if you use PowerShell.
 
 </details>
@@ -481,7 +483,7 @@ services:
 Note: `172.17.0.1` is the default IP of the `docker0` interface. It can be
 different on some installations. You can see this IP thanks to the following
 command `ip address show docker0`. Since `docker-compose.yml` file supports
-environnement variables you may script this with fabric.
+environnement variables you may script this with Invoke.
 
 </details>
 

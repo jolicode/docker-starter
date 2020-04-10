@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 if [ "$PROJECT_START_WORKERS" = "False" ]; then

@@ -3,14 +3,18 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-
 [packages]
 docker-compose = ">=1.23.0"
 docker = "*"
-Fabric = ">=1.13.1,<2.0"
+invoke = ">=1.4"
 # https://github.com/docker/compose/issues/6839
-colorama = {version = ">=0.4, <1", markers = "sys_platform == 'win32'"}
+colorama = {version = ">=0.4, <1"}
+pypiwin32 = {version = "*", sys_platform = "== 'win32'"}
+pywin32 = {version = "*", sys_platform = "== 'win32'"}
 
 [requires]
-python_version = "2.7"
+python_version = "3"
+
+[scripts]
+# Alias fab to invoke to avoid BC break
+fab = "invoke"

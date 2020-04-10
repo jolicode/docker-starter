@@ -10,12 +10,12 @@ x-services-templates:
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
         user: app
+        environment:
+            - "PROJECT_START_WORKERS=${PROJECT_START_WORKERS}"
         labels:
             - "docker-starter.worker.${PROJECT_NAME}"
 
 #services:
-#    # Worker service names must start by "worker_"
-#
 #    worker_messenger:
 #        <<: *worker_base
 #        command: php -d memory_limit=1G /home/app/application/bin/console messenger:consume async --memory-limit=128M
