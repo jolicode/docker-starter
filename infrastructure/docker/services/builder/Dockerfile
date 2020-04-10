@@ -15,12 +15,13 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Config
+COPY etc/. /etc/
 RUN adduser app sudo \
     && ln -s /usr/bin/yarnpkg /usr/bin/yarn \
-    && phpenmod app-default
-
-# Configuration
-COPY etc/. /etc/
+    && mkdir /var/log/php \
+    && chmod 777 /var/log/php \
+    && phpenmod app-default \
+    && phpenmod app-builder
 
 # Composer
 COPY --from=composer:1.10.1 /usr/bin/composer /usr/bin/composer

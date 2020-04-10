@@ -5,6 +5,7 @@
  * Migrate from Fabric to Invoke
  * Migrate from Alpine to Debian for PHP images
  * Add a confirmation when calling `inv destroy`
+ * Tweaked the PHP Configuration
 
 ## 2.0.0 (2020-01-08)
 
