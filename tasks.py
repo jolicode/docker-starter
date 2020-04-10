@@ -1,6 +1,7 @@
 from invoke import task
 from shlex import quote
 from colorama import Fore
+import re
 
 
 @task
@@ -145,10 +146,16 @@ def stop_workers(c):
 
 
 @task
-def destroy(c):
+def destroy(c, force=False):
     """
     Clean the infrastructure (remove container, volume, networks)
     """
+
+    if not force:
+        ok = confirm_choice('Are you sure? This will permanently remove all containers, volumes, networks... created for this project.')
+        if not ok:
+            return
+
     with Builder(c):
         docker_compose(c, 'down --volumes --rmi=local')
 
@@ -213,6 +220,12 @@ def get_workers(c):
     """
     cmd = c.run('docker ps -a --filter "label=docker-starter.worker.%s" --quiet' % c.project_name, hide='both')
     return list(filter(None, cmd.stdout.rsplit("\n")))
+
+
+def confirm_choice(message):
+    confirm = input('%s [y]es or [N]o: ' % message)
+
+    return re.compile('^y').search(confirm)
 
 
 class Builder:
