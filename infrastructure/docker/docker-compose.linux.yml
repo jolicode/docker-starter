@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+    router:
+        # Network mode only works on Linux, see https://docs.docker.com/network/network-tutorial-host/#prerequisites
+        network_mode: "host"
+        ports: []

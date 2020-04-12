@@ -60,6 +60,7 @@ def __extract_runtime_configuration(config):
 
     if not config['power_shell']:
         config['user_id'] = int(run('id --user', hide=True).stdout)
+        config['docker_compose_files'].append('docker-compose.linux.yml')
 
     if config['user_id'] > 256000:
         config['user_id'] = 1000
