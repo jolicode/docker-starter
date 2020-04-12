@@ -55,7 +55,7 @@ def __extract_runtime_configuration(config):
             print('$Env:PROJECT_NAME="%s"' % config['project_name'])
             print('$Env:PROJECT_DIRECTORY="%s"' % config['project_directory'])
             print('$Env:PROJECT_ROOT_DOMAIN="%s"' % config['root_domain'])
-            print('$Env:PROJECT_DOMAINS="%s"' % domains)
+            print("$Env:PROJECT_DOMAINS='%s'" % domains)
             sys.exit(1)
 
     if not config['power_shell']:
