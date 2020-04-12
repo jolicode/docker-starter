@@ -1,2 +1,2 @@
-# Declare files that will always have CRLF line endings on checkout.
-infrastructure/docker/services/frontend/etc/service/*/* text eol=lf
+# Force LF line ending (mandatory for Windows)
+* text=auto eol=lf
