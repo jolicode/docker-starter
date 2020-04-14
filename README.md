@@ -228,6 +228,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.${PROJECT_NAME}-redis.rule=Host(`redis.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
+            - "traefik.http.services.redis.loadbalancer.server.port=8001"
 
 ```
 
