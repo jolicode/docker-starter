@@ -264,6 +264,38 @@ Then, you will be able to browse:
 
 </details>
 
+### How to add Mercure
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use Mercure, you should add the following content to the
+`docker-compose.yml` file:
+
+```yaml
+services:
+    mercure:
+        image: dunglas/mercure
+        environment:
+            - "JWT_KEY=password"
+            - "ALLOW_ANONYMOUS=1"
+            - "CORS_ALLOWED_ORIGINS=*"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-mercure.rule=Host(`mercure.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-mercure.tls=true"
+```
+
+If you are using Symfony, you must put the following configuration in the `.env` file:
+
+```
+MERCURE_PUBLISH_URL=http://mercure/.well-known/mercure
+MERCURE_JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjcmliZSI6W10sInB1Ymxpc2giOltdfX0.t9ZVMwTzmyjVs0u9s6MI7-oiXP-ywdihbAfPlghTBeQ
+```
+
+</details>
+
 ### How to add support for crons?
 
 <details>
