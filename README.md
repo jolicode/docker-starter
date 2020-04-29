@@ -292,14 +292,21 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-COPY crontab /etc/crontabs/app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        cron \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-CMD ["crond", "-l", "0", "-f"]
+COPY crontab /etc/cron.d/crontab
+RUN crontab /etc/cron.d/crontab
+
+CMD ["cron", "-f"]
 ```
 
 And you can add all your crons in the `services/cron/crontab` file:
 ```crontab
-* * * * * php /home/app/application/my-command >> /path/to/log
+* * * * * su app -c "php -r 'echo time();'" >> /var/log/cron
 ```
 
 Finally, add the following content to the `docker-compose.yml` file:
