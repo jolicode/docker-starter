@@ -171,7 +171,7 @@ services:
 ```
 
 In order to publish and consume messages with PHP, you need to install the
-`php7-amqp` in the `php-base` image.
+`php${PHP_VERSION}-amqp` in the `php-base` image.
 
 Then, you will be able to browse:
 
@@ -209,6 +209,9 @@ services:
             - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
 
 ```
+
+In order to communicate with Redis, you need to install the
+`php${PHP_VERSION}-redis` in the `php-base` image.
 
 Then, you will be able to browse:
 
@@ -415,22 +418,20 @@ diff --git a/infrastructure/docker/services/php-base/Dockerfile b/infrastructure
 index 56e1835..95fee78 100644
 --- a/infrastructure/docker/services/php-base/Dockerfile
 +++ b/infrastructure/docker/services/php-base/Dockerfile
-@@ -22,7 +22,7 @@ RUN apk add --no-cache \
-     php7-opcache \
-     php7-openssl \
-     php7-pdo \
--    php7-pdo_pgsql \
-+    php7-pdo_mysql \
-     php7-pcntl \
-     php7-posix \
-     php7-session \
+@@ -24,7 +24,7 @@ RUN apk add --no-cache \
+     php${PHP_VERSION}-intl \
+     php${PHP_VERSION}-mbstring \
+-    php${PHP_VERSION}-pgsql \
++    php${PHP_VERSION}-mysql \
+     php${PHP_VERSION}-xml \
+     php${PHP_VERSION}-zip \
 diff --git a/infrastructure/docker/services/postgres/Dockerfile b/infrastructure/docker/services/postgres/Dockerfile
 deleted file mode 100644
 index a1c26c4..0000000
 --- a/infrastructure/docker/services/postgres/Dockerfile
 +++ /dev/null
 @@ -1,3 +0,0 @@
--FROM postgres:11
+-FROM postgres:12
 -
 -EXPOSE 5432
 ```
