@@ -76,12 +76,14 @@ mv README.{dist.md,md}
 
 <summary>Read the cookbook</summary>
 
-If you want to create a new Symfony project, you need to:
+If you want to create a new Symfony project, you need to enter a builder (`inv
+builder`) and run the following commands
 
 1. Remove the `application` folder:
 
     ```bash
-    rm -rf application/
+    cd ..
+    rm -rf application/*
     ```
 
 1. Create a new project:
@@ -93,30 +95,7 @@ If you want to create a new Symfony project, you need to:
 1. Configure the `.env`
 
     ```bash
-    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" application/.env
-    ```
-
-1. Configure doctrine
-
-    By default, Symfony and Doctrine are configured to use MySQL. Since MySQL
-    has bad default configuration, Doctrine is forced to configure MySQL
-    explicitly. PostgreSQL does not have this issue. So **update the following
-    configuration** in `application/config/packages/doctrine.yaml`:
-
-    ```yaml
-    doctrine:
-        dbal:
-            # configure these for your database server
-            driver: 'pdo_pgsql'
-            server_version: '11'
-            charset: UTF8
-            default_table_options:
-                charset: UTF8
-                # Adapt the collate according to the content of your DB.
-                # For example, if your content is mainly in French:
-                # collate: fr_FR.UTF8
-
-            url: '%env(resolve:DATABASE_URL)%'
+    sed -i 's#DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=12\&charset=utf8#' application/.env
     ```
 
 </details>
