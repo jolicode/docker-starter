@@ -76,12 +76,14 @@ mv README.{dist.md,md}
 
 <summary>Read the cookbook</summary>
 
-If you want to create a new Symfony project, you need to:
+If you want to create a new Symfony project, you need to enter a builder (`inv
+builder`) and run the following commands
 
 1. Remove the `application` folder:
 
     ```bash
-    rm -rf application/
+    cd ..
+    rm -rf application/*
     ```
 
 1. Create a new project:
@@ -93,30 +95,7 @@ If you want to create a new Symfony project, you need to:
 1. Configure the `.env`
 
     ```bash
-    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" application/.env
-    ```
-
-1. Configure doctrine
-
-    By default, Symfony and Doctrine are configured to use MySQL. Since MySQL
-    has bad default configuration, Doctrine is forced to configure MySQL
-    explicitly. PostgreSQL does not have this issue. So **update the following
-    configuration** in `application/config/packages/doctrine.yaml`:
-
-    ```yaml
-    doctrine:
-        dbal:
-            # configure these for your database server
-            driver: 'pdo_pgsql'
-            server_version: '11'
-            charset: UTF8
-            default_table_options:
-                charset: UTF8
-                # Adapt the collate according to the content of your DB.
-                # For example, if your content is mainly in French:
-                # collate: fr_FR.UTF8
-
-            url: '%env(resolve:DATABASE_URL)%'
+    sed -i 's#DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=12\&charset=utf8#' application/.env
     ```
 
 </details>
@@ -192,7 +171,7 @@ services:
 ```
 
 In order to publish and consume messages with PHP, you need to install the
-`php7-amqp` in the `php-base` image.
+`php${PHP_VERSION}-amqp` in the `php-base` image.
 
 Then, you will be able to browse:
 
@@ -230,6 +209,9 @@ services:
             - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
 
 ```
+
+In order to communicate with Redis, you need to install the
+`php${PHP_VERSION}-redis` in the `php-base` image.
 
 Then, you will be able to browse:
 
@@ -310,14 +292,21 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-COPY crontab /etc/crontabs/app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        cron \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-CMD ["crond", "-l", "0", "-f"]
+COPY crontab /etc/cron.d/crontab
+RUN crontab /etc/cron.d/crontab
+
+CMD ["cron", "-f"]
 ```
 
 And you can add all your crons in the `services/cron/crontab` file:
 ```crontab
-* * * * * php /home/app/application/my-command >> /path/to/log
+* * * * * su app -c "php -r 'echo time();'" >> /var/log/cron
 ```
 
 Finally, add the following content to the `docker-compose.yml` file:
@@ -436,22 +425,20 @@ diff --git a/infrastructure/docker/services/php-base/Dockerfile b/infrastructure
 index 56e1835..95fee78 100644
 --- a/infrastructure/docker/services/php-base/Dockerfile
 +++ b/infrastructure/docker/services/php-base/Dockerfile
-@@ -22,7 +22,7 @@ RUN apk add --no-cache \
-     php7-opcache \
-     php7-openssl \
-     php7-pdo \
--    php7-pdo_pgsql \
-+    php7-pdo_mysql \
-     php7-pcntl \
-     php7-posix \
-     php7-session \
+@@ -24,7 +24,7 @@ RUN apk add --no-cache \
+     php${PHP_VERSION}-intl \
+     php${PHP_VERSION}-mbstring \
+-    php${PHP_VERSION}-pgsql \
++    php${PHP_VERSION}-mysql \
+     php${PHP_VERSION}-xml \
+     php${PHP_VERSION}-zip \
 diff --git a/infrastructure/docker/services/postgres/Dockerfile b/infrastructure/docker/services/postgres/Dockerfile
 deleted file mode 100644
 index a1c26c4..0000000
 --- a/infrastructure/docker/services/postgres/Dockerfile
 +++ /dev/null
 @@ -1,3 +0,0 @@
--FROM postgres:11
+-FROM postgres:12
 -
 -EXPOSE 5432
 ```
