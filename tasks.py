@@ -157,7 +157,7 @@ def destroy(c, force=False):
             return
 
     with Builder(c):
-        docker_compose(c, 'down --volumes --rmi=local')
+        docker_compose(c, 'down --remove-orphans --volumes --rmi=local')
 
 
 def run_in_docker_or_locally_for_dinghy(c, command, no_deps=False):
