@@ -2,6 +2,10 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
+ARG NODEJS_VERSION=12.x
+RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} buster main" > /etc/apt/sources.list.d/nodejs.list \
+    && apt-key adv --fetch-keys https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
 # Default toys
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -10,14 +14,13 @@ RUN apt-get update \
         make \
         nodejs \
         sudo \
-        yarnpkg \
     && apt-get clean \
+    && npm install -g yarn \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Config
 COPY etc/. /etc/
 RUN adduser app sudo \
-    && ln -s /usr/bin/yarnpkg /usr/bin/yarn \
     && mkdir /var/log/php \
     && chmod 777 /var/log/php \
     && phpenmod app-default \
