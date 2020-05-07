@@ -100,6 +100,41 @@ builder`) and run the following commands
 
 </details>
 
+### How to use with Webpack Encore
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+If you want to use Webpack Encore in a Symfony project,
+
+1. Follow [instructions on symfony.com](https://symfony.com/doc/current/frontend/encore/installation.html#installing-encore-in-symfony-applications) to install webpack encore.
+
+    You will need to follow [theses instructions](https://symfony.com/doc/current/frontend/encore/simple-example.html) too.
+
+1. Create a new service for encore:
+
+    Add the following content to the `docker-compose.yml` file:
+
+    ```yaml
+    services:
+        encore:
+            build: services/builder
+            volumes:
+                - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+            command: "yarn run dev-server --host 0.0.0.0 --port 9999 --hot --public https://encore.${PROJECT_ROOT_DOMAIN}/ --disable-host-check"
+            labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.${PROJECT_NAME}-encore.rule=Host(`encore.${PROJECT_ROOT_DOMAIN}`)"
+                - "traefik.http.routers.${PROJECT_NAME}-encore.tls=true"
+                - "traefik.http.services.encore.loadbalancer.server.port=9999"
+    ```
+
+If the assets are not reachable, you may accept self signed certificate. To do so, open a new tab
+at https://encore.app.test and click on accept.
+
+</details>
+
 ### How to add Elasticsearch and Kibana
 
 <details>
