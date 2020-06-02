@@ -68,6 +68,13 @@ You should probably use this README.dist.md as a base for your project's README.
 mv README.{dist.md,md}
 ```
 
+Also, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+```bash
+invoke --print-completion-script=$(basename $SHELL) > /etc/bash_completion.d/invoke
+```
+
+Invoke supports completion for `bash`, `zsh` & `fish` shells.
+
 ## Cookbooks
 
 ### How to use with Symfony

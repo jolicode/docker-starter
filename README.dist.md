@@ -22,6 +22,13 @@ You can configure your current shell to be able to use Invoke commands directly
 pipenv shell
 ```
 
+Optionaly, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+```bash
+invoke --print-completion-script=$(basename $SHELL) > /etc/bash_completion.d/invoke
+```
+
+Invoke supports completion for `bash`, `zsh` & `fish` shells.
+
 ### Docker environment
 
 The Docker infrastructure provides a web stack with:
