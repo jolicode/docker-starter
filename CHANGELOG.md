@@ -12,7 +12,7 @@
  * The help command list all HTTP(s) services available
  * The help command list tasks available
  * Fixed the support for Mac and Windows
- * Try to map the correct the composer cache dir from the host
+ * Try to map the correct Composer cache dir from the host
  * Enhance the documentation
 
 ## 2.0.0 (2020-01-08)
