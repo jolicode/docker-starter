@@ -79,7 +79,7 @@ def migrate(c):
     """
     # with Builder(c):
     #     docker_compose_run(c, 'php bin/console doctrine:database:create --if-not-exists')
-    #     docker_compose_run(c, 'php bin/console doctrine:migration:migrate -n')
+    #     docker_compose_run(c, 'php bin/console doctrine:migration:migrate -n --allow-no-migration')
 
 
 @task
