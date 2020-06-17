@@ -292,6 +292,8 @@ Then, you will be able to browse:
 
 * `https://maildev.<root_domain>`
 
+> You can then configure your development mailer to send SMTP emails to the `maildev` host. For exemple with Symfony: `MAILER_DSN=smtp://maildev:25`.
+
 </details>
 
 ### How to add Mercure
