@@ -41,14 +41,18 @@ def __extract_runtime_configuration(config):
     if composer_cache_dir:
         config['composer_cache_dir'] = composer_cache_dir.strip()
 
-    try:
-        docker_kernel = run('docker version --format "{{.Server.KernelVersion}}"', hide=True).stdout
-    except:
-        docker_kernel = ''
+    if platform == "darwin":
+        try:
+            docker_kernel = run('docker version --format "{{.Server.KernelVersion}}"', hide=True).stdout
+        except:
+            docker_kernel = ''
 
-    if platform == "darwin" and docker_kernel.find('linuxkit') != -1:
-        config['dinghy'] = True
+        if docker_kernel.find('boot2docker') != -1:
+            config['dinghy'] = True
+        else:
+            config['docker_compose_files'] += ['docker-compose.docker-for-x.yml']
     elif platform in ["win32", "win64"]:
+        config['docker_compose_files'] += ['docker-compose.docker-for-x.yml']
         config['power_shell'] = True
         # # Python can't set the vars correctly on PowerShell and local() always calls cmd.exe
         shellProjectName = run('echo %PROJECT_NAME%', hide=True).stdout
@@ -66,7 +70,7 @@ def __extract_runtime_configuration(config):
             sys.exit(1)
 
     if not config['power_shell']:
-        config['user_id'] = int(run('id --user', hide=True).stdout)
+        config['user_id'] = int(run('id -u', hide=True).stdout)
 
     if config['user_id'] > 256000:
         config['user_id'] = 1000
