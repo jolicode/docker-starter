@@ -231,12 +231,14 @@ def docker_compose_run(c, command_name, service="builder", user="app", no_deps=F
 def docker_compose(c, command_name):
     domains = '`' + '`, `'.join([c.root_domain] + c.extra_domains) + '`'
 
+    # This list should be in sync with the one in invoke.py
     env = {
         'PROJECT_NAME': c.project_name,
         'PROJECT_DIRECTORY': c.project_directory,
         'PROJECT_ROOT_DOMAIN': c.root_domain,
         'PROJECT_DOMAINS': domains,
         'PROJECT_START_WORKERS': str(c.start_workers),
+        'COMPOSER_CACHE_DIR': c.composer_cache_dir,
     }
 
     cmd = 'docker-compose -p %s %s %s' % (
