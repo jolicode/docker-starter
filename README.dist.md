@@ -22,10 +22,16 @@ You can configure your current shell to be able to use Invoke commands directly
 pipenv shell
 ```
 
-Optionaly, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+Optionally, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+
+If you are using bash:
+
 ```bash
-invoke --print-completion-script=$(basename $SHELL) > /etc/bash_completion.d/invoke
+invoke --print-completion-script=bash > /etc/bash_completion.d/invoke
 ```
+
+If you are using something else, please refer to your shell documentation. But
+you may need to use `invoke --print-completion-script=zsh > /to/somewhere`
 
 Invoke supports completion for `bash`, `zsh` & `fish` shells.
 
