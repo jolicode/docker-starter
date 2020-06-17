@@ -22,6 +22,7 @@ jobs:
                 name: Install Requirements
                 command: |
                     set -e
+                    pip install --upgrade pip
                     pip install --user pipenv
                     ~/.local/bin/pipenv install
             - run:
