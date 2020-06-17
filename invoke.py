@@ -24,6 +24,7 @@ power_shell = False
 user_id = 1000
 root_dir = '.'
 start_workers = False
+composer_cache_dir = '~/.composer/cache'
 
 
 def __extract_runtime_configuration(config):
@@ -35,6 +36,10 @@ def __extract_runtime_configuration(config):
     init(autoreset=True)
 
     config['root_dir'] = os.path.dirname(os.path.abspath(__file__))
+
+    composer_cache_dir = run('composer global config cache-dir -q', warn=True, hide=True).stdout
+    if composer_cache_dir:
+        config['composer_cache_dir'] = composer_cache_dir.strip()
 
     try:
         docker_kernel = run('docker version --format "{{.Server.KernelVersion}}"', hide=True).stdout
@@ -52,10 +57,12 @@ def __extract_runtime_configuration(config):
             domains = '`' + '`, `'.join([config['root_domain']] + config['extra_domains']) + '`'
             print(Fore.RED + 'Env vars not set (Windows detected)')
             print(Fore.YELLOW + 'You must manually set environment variables on Windows:')
+            # This list should be in sync with the one in docker_compose.py, docker_compose() function
             print('$Env:PROJECT_NAME="%s"' % config['project_name'])
             print('$Env:PROJECT_DIRECTORY="%s"' % config['project_directory'])
             print('$Env:PROJECT_ROOT_DOMAIN="%s"' % config['root_domain'])
             print('$Env:PROJECT_DOMAINS="%s"' % domains)
+            print('$Env:COMPOSER_CACHE_DIR="%s"' % config['composer_cache_dir'])
             sys.exit(1)
 
     if not config['power_shell']:
