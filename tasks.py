@@ -161,17 +161,24 @@ def destroy(c, force=False):
         docker_compose(c, 'down --remove-orphans --volumes --rmi=local')
 
 
-@task
+@task(default=True)
 def help(c):
     """
     Display some help and available urls for the current project
     """
 
     print('Run ' + Fore.GREEN + 'inv help' + Fore.RESET + ' to display this help.')
+    print('')
+
+    print('Run ' + Fore.GREEN + 'inv --help' + Fore.RESET + ' to display invoke help.')
+    print('')
+
     print('Run ' + Fore.GREEN + 'inv -l' + Fore.RESET + ' to list all the available tasks.')
-    print(Fore.GREEN + 'Available URLs for this project:')
+    c.run('inv --list')
+
+    print(Fore.GREEN + 'Available URLs for this project:' + Fore.RESET)
     for domain in [c.root_domain] + c.extra_domains:
-        print(Fore.YELLOW + "* https://" + domain)
+        print("* " + Fore.YELLOW + "https://" + domain + Fore.RESET)
 
     try:
         response = json.loads(requests.get('http://%s:8080/api/http/routers' % (c.root_domain)).text)
@@ -181,7 +188,8 @@ def help(c):
                 host = re.search('Host\(\`(?P<host>.*)\`\)', router['rule']).group('host')
                 if host:
                     scheme = 'https' if 'https' in router['using'] else router['using'][0]
-                    print(Fore.YELLOW + "* " + scheme + "://" + host)
+                    print("* " + Fore.YELLOW + scheme + "://" + host + Fore.RESET)
+        print('')
     except:
         pass
 
