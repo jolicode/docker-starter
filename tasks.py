@@ -2,6 +2,8 @@ from invoke import task
 from shlex import quote
 from colorama import Fore
 import re
+import requests
+import json
 
 
 @task
@@ -48,9 +50,8 @@ def start(c):
     migrate(c)
     start_workers(c)
 
-    print(Fore.GREEN + 'You can now browse:')
-    for domain in [c.root_domain] + c.extra_domains:
-        print(Fore.YELLOW + "* https://" + domain)
+    print(Fore.GREEN + 'The stack is now up and running.')
+    help(c)
 
 
 @task
@@ -79,7 +80,7 @@ def migrate(c):
     """
     # with Builder(c):
     #     docker_compose_run(c, 'php bin/console doctrine:database:create --if-not-exists')
-    #     docker_compose_run(c, 'php bin/console doctrine:migration:migrate -n')
+    #     docker_compose_run(c, 'php bin/console doctrine:migration:migrate -n --allow-no-migration')
 
 
 @task
@@ -157,7 +158,40 @@ def destroy(c, force=False):
             return
 
     with Builder(c):
-        docker_compose(c, 'down --volumes --rmi=local')
+        docker_compose(c, 'down --remove-orphans --volumes --rmi=local')
+
+
+@task(default=True)
+def help(c):
+    """
+    Display some help and available urls for the current project
+    """
+
+    print('Run ' + Fore.GREEN + 'inv help' + Fore.RESET + ' to display this help.')
+    print('')
+
+    print('Run ' + Fore.GREEN + 'inv --help' + Fore.RESET + ' to display invoke help.')
+    print('')
+
+    print('Run ' + Fore.GREEN + 'inv -l' + Fore.RESET + ' to list all the available tasks.')
+    c.run('inv --list')
+
+    print(Fore.GREEN + 'Available URLs for this project:' + Fore.RESET)
+    for domain in [c.root_domain] + c.extra_domains:
+        print("* " + Fore.YELLOW + "https://" + domain + Fore.RESET)
+
+    try:
+        response = json.loads(requests.get('http://%s:8080/api/http/routers' % (c.root_domain)).text)
+        gen = (router for router in response if re.match("^%s-(.*)@docker$" % (c.project_name), router['name']))
+        for router in gen:
+            if router['service'] != 'frontend-%s' % (c.project_name):
+                host = re.search('Host\(\`(?P<host>.*)\`\)', router['rule']).group('host')
+                if host:
+                    scheme = 'https' if 'https' in router['using'] else router['using'][0]
+                    print("* " + Fore.YELLOW + scheme + "://" + host + Fore.RESET)
+        print('')
+    except:
+        pass
 
 
 def run_in_docker_or_locally_for_dinghy(c, command, no_deps=False):
@@ -197,12 +231,14 @@ def docker_compose_run(c, command_name, service="builder", user="app", no_deps=F
 def docker_compose(c, command_name):
     domains = '`' + '`, `'.join([c.root_domain] + c.extra_domains) + '`'
 
+    # This list should be in sync with the one in invoke.py
     env = {
         'PROJECT_NAME': c.project_name,
         'PROJECT_DIRECTORY': c.project_directory,
         'PROJECT_ROOT_DOMAIN': c.root_domain,
         'PROJECT_DOMAINS': domains,
         'PROJECT_START_WORKERS': str(c.start_workers),
+        'COMPOSER_CACHE_DIR': c.composer_cache_dir,
     }
 
     cmd = 'docker-compose -p %s %s %s' % (

@@ -68,6 +68,25 @@ You should probably use this README.dist.md as a base for your project's README.
 mv README.{dist.md,md}
 ```
 
+Somes files will not be needed for your project and should be deleted:
+
+```bash
+rm -rf .circleci/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-3.0.md
+```
+
+Also, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+
+If you are using bash:
+
+```bash
+invoke --print-completion-script=bash > /etc/bash_completion.d/invoke
+```
+
+If you are using something else, please refer to your shell documentation. But
+you may need to use `invoke --print-completion-script=zsh > /to/somewhere`
+
+Invoke supports completion for `bash`, `zsh` & `fish` shells.
+
 ## Cookbooks
 
 ### How to use with Symfony
@@ -76,12 +95,14 @@ mv README.{dist.md,md}
 
 <summary>Read the cookbook</summary>
 
-If you want to create a new Symfony project, you need to:
+If you want to create a new Symfony project, you need to enter a builder (`inv
+builder`) and run the following commands
 
 1. Remove the `application` folder:
 
     ```bash
-    rm -rf application/
+    cd ..
+    rm -rf application/*
     ```
 
 1. Create a new project:
@@ -93,31 +114,43 @@ If you want to create a new Symfony project, you need to:
 1. Configure the `.env`
 
     ```bash
-    sed -i "s#DATABASE_URL.*#DATABASE_URL=pgsql://app:app@postgres/YOUR_DB_NAME#" application/.env
+    sed -i 's#DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=12\&charset=utf8#' application/.env
     ```
 
-1. Configure doctrine
+</details>
 
-    By default, Symfony and Doctrine are configured to use MySQL. Since MySQL
-    has bad default configuration, Doctrine is forced to configure MySQL
-    explicitly. PostgreSQL does not have this issue. So **update the following
-    configuration** in `application/config/packages/doctrine.yaml`:
+### How to use with Webpack Encore
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+If you want to use Webpack Encore in a Symfony project,
+
+1. Follow [instructions on symfony.com](https://symfony.com/doc/current/frontend/encore/installation.html#installing-encore-in-symfony-applications) to install webpack encore.
+
+    You will need to follow [theses instructions](https://symfony.com/doc/current/frontend/encore/simple-example.html) too.
+
+1. Create a new service for encore:
+
+    Add the following content to the `docker-compose.yml` file:
 
     ```yaml
-    doctrine:
-        dbal:
-            # configure these for your database server
-            driver: 'pdo_pgsql'
-            server_version: '11'
-            charset: UTF8
-            default_table_options:
-                charset: UTF8
-                # Adapt the collate according to the content of your DB.
-                # For example, if your content is mainly in French:
-                # collate: fr_FR.UTF8
-
-            url: '%env(resolve:DATABASE_URL)%'
+    services:
+        encore:
+            build: services/builder
+            volumes:
+                - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+            command: "yarn run dev-server --host 0.0.0.0 --port 9999 --hot --public https://encore.${PROJECT_ROOT_DOMAIN}/ --disable-host-check"
+            labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.${PROJECT_NAME}-encore.rule=Host(`encore.${PROJECT_ROOT_DOMAIN}`)"
+                - "traefik.http.routers.${PROJECT_NAME}-encore.tls=true"
+                - "traefik.http.services.encore.loadbalancer.server.port=9999"
     ```
+
+If the assets are not reachable, you may accept self signed certificate. To do so, open a new tab
+at https://encore.app.test and click on accept.
 
 </details>
 
@@ -192,7 +225,7 @@ services:
 ```
 
 In order to publish and consume messages with PHP, you need to install the
-`php7-amqp` in the `php-base` image.
+`php${PHP_VERSION}-amqp` in the `php-base` image.
 
 Then, you will be able to browse:
 
@@ -231,6 +264,9 @@ services:
 
 ```
 
+In order to communicate with Redis, you need to install the
+`php${PHP_VERSION}-redis` in the `php-base` image.
+
 Then, you will be able to browse:
 
 * `https://redis.<root_domain>`
@@ -262,6 +298,40 @@ Then, you will be able to browse:
 
 * `https://maildev.<root_domain>`
 
+> You can then configure your development mailer to send SMTP emails to the `maildev` host. For exemple with Symfony: `MAILER_DSN=smtp://maildev:25`.
+
+</details>
+
+### How to add Mercure
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use Mercure, you should add the following content to the
+`docker-compose.yml` file:
+
+```yaml
+services:
+    mercure:
+        image: dunglas/mercure
+        environment:
+            - "JWT_KEY=password"
+            - "ALLOW_ANONYMOUS=1"
+            - "CORS_ALLOWED_ORIGINS=*"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.${PROJECT_NAME}-mercure.rule=Host(`mercure.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-mercure.tls=true"
+```
+
+If you are using Symfony, you must put the following configuration in the `.env` file:
+
+```
+MERCURE_PUBLISH_URL=http://mercure/.well-known/mercure
+MERCURE_JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjcmliZSI6W10sInB1Ymxpc2giOltdfX0.t9ZVMwTzmyjVs0u9s6MI7-oiXP-ywdihbAfPlghTBeQ
+```
+
 </details>
 
 ### How to add support for crons?
@@ -278,14 +348,21 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-COPY crontab /etc/crontabs/app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        cron \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-CMD ["crond", "-l", "0", "-f"]
+COPY crontab /etc/cron.d/crontab
+RUN crontab /etc/cron.d/crontab
+
+CMD ["cron", "-f"]
 ```
 
 And you can add all your crons in the `services/cron/crontab` file:
 ```crontab
-* * * * * php /home/app/application/my-command >> /path/to/log
+* * * * * su app -c "php -r 'echo time();'" >> /var/log/cron
 ```
 
 Finally, add the following content to the `docker-compose.yml` file:
@@ -404,22 +481,20 @@ diff --git a/infrastructure/docker/services/php-base/Dockerfile b/infrastructure
 index 56e1835..95fee78 100644
 --- a/infrastructure/docker/services/php-base/Dockerfile
 +++ b/infrastructure/docker/services/php-base/Dockerfile
-@@ -22,7 +22,7 @@ RUN apk add --no-cache \
-     php7-opcache \
-     php7-openssl \
-     php7-pdo \
--    php7-pdo_pgsql \
-+    php7-pdo_mysql \
-     php7-pcntl \
-     php7-posix \
-     php7-session \
+@@ -24,7 +24,7 @@ RUN apk add --no-cache \
+     php${PHP_VERSION}-intl \
+     php${PHP_VERSION}-mbstring \
+-    php${PHP_VERSION}-pgsql \
++    php${PHP_VERSION}-mysql \
+     php${PHP_VERSION}-xml \
+     php${PHP_VERSION}-zip \
 diff --git a/infrastructure/docker/services/postgres/Dockerfile b/infrastructure/docker/services/postgres/Dockerfile
 deleted file mode 100644
 index a1c26c4..0000000
 --- a/infrastructure/docker/services/postgres/Dockerfile
 +++ /dev/null
 @@ -1,3 +0,0 @@
--FROM postgres:11
+-FROM postgres:12
 -
 -EXPOSE 5432
 ```

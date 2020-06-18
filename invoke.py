@@ -24,6 +24,7 @@ power_shell = False
 user_id = 1000
 root_dir = '.'
 start_workers = False
+composer_cache_dir = '~/.composer/cache'
 
 
 def __extract_runtime_configuration(config):
@@ -36,14 +37,22 @@ def __extract_runtime_configuration(config):
 
     config['root_dir'] = os.path.dirname(os.path.abspath(__file__))
 
-    try:
-        docker_kernel = run('docker version --format "{{.Server.KernelVersion}}"', hide=True).stdout
-    except:
-        docker_kernel = ''
+    composer_cache_dir = run('composer global config cache-dir -q', warn=True, hide=True).stdout
+    if composer_cache_dir:
+        config['composer_cache_dir'] = composer_cache_dir.strip()
 
-    if platform == "darwin" and docker_kernel.find('linuxkit') != -1:
-        config['dinghy'] = True
+    if platform == "darwin":
+        try:
+            docker_kernel = run('docker version --format "{{.Server.KernelVersion}}"', hide=True).stdout
+        except:
+            docker_kernel = ''
+
+        if docker_kernel.find('boot2docker') != -1:
+            config['dinghy'] = True
+        else:
+            config['docker_compose_files'] += ['docker-compose.docker-for-x.yml']
     elif platform in ["win32", "win64"]:
+        config['docker_compose_files'] += ['docker-compose.docker-for-x.yml']
         config['power_shell'] = True
         # # Python can't set the vars correctly on PowerShell and local() always calls cmd.exe
         shellProjectName = run('echo %PROJECT_NAME%', hide=True).stdout
@@ -52,15 +61,16 @@ def __extract_runtime_configuration(config):
             domains = '`' + '`, `'.join([config['root_domain']] + config['extra_domains']) + '`'
             print(Fore.RED + 'Env vars not set (Windows detected)')
             print(Fore.YELLOW + 'You must manually set environment variables on Windows:')
+            # This list should be in sync with the one in docker_compose.py, docker_compose() function
             print('$Env:PROJECT_NAME="%s"' % config['project_name'])
             print('$Env:PROJECT_DIRECTORY="%s"' % config['project_directory'])
             print('$Env:PROJECT_ROOT_DOMAIN="%s"' % config['root_domain'])
             print("$Env:PROJECT_DOMAINS='%s'" % domains)
+            print('$Env:COMPOSER_CACHE_DIR="%s"' % config['composer_cache_dir'])
             sys.exit(1)
 
     if not config['power_shell']:
-        config['user_id'] = int(run('id --user', hide=True).stdout)
-        config['docker_compose_files'].append('docker-compose.linux.yml')
+        config['user_id'] = int(run('id -u', hide=True).stdout)
 
     if config['user_id'] > 256000:
         config['user_id'] = 1000
