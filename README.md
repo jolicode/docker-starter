@@ -195,6 +195,12 @@ Then, you will be able to browse:
 * `https://kibana.<root_domain>`
 * `https://elasticsearch.<root_domain>`
 
+In your application, you can use the following configuration:
+
+* scheme: `http`;
+* host: `elasticsearch`;
+* port: `9200`.
+
 </details>
 
 ### How to add RabbitMQ and its dashboard
@@ -229,7 +235,16 @@ In order to publish and consume messages with PHP, you need to install the
 
 Then, you will be able to browse:
 
-* `https://rabbitmq.<root_domain>`
+* `https://rabbitmq.<root_domain>` (username: `guest`, password: `guest`)
+
+In your application, you can use the following configuration:
+
+* host: `rabbitmq`;
+* username: `guest`;
+* passt: `guest`;
+* post: `rabbitmq`.
+
+For example in Symfony you can use: `MESSENGER_TRANSPORT_DSN=amqp://guest:guest@rabbitmq:5672/%2f/messages`
 
 </details>
 
@@ -271,6 +286,11 @@ Then, you will be able to browse:
 
 * `https://redis.<root_domain>`
 
+In your application, you can use the following configuration:
+
+* host: `redis`;
+* port: `6379`.
+
 </details>
 
 ### How to add Maildev
@@ -298,7 +318,13 @@ Then, you will be able to browse:
 
 * `https://maildev.<root_domain>`
 
-> You can then configure your development mailer to send SMTP emails to the `maildev` host. For exemple with Symfony: `MAILER_DSN=smtp://maildev:25`.
+In your application, you can use the following configuration:
+
+* scheme: `smtp`;
+* host: `maildev`;
+* port: `25`.
+
+For example in Symfony you can use: `MAILER_DSN=smtp://maildev:25`.
 
 </details>
 
