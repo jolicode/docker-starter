@@ -241,7 +241,7 @@ In your application, you can use the following configuration:
 
 * host: `rabbitmq`;
 * username: `guest`;
-* passt: `guest`;
+* password: `guest`;
 * post: `rabbitmq`.
 
 For example in Symfony you can use: `MESSENGER_TRANSPORT_DSN=amqp://guest:guest@rabbitmq:5672/%2f/messages`
