@@ -1,0 +1,13 @@
+# This file is used only when using Docker for Mac or Windows
+
+version: '3.7'
+
+services:
+    router:
+        # Docker for Mac or Windows does not support the "network_mode=host"
+        # So we use the default network mode and we map all needed ports
+        network_mode: "${PROJECT_NAME}_default"
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
