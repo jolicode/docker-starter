@@ -14,6 +14,7 @@ RUN apt-get update \
         make \
         nodejs \
         sudo \
+        unzip \
     && apt-get clean \
     && npm install -g yarn \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
