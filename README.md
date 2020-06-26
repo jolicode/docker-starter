@@ -169,11 +169,10 @@ volumes:
 
 services:
     elasticsearch:
-        image: elasticsearch:7.3.2
+        image: elasticsearch:7.8.0
         volumes:
             - elasticsearch-data:/usr/share/elasticsearch/data
         environment:
-            - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
             - "discovery.type=single-node"
         labels:
             - "traefik.enable=true"
@@ -181,7 +180,7 @@ services:
             - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.tls=true"
 
     kibana:
-        image: kibana:7.3.2
+        image: kibana:7.8.0
         depends_on:
             - elasticsearch
         labels:
