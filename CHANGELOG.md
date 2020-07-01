@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 3.0.0 (not released yet)
+## 3.0.0 (2020-07-01)
 
  * Migrate from Fabric to Invoke
  * Migrate from Alpine to Debian for PHP images
