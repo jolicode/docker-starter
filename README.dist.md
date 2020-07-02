@@ -12,7 +12,7 @@ A Docker environment is provided and requires you to have these tools available:
 Install and run `pipenv` to install the required tools:
 
 ```bash
-pipenv install
+pipenv --three install
 ```
 
 You can configure your current shell to be able to use Invoke commands directly
