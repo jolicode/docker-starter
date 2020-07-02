@@ -15,7 +15,8 @@ RUN useradd -s /bin/false nginx
 COPY etc/. /etc/
 
 RUN phpenmod app-default \
-    && phpenmod app-fpm
+    && phpenmod app-fpm \
+    && phpenmod apm
 
 EXPOSE 80
 
