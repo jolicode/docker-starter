@@ -1,9 +1,11 @@
 from invoke import task
 from shlex import quote
 from colorama import Fore
+import json
+import os
 import re
 import requests
-import json
+import subprocess
 
 
 @task
@@ -89,7 +91,7 @@ def builder(c, user="app"):
     Open a shell (bash) into a builder container
     """
     with Builder(c):
-        docker_compose_run(c, 'bash', user=user)
+        docker_compose_run(c, 'bash', user=user, bare_run=True)
 
 
 @task
@@ -205,7 +207,7 @@ def run_in_docker_or_locally_for_dinghy(c, command, no_deps=False):
         docker_compose_run(c, command, no_deps=no_deps)
 
 
-def docker_compose_run(c, command_name, service="builder", user="app", no_deps=False, workdir=None, port_mapping=False):
+def docker_compose_run(c, command_name, service="builder", user="app", no_deps=False, workdir=None, port_mapping=False, bare_run=False):
     args = [
         'run',
         '--rm',
@@ -225,10 +227,10 @@ def docker_compose_run(c, command_name, service="builder", user="app", no_deps=F
         ' '.join(args),
         quote(service),
         command_name
-    ))
+    ), bare_run=bare_run)
 
 
-def docker_compose(c, command_name):
+def docker_compose(c, command_name, bare_run=False):
     domains = '`' + '`, `'.join([c.root_domain] + c.extra_domains) + '`'
 
     # This list should be in sync with the one in invoke.py
@@ -247,7 +249,14 @@ def docker_compose(c, command_name):
         command_name
     )
 
-    c.run(cmd, pty=not c.power_shell, env=env)
+    # bare_run bypass invoke run() function
+    # see https://github.com/pyinvoke/invoke/issues/744
+    # Use it ONLY for task where you need to interact with the container like builder
+    if (bare_run):
+        env.update(os.environ)
+        subprocess.run(cmd, shell=True, env=env)
+    else:
+        c.run(cmd, pty=not c.power_shell, env=env)
 
 
 def get_workers(c):
