@@ -543,7 +543,7 @@ services first.
 
 </details>
 
-### Docker For Windows support (partial)
+### Docker For Windows support
 
 <details>
 
@@ -551,8 +551,7 @@ services first.
 
 This starter kit is compatible with Docker for Windows, so you can enjoy native Docker experience on Windows. You will have to keep in mind some differences:
 
-- You will be prompted to run the env vars manually if you use PowerShell;
-- As pty in invoke does not works on Windows, **the builder is not really usable**... See https://github.com/pyinvoke/invoke/issues/561 for more information.
+- You will be prompted to run the env vars manually if you use PowerShell.
 </details>
 
 ### How to access a container via a custom hostname from another container
