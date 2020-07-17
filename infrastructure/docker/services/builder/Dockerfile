@@ -25,7 +25,8 @@ RUN adduser app sudo \
     && mkdir /var/log/php \
     && chmod 777 /var/log/php \
     && phpenmod app-default \
-    && phpenmod app-builder
+    && phpenmod app-builder \
+    && phpenmod apm
 
 # Composer
 COPY --from=composer:1.10.7 /usr/bin/composer /usr/bin/composer

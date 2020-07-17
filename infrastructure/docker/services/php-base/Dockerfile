@@ -4,6 +4,11 @@ RUN apt-get update \
     && apt install -y --no-install-recommends \
         ca-certificates \
         gnupg \
+        curl \
+        unzip \
+        build-essential \
+        autoconf \
+        libcurl4-openssl-dev \
     && echo "deb https://packages.sury.org/php buster main" > /etc/apt/sources.list.d/sury.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B188E2B695BD4743
 
@@ -25,8 +30,21 @@ RUN apt-get update \
         php${PHP_VERSION}-pgsql \
         php${PHP_VERSION}-xml \
         php${PHP_VERSION}-zip \
+        php${PHP_VERSION}-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+# Compile APM Agent
+# Installing shared extensions: /usr/lib/php/20190902/
+RUN curl https://github.com/elastic/apm-agent-php/archive/master.zip -L -o agent.zip
+RUN unzip agent.zip
+
+WORKDIR /apm-agent-php-master/src/ext
+RUN phpize \
+    && ./configure --enable-elastic_apm \
+    && make clean \
+    && make \
+    && make install
 
 # Fake user to maps with the one on the host
 ARG USER_ID
