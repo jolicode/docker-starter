@@ -62,11 +62,11 @@ def install(c):
     Install the application (composer, yarn, ...)
     """
     with Builder(c):
-        if os.path.isfile('composer.json'):
+        if os.path.isfile(c.root_dir + c.project_directory + 'composer.json'):
             docker_compose_run(c, 'composer install -n --prefer-dist --optimize-autoloader', no_deps=True)
-        if os.path.isfile('yarn.lock'):
+        if os.path.isfile(c.root_dir + c.project_directory + 'yarn.lock'):
             run_in_docker_or_locally_for_dinghy(c, 'yarn', no_deps=True)
-        if os.path.isfile('package.json'):
+        if os.path.isfile(c.root_dir + c.project_directory + 'package.json'):
             run_in_docker_or_locally_for_dinghy(c, 'npm install', no_deps=True)
     
 
