@@ -66,7 +66,7 @@ def install(c):
             docker_compose_run(c, 'composer install -n --prefer-dist --optimize-autoloader', no_deps=True)
         if os.path.isfile(c.root_dir + c.project_directory + 'yarn.lock'):
             run_in_docker_or_locally_for_dinghy(c, 'yarn', no_deps=True)
-        if os.path.isfile(c.root_dir + c.project_directory + 'package.json'):
+        elif os.path.isfile(c.root_dir + c.project_directory + 'package.json'):
             run_in_docker_or_locally_for_dinghy(c, 'npm install', no_deps=True)
     
 
