@@ -61,10 +61,14 @@ def install(c):
     """
     Install the application (composer, yarn, ...)
     """
-    # with Builder(c):
-    #     docker_compose_run(c, 'composer install -n --prefer-dist --optimize-autoloader', no_deps=True)
-    #     run_in_docker_or_locally_for_dinghy(c, 'yarn', no_deps=True)
-
+    with Builder(c):
+        if os.path.isfile(c.root_dir + c.project_directory + 'composer.json'):
+            docker_compose_run(c, 'composer install -n --prefer-dist --optimize-autoloader', no_deps=True)
+        if os.path.isfile(c.root_dir + c.project_directory + 'yarn.lock'):
+            run_in_docker_or_locally_for_dinghy(c, 'yarn', no_deps=True)
+        elif os.path.isfile(c.root_dir + c.project_directory + 'package.json'):
+            run_in_docker_or_locally_for_dinghy(c, 'npm install', no_deps=True)
+    
 
 @task
 def cache_clear(c):
