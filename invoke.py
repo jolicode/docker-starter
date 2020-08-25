@@ -10,7 +10,7 @@ extra_domains = []
 project_directory = 'application'
 
 # Usually, you should not edit the file above this point
-
+php_version = '7.4'
 docker_compose_files = [
     'docker-compose.yml',
     'docker-compose.worker.yml',
@@ -67,6 +67,7 @@ def __extract_runtime_configuration(config):
             print('$Env:PROJECT_ROOT_DOMAIN="%s"' % config['root_domain'])
             print("$Env:PROJECT_DOMAINS='%s'" % domains)
             print('$Env:COMPOSER_CACHE_DIR="%s"' % config['composer_cache_dir'])
+            print('$Env:PHP_VERSION="%s"' % config['php_version'])
             sys.exit(1)
 
     if not config['power_shell']:
