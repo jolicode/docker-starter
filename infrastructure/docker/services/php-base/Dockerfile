@@ -41,7 +41,7 @@ RUN unzip agent.zip
 
 WORKDIR /apm-agent-php-master/src/ext
 RUN phpize \
-    && ./configure --enable-elastic_apm \
+    && CFLAGS="-std=gnu99" ./configure --enable-elastic_apm \
     && make clean \
     && make \
     && make install
