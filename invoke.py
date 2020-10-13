@@ -75,6 +75,10 @@ def __extract_runtime_configuration(config):
     if config['user_id'] > 256000:
         config['user_id'] = 1000
 
+    if config['user_id'] == 0:
+        print(Fore.YELLOW + 'Running as root? Fallback to fake user id.')
+        config['user_id'] = 1000
+
     return config
 
 
