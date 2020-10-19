@@ -21,6 +21,8 @@ RUN apt-get update \
 
 # Config
 COPY etc/. /etc/
+ARG PHP_VERSION
+COPY php-configuration /etc/php/${PHP_VERSION}
 RUN adduser app sudo \
     && mkdir /var/log/php \
     && chmod 777 /var/log/php \

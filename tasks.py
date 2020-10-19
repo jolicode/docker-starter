@@ -16,6 +16,7 @@ def build(c):
     command = 'build'
     command += ' --build-arg PROJECT_NAME=%s' % c.project_name
     command += ' --build-arg USER_ID=%s' % c.user_id
+    command += ' --build-arg PHP_VERSION=%s' % c.php_version
 
     with Builder(c):
         for service in c.services_to_build_first:
@@ -245,6 +246,7 @@ def docker_compose(c, command_name, bare_run=False):
         'PROJECT_DOMAINS': domains,
         'PROJECT_START_WORKERS': str(c.start_workers),
         'COMPOSER_CACHE_DIR': c.composer_cache_dir,
+        'PHP_VERSION': c.php_version,
     }
 
     cmd = 'docker-compose -p %s %s %s' % (
