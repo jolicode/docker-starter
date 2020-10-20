@@ -31,8 +31,8 @@ If you are using bash:
 invoke --print-completion-script=bash > /etc/bash_completion.d/invoke
 ```
 
-If you are using something else, please refer to your shell documentation. But
-you may need to use `invoke --print-completion-script=zsh > /to/somewhere`
+If you are using something else, please refer to your shell documentation.
+You may need to use `invoke --print-completion-script=zsh > /to/somewhere`.
 
 Invoke supports completion for `bash`, `zsh` & `fish` shells.
 
@@ -78,7 +78,7 @@ The site is now accessible at the hostnames your have configured over HTTPS
 
 ### Builder
 
-Having some composer, yarn or another modifications to make on the project?
+Having some composer, yarn or other modifications to make on the project?
 Start the builder which will give you access to a container with all these
 tools available:
 
@@ -86,9 +86,17 @@ tools available:
 inv builder
 ```
 
-Note: You can add as many Invoke command as you want. But the command should be
-ran by the builder, don't forget to add `@with_builder` annotation to the
-function.
+Note: You can add as many Invoke commands as you want. If a command should be
+ran by the builder, don't forget to use `with Builder(c):`:
+```
+@task
+def mycommand(c):
+    """
+    My documentation
+    """
+    with Builder(c):
+        docker_compose_run(c, 'echo "HelloWorld")
+```
 
 ### Other tasks
 
