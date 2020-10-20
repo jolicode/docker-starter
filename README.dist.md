@@ -87,8 +87,16 @@ inv builder
 ```
 
 Note: You can add as many Invoke commands as you want. If a command should be
-ran by the builder, don't forget to add `@with_builder` annotation to the
-function.
+ran by the builder, don't forget to use `with Builder(c):`:
+```
+@task
+def mycommand(c):
+    """
+    My documentation
+    """
+    with Builder(c):
+        docker_compose_run(c, 'echo "HelloWorld")
+```
 
 ### Other tasks
 
