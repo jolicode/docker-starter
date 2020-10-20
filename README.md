@@ -82,8 +82,8 @@ If you are using bash:
 invoke --print-completion-script=bash > /etc/bash_completion.d/invoke
 ```
 
-If you are using something else, please refer to your shell documentation. But
-you may need to use `invoke --print-completion-script=zsh > /to/somewhere`
+If you are using something else, please refer to your shell documentation.
+You may need to use `invoke --print-completion-script=zsh > /to/somewhere`.
 
 Invoke supports completion for `bash`, `zsh` & `fish` shells.
 
@@ -129,7 +129,7 @@ If you want to use Webpack Encore in a Symfony project,
 
 1. Follow [instructions on symfony.com](https://symfony.com/doc/current/frontend/encore/installation.html#installing-encore-in-symfony-applications) to install webpack encore.
 
-    You will need to follow [theses instructions](https://symfony.com/doc/current/frontend/encore/simple-example.html) too.
+    You will need to follow [these instructions](https://symfony.com/doc/current/frontend/encore/simple-example.html) too.
 
 1. Create a new service for encore:
 
@@ -243,7 +243,7 @@ In your application, you can use the following configuration:
 * password: `guest`;
 * port: `rabbitmq`.
 
-For example in Symfony you can use: `MESSENGER_TRANSPORT_DSN=amqp://guest:guest@rabbitmq:5672/%2f/messages`
+For example in Symfony you can use: `MESSENGER_TRANSPORT_DSN=amqp://guest:guest@rabbitmq:5672/%2f/messages`.
 
 </details>
 
@@ -365,7 +365,7 @@ MERCURE_JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjc
 
 <summary>Read the cookbook</summary>
 
-In order to setup crontab, you should add a new container:
+In order to set up crontab, you should add a new container:
 
 ```Dockerfile
 # services/cron/Dockerfile
@@ -407,7 +407,7 @@ services:
 
 <summary>Read the cookbook</summary>
 
-In order to setup workers, you should define their service in the `docker-compose.worker.yml` file:
+In order to set up workers, you should define their service in the `docker-compose.worker.yml` file:
 
 ```yaml
 services:
@@ -538,7 +538,7 @@ following bug:
 > ERROR: Service 'frontend' failed to build: pull access denied for app_basephp, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
 
 In order to fix this issue, you can update the `services_to_build_first` variable
-in the `invoke.py` file. This will force docker-compose to build theses
+in the `invoke.py` file. This will force docker-compose to build these
 services first.
 
 </details>
@@ -581,7 +581,7 @@ services:
 Note: `172.17.0.1` is the default IP of the `docker0` interface. It can be
 different on some installations. You can see this IP thanks to the following
 command `ip address show docker0`. Since `docker-compose.yml` file supports
-environnement variables you may script this with Invoke.
+environment variables you may script this with Invoke.
 
 </details>
 

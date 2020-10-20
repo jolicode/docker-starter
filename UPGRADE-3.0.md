@@ -5,11 +5,11 @@ This guide will cover the migration from Fabric to Invoke.
 At anytime, you can refer the final form of the starter kit by looking
 at the [main repository](https://github.com/jolicode/docker-starter)
 
-**WARNING**: Migrating from 2.x to 3.0 can be a fastidious task since lot of
-parts have changed. More over, this project is a started kit. It means you
+**WARNING**: Migrating from 2.x to 3.0 can be a fastidious task since a lot of
+parts have changed. Moreover, this project is a starter kit. It means you
 usually start with it, then you make your own choices and implementations. So if
-you are confortable with your current project **we recommend you to stick on
-2.x**. But if you want to migrate from 2.x to 3.0 here is the tasks you will have
+you are comfortable with your current project **we recommend you to stick on
+2.x**. If you want to migrate from 2.x to 3.0, here are the tasks you will have
 to perform.
 
 ## Fabric to Invoke
@@ -266,7 +266,7 @@ to perform.
 
     1. Update colors
 
-        Fabric provided nice helper for colors. Now we use colorama
+        Fabric provided a nice helper for colors. Now we use colorama.
 
         Before:
 
