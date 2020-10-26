@@ -30,6 +30,6 @@ RUN adduser app sudo \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer:1.10.7 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.0.2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /home/app/application
