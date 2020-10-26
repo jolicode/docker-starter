@@ -26,6 +26,7 @@ RUN apt-get update \
         php${PHP_VERSION}-intl \
         php${PHP_VERSION}-mbstring \
         php${PHP_VERSION}-pgsql \
+        php${PHP_VERSION}-uuid \
         php${PHP_VERSION}-xml \
         php${PHP_VERSION}-zip \
     && apt-get clean \

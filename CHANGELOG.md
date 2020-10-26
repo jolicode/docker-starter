@@ -5,6 +5,7 @@
  * Fixed TTY on all OS
  * Added default vendor installation command with auto-detection in install() for Yarn, NPM and Composer
  * Update Composer to version 2
+ * Install by default php-uuid
 
 ## 3.0.0 (2020-07-01)
 
