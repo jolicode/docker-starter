@@ -387,7 +387,7 @@ CMD ["cron", "-f"]
 
 And you can add all your crons in the `services/cron/crontab` file:
 ```crontab
-* * * * * su app -c "/usr/local/bin/php -r 'echo time();'" > /proc/1/fd/1 2>&1
+* * * * * su app -c "/usr/local/bin/php -r 'echo time().PHP_EOL;'" > /proc/1/fd/1 2>&1
 ```
 
 Finally, add the following content to the `docker-compose.yml` file:
