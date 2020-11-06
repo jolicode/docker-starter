@@ -359,6 +359,64 @@ MERCURE_JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjc
 
 </details>
 
+### How to add Blackfire.io
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use Blackfire.io, you should add the following content to the
+`docker-compose.yml` file to run the agent:
+
+```yaml
+services:
+    blackfire:
+        image: blackfire/blackfire
+        environment:
+            BLACKFIRE_SERVER_ID: FIXME
+            BLACKFIRE_SERVER_TOKEN: FIXME
+            BLACKFIRE_CLIENT_ID: FIXME
+            BLACKFIRE_CLIENT_TOKEN: FIXME
+
+```
+
+Then you'll need `wget`. In
+`infrastructure/docker/services/php-base/Dockerfile`:
+
+```Dockerfile
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+```
+
+You can group this command with another one.
+
+Then, **after** installing PHP, you need to install the probe:
+
+```Dockerfile
+RUN sh -c 'wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add -' \
+    && sh -c 'echo "deb http://packages.blackfire.io/debian any main" > /etc/apt/sources.list.d/blackfire.list' \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        blackfire-php \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
+    && sed -i 's#blackfire.agent_socket.*#blackfire.agent_socket=tcp://blackfire:8707#' /etc/php/${PHP_VERSION}/mods-available/blackfire.ini
+```
+
+If you want to profile HTTP calls, you need to enable the probe with PHP-FPM.
+So in `infrastructure/docker/services/frontend/Dockerfile`:
+
+```Dockerfile
+RUN phpenmod blackfire
+```
+
+Here also, You can group this command with another one.
+
+</details>
+
 ### How to add support for crons?
 
 <details>
