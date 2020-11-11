@@ -2,7 +2,7 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-ARG NODEJS_VERSION=12.x
+ARG NODEJS_VERSION=14.x
 RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} buster main" > /etc/apt/sources.list.d/nodejs.list \
     && apt-key adv --fetch-keys https://deb.nodesource.com/gpgkey/nodesource.gpg.key
 
