@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## x.x.x (not released yet)
+
 ## 3.1.0 (2020-11-13)
 
  * Fixed TTY on all OS
