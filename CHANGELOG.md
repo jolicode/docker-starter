@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## x.x.x (not released yet)
+## 3.1.0 (2020-11-13)
 
  * Fixed TTY on all OS
  * Added default vendor installation command with auto-detection in `install()` for Yarn, NPM and Composer
