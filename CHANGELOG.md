@@ -3,9 +3,10 @@
 ## x.x.x (not released yet)
 
  * Fixed TTY on all OS
- * Added default vendor installation command with auto-detection in install() for Yarn, NPM and Composer
+ * Added default vendor installation command with auto-detection in `install()` for Yarn, NPM and Composer
  * Update Composer to version 2
- * Install by default php-uuid
+ * Install by default php-uuid extension
+ * Update NodeJS from 12.x to 14.x
 
 ## 3.0.0 (2020-07-01)
 
