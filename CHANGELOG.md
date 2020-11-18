@@ -2,6 +2,8 @@
 
 ## x.x.x (not released yet)
 
+* Migrate CI from Circle to GitHub Actions
+
 ## 3.1.0 (2020-11-13)
 
  * Fixed TTY on all OS
