@@ -1,0 +1,79 @@
+name: CI
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+
+jobs:
+    check-python-cs:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-python@v2
+              with:
+                  python-version: '3.x'
+            - run: pip install pycodestyle
+            - run: pycodestyle --ignore=E501,W605,E722 invoke.py tasks.py
+
+    ci:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            # Cache
+            - uses: satackey/action-docker-layer-caching@v0.0.8
+              continue-on-error: true
+              with:
+                  key: docker-{hash}
+                  restore-keys: docker-
+            - name: Cache Composer
+              id: cache-composer
+              uses: actions/cache@v2
+              with:
+                  path: ~/.composer/cache/
+                  key: composer-${{ github.sha }}
+                  restore-keys: composer-
+            - name: Cache Pipenv
+              uses: actions/cache@v2
+              with:
+                  path: |
+                      ~/.cache/pip
+                      ~/.cache/pipenv
+                      ~/.local/share/virtualenvs/
+                  key: pip-pipenv-${{ hashFiles('Pipfile.lock') }}-${{ github.sha }}
+                  restore-keys: |
+                      pip-pipenv-
+                      pip-pipenv-${{ hashFiles('Pipfile.lock') }}-
+
+            # Setup
+            - uses: actions/setup-python@v2
+              with:
+                  python-version: '3.x'
+            - run: pip install pipenv
+
+            # Install the stack and run the tests
+            - run: pipenv install --deploy --dev
+            - run: pipenv run inv start && sleep 5
+            - name: Test the infrastructure is working
+              run: |
+                  set -e
+                  set -o pipefail
+                  curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
+            - name: Test communication with DB
+              run: |
+                  set -e
+                  set -o pipefail
+
+                  # Need to mount (replace the old one) the new directories layout to the web container
+                  pipenv run inv up
+
+                  cat > application/public/index.php <<'EOPHP'
+                  <?php
+                  $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
+                  $pdo->exec('CREATE TABLE test (id integer NOT NULL)');
+                  $pdo->exec('INSERT INTO test VALUES (1)');
+                  echo $pdo->query('SELECT * from test')->fetchAll() ? 'database OK' : 'database KO';
+                  EOPHP
+
+                  curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "database OK"
