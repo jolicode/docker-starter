@@ -47,7 +47,7 @@ jobs:
                       pip-pipenv-${{ hashFiles('Pipfile.lock') }}-
 
             # Setup
-            - uses: actions/setup-python@v1
+            - uses: actions/setup-python@v2
               with:
                   python-version: '3.x'
             - run: pip install pipenv
