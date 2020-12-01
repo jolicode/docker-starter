@@ -31,5 +31,7 @@ RUN adduser app sudo \
 
 # Composer
 COPY --from=composer/composer:2.0.7 /usr/bin/composer /usr/bin/composer
+RUN mkdir -p "/home/app/.composer/cache" \
+    && chown app: /home/app/.composer -R
 
 WORKDIR /home/app/application
