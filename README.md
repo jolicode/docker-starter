@@ -655,7 +655,7 @@ directory from git:
 ```bash
 git rm infrastructure/docker/services/router/etc/ssl/certs/*.pem
 touch infrastructure/docker/services/router/etc/ssl/certs/.gitkeep
-echo '/infrastructure/docker/services/router/etc/ssl/certs/*.pem' | tee -a .gitignore
+echo '/infrastructure/docker/services/router/etc/ssl/certs/*.pem' >> .gitignore
 ```
 
 Then you need to [install mkcert](https://github.com/FiloSottile/mkcert#installation)
@@ -698,20 +698,20 @@ and your project will now run with locally trusted certificates.
 
 Ideally you will document this process in your project's README:
 
-```text
-### SSL certificates (first time only)
+> ### SSL certificates (first time only)
+>
+> Before running the application for the first time, you also need to generate SSL certificates
+> to make the application working in HTTPS out of the box.
+>
+> We suggest to use [`mkcert`](https://github.com/FiloSottile/mkcert#installation) to generate and sign your certificates.
+>
+> If you never installed CA root from mkcert before, you can do it by running `mkcert -install`. Now you can run the following
+> command to generate the SSL certificates for the project:
+>
+> ```bash
+>  inv generate-certificates
+> ```
 
-Before running the application for the first time, you also need to generate SSL certificates
-to make the application working in HTTPS out of the box.
-
-We suggest to use [`mkcert`](https://github.com/FiloSottile/mkcert#installation) to generate and sign your certificates.
-
-If you never installed CA root from mkcert before, you can do it by running `mkcert -install`. Now you can run the following
-command to generate the SSL certificates for the project:
-
-```bash
-inv generate-certificates
-```
 </details>
 
 ## Credits
