@@ -49,8 +49,8 @@ necessarily let you work with invalid certificates), you will have to:
 
 In this case, it's recommended to use more powerful tool like [mkcert](https://github.com/FiloSottile/mkcert).
 As mkcert uses a CA root, you will need to generate a certificate on each computer
-using this stack and so add `/infrastructure/services/router/certs/` to the
-`.gitignore` file.
+using this stack and so add `/infrastructure/services/router/etc/ssl/certs/` to the
+`.gitignore` file. See the [cookbook about mkcert usage](#how-to-generate-locally-trusted-ssl-certificates-with-mkcert).
 
 Alternatively, you can configure
 `infrastructure/docker/services/router/openssl.cnf` then use
@@ -640,6 +640,77 @@ Note: `172.17.0.1` is the default IP of the `docker0` interface. It can be
 different on some installations. You can see this IP thanks to the following
 command `ip address show docker0`. Since `docker-compose.yml` file supports
 environment variables you may script this with Invoke.
+
+</details>
+
+### How to generate locally trusted SSL certificates with mkcert
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+First, you need to remove the existing self-signed certificates and ignore the
+directory from git:
+
+```bash
+git rm infrastructure/docker/services/router/etc/ssl/certs/*.pem
+touch infrastructure/docker/services/router/etc/ssl/certs/.gitkeep
+echo '/infrastructure/docker/services/router/etc/ssl/certs/*.pem' >> .gitignore
+```
+
+Then you need to [install mkcert](https://github.com/FiloSottile/mkcert#installation)
+and setup its root CA on your computer. Everyone that want to use your project
+will need to setup mkcert once if they never did it before:
+
+```bash
+mkcert -install
+```
+
+You can now generate trusted SSL certificates for your project. To ease the process
+for everyone, you can add this Invoke task:
+
+```python
+from distutils.spawn import find_executable
+
+
+@task
+def generate_certificates(c):
+    """
+    Generate SSL certificate with mkcert
+    """
+    with Builder(c):
+        if find_executable('mkcert') is None:
+            print(Fore.RED + 'You must install mkcert first')
+            return
+
+        path_caroot = c.run('mkcert -CAROOT', hide=True).stdout.strip()
+
+        if not os.path.isdir(path_caroot):
+            print(Fore.RED + 'You must have mkcert CA Root installed on your host with `mkcert -install` command')
+            return
+
+        c.run('mkcert -cert-file infrastructure/docker/services/router/etc/ssl/certs/cert.pem -key-file infrastructure/docker/services/router/etc/ssl/certs/key.pem %s "*.%s"' % (c.root_domain, c.root_domain))
+        print(Fore.GREEN + 'SSL certificate is now installed!')
+```
+
+Finally, run this new command, rebuild the infrastructure (with `inv up` or `inv start`)
+and your project will now run with locally trusted certificates.
+
+Ideally you will document this process in your project's README:
+
+> ### SSL certificates (first time only)
+>
+> Before running the application for the first time, you also need to generate SSL certificates
+> to make the application working in HTTPS out of the box.
+>
+> We suggest to use [`mkcert`](https://github.com/FiloSottile/mkcert#installation) to generate and sign your certificates.
+>
+> If you never installed CA root from mkcert before, you can do it by running `mkcert -install`. Now you can run the following
+> command to generate the SSL certificates for the project:
+>
+> ```bash
+>  inv generate-certificates
+> ```
 
 </details>
 
