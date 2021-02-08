@@ -37,6 +37,9 @@ def __extract_runtime_configuration(config):
 
     config['root_dir'] = os.path.dirname(os.path.abspath(__file__))
 
+    if os.path.exists(config['root_dir'] + '/infrastructure/docker/docker-compose.override.yml'):
+        config['docker_compose_files'] += ['docker-compose.override.yml']
+
     composer_cache_dir = run('composer global config cache-dir -q', warn=True, hide=True).stdout
     if composer_cache_dir:
         config['composer_cache_dir'] = composer_cache_dir.strip()
