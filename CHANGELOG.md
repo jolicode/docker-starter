@@ -3,6 +3,7 @@
 ## x.x.x (not released yet)
 
 * Migrate CI from Circle to GitHub Actions
+* Add support for `docker-compose.override.yml`
 
 ## 3.1.0 (2020-11-13)
 
