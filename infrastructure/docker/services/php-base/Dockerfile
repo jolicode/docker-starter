@@ -5,7 +5,7 @@ RUN apt-get update \
         ca-certificates \
         gnupg \
     && echo "deb https://packages.sury.org/php buster main" > /etc/apt/sources.list.d/sury.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B188E2B695BD4743
+    && apt-key adv --fetch-keys https://packages.sury.org/php/apt.gpg
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
