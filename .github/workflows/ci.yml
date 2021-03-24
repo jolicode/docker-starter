@@ -42,7 +42,6 @@ jobs:
                   path: |
                       ~/.cache/pip
                       ~/.cache/pipenv
-                      ~/.local/share/virtualenvs/
                   key: pip-pipenv-${{ hashFiles('Pipfile.lock') }}-${{ github.sha }}
                   restore-keys: |
                       pip-pipenv-
@@ -51,9 +50,8 @@ jobs:
             # Setup
             - uses: actions/setup-python@v2
               with:
-                  python-version: '3.x'
-            - run: pip install pipenv
-
+                  python-version: '3.9'
+            - run: pip3 install pipenv
             # Install the stack and run the tests
             - run: pipenv install --deploy --dev
             - run: pipenv run inv start && sleep 5
