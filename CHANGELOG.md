@@ -2,7 +2,10 @@
 
 ## x.x.x (not released yet)
 
-## 3.2.0 (2020-02-17)
+* Update Composer to version 2.0.11
+* Fixed apt key for Sury repository
+
+## 3.2.0 (2021-02-17)
 
 * Migrate CI from Circle to GitHub Actions
 * Add support for `docker-compose.override.yml`
