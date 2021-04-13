@@ -32,12 +32,6 @@ jobs:
             # Cache
 
             -
-                uses: satackey/action-docker-layer-caching@v0.0.11
-                continue-on-error: true
-                with:
-                    key: 'docker-{hash}'
-                    restore-keys: docker-
-            -
                 name: 'Cache Composer'
                 id: cache-composer
                 uses: actions/cache@v2
