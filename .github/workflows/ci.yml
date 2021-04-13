@@ -45,16 +45,6 @@ jobs:
                     path: ~/.composer/cache/
                     key: "composer-${{ hashFiles('**/composer.lock') }}"
                     restore-keys: composer-
-            -
-                name: 'Cache Pipenv'
-                uses: actions/cache@v2
-                with:
-                    path: |
-                        ~/.cache/pip
-                        ~/.cache/pipenv
-                    key: "pip-pipenv-${{ hashFiles('**/Pipfile.lock') }}"
-                    restore-keys: |
-                        pip-pipenv-
 
             # Setup
 
