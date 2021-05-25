@@ -2,6 +2,7 @@
 
 ## x.x.x (not released yet)
 
+* Update PHP to verion 8.0
 * Update Composer to version 2.0.11
 * Fixed apt key for Sury repository
 
