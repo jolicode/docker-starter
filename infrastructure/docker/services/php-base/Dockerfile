@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:10.9-slim
 
 RUN apt-get update \
     && apt install -y --no-install-recommends \

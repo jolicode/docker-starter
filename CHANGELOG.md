@@ -5,6 +5,7 @@
 * Update PHP to version 8.0
 * Update Composer to version 2.0.13
 * Fix APT key for Sury repository
+* Tag a strict version for the Debian base image
 
 ## 3.2.0 (2021-02-17)
 
