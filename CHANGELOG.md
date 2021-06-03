@@ -3,7 +3,7 @@
 ## x.x.x (not released yet)
 
 * Update PHP to version 8.0
-* Update Composer to version 2.0.13
+* Update Composer to version 2.1.0
 * Fix APT key for Sury repository
 * Fix the version of our debian base image
 
