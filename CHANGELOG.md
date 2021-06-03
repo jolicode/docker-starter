@@ -2,6 +2,8 @@
 
 ## x.x.x (not released yet)
 
+## 3.3.0 (2021-06-03)
+
 * Update PHP to version 8.0
 * Update Composer to version 2.1.0
 * Fix APT key for Sury repository
