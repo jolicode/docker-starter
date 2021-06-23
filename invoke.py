@@ -41,9 +41,9 @@ def __extract_runtime_configuration(config):
         config['docker_compose_files'] += ['docker-compose.override.yml']
 
     config['composer_cache_dir'] = composer_cache_dir
-    composer_cache_dir = run('composer global config cache-dir -q', warn=True, hide=True).stdout
-    if composer_cache_dir:
-        config['composer_cache_dir'] = composer_cache_dir.strip()
+    composer_cache_dir_from_host = run('composer global config cache-dir -q', warn=True, hide=True).stdout
+    if composer_cache_dir_from_host:
+        config['composer_cache_dir'] = composer_cache_dir_from_host.strip()
 
     if platform == "darwin":
         try:
