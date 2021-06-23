@@ -2,6 +2,8 @@
 
 ## x.x.x (not released yet)
 
+* Fix `COMPOSER_CACHE_DIR` default value when composer is not installed on host
+
 ## 3.3.0 (2021-06-03)
 
 * Update PHP to version 8.0
