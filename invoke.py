@@ -40,9 +40,10 @@ def __extract_runtime_configuration(config):
     if os.path.exists(config['root_dir'] + '/infrastructure/docker/docker-compose.override.yml'):
         config['docker_compose_files'] += ['docker-compose.override.yml']
 
-    composer_cache_dir = run('composer global config cache-dir -q', warn=True, hide=True).stdout
-    if composer_cache_dir:
-        config['composer_cache_dir'] = composer_cache_dir.strip()
+    config['composer_cache_dir'] = composer_cache_dir
+    composer_cache_dir_from_host = run('composer global config cache-dir -q', warn=True, hide=True).stdout
+    if composer_cache_dir_from_host:
+        config['composer_cache_dir'] = composer_cache_dir_from_host.strip()
 
     if platform == "darwin":
         try:
