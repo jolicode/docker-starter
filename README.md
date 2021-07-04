@@ -141,7 +141,7 @@ If you want to use Webpack Encore in a Symfony project,
             build: services/builder
             volumes:
                 - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
-            command: "yarn run dev-server --host 0.0.0.0 --port 9999 --hot --public https://encore.${PROJECT_ROOT_DOMAIN}/ --disable-host-check"
+            command: "yarn run dev-server --host 0.0.0.0 --port 9999 --hot --public https://encore.${PROJECT_ROOT_DOMAIN}/ --no-firewall"
             labels:
                 - "traefik.enable=true"
                 - "traefik.http.routers.${PROJECT_NAME}-encore.rule=Host(`encore.${PROJECT_ROOT_DOMAIN}`)"
