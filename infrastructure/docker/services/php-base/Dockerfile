@@ -1,10 +1,10 @@
-FROM debian:10.9-slim
+FROM debian:11.0-slim
 
 RUN apt-get update \
     && apt install -y --no-install-recommends \
         ca-certificates \
         gnupg \
-    && echo "deb https://packages.sury.org/php buster main" > /etc/apt/sources.list.d/sury.list \
+    && echo "deb https://packages.sury.org/php bullseye main" > /etc/apt/sources.list.d/sury.list \
     && apt-key adv --fetch-keys https://packages.sury.org/php/apt.gpg
 
 RUN apt-get update \
