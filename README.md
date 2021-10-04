@@ -71,7 +71,7 @@ mv README.{dist.md,md}
 Somes files will not be needed for your project and should be deleted:
 
 ```bash
-rm -rf .circleci/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-3.0.md
+rm -rf .github/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-3.0.md
 ```
 
 Also, in order to improve your usage of invoke scripts, you can install console autocompletion script.
