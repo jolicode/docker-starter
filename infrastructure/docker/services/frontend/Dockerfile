@@ -14,7 +14,8 @@ RUN apt-get update \
 
 RUN useradd -s /bin/false nginx
 
-COPY etc/. /etc/
+COPY etc/nginx/. /etc/nginx/
+COPY etc/service/. /etc/service/
 COPY php-configuration /etc/php/${PHP_VERSION}
 
 RUN phpenmod app-default \
