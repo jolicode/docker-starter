@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## x.x.x (not released yet)
+## 3.4.0 (2021-10-13)
 
 * Fix `COMPOSER_CACHE_DIR` default value when composer is not installed on host
 * Upgrade base to Debian Bullseye (11.0)
