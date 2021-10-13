@@ -4,6 +4,7 @@
 
 * Fix `COMPOSER_CACHE_DIR` default value when composer is not installed on host
 * Upgrade base to Debian Bullseye (11.0)
+* Document webpack 5+ integration
 
 ## 3.3.0 (2021-06-03)
 
