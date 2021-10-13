@@ -125,6 +125,9 @@ builder`) and run the following commands
 
 <summary>Read the cookbook</summary>
 
+Note: this cookbook documents the integration of webpack 5+. For older version
+of webpack, use previous version of the docker starter.
+
 If you want to use Webpack Encore in a Symfony project,
 
 1. Follow [instructions on symfony.com](https://symfony.com/doc/current/frontend/encore/installation.html#installing-encore-in-symfony-applications) to install webpack encore.
@@ -141,12 +144,48 @@ If you want to use Webpack Encore in a Symfony project,
             build: services/builder
             volumes:
                 - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
-            command: "yarn run dev-server --host 0.0.0.0 --port 9999 --hot --public https://encore.${PROJECT_ROOT_DOMAIN}/ --no-firewall"
+            command: "yarn run dev-server --hot --host 0.0.0.0 --allowed-hosts encore.${PROJECT_ROOT_DOMAIN} --allowed-hosts ${PROJECT_ROOT_DOMAIN} --client-web-socket-url-hostname encore.${PROJECT_ROOT_DOMAIN} --client-web-socket-url-port 443 --client-web-socket-url-protocol wss"
             labels:
                 - "traefik.enable=true"
                 - "traefik.http.routers.${PROJECT_NAME}-encore.rule=Host(`encore.${PROJECT_ROOT_DOMAIN}`)"
                 - "traefik.http.routers.${PROJECT_NAME}-encore.tls=true"
-                - "traefik.http.services.encore.loadbalancer.server.port=9999"
+                - "traefik.http.services.encore.loadbalancer.server.port=8080"
+    ```
+
+1. Update the webpack configuration to specify the asset location in **dev**:
+
+    ```diff
+    diff --git a/application/webpack.config.js b/application/webpack.config.js
+    index 056b04a..766c590 100644
+    --- a/application/webpack.config.js
+    +++ b/application/webpack.config.js
+    @@ -6,13 +6,22 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
+        Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
+    }
+
+    +
+    +if (Encore.isProduction()) {
+    +    Encore
+    +        // public path used by the web server to access the output path
+    +        .setPublicPath('/build')
+    +        // only needed for CDN's or sub-directory deploy
+    +        //.setManifestKeyPrefix('build/')
+    +} else {
+    +    Encore
+    +        .setPublicPath('https://encore.app.test/build')
+    +        .setManifestKeyPrefix('build/')
+    +}
+    +
+    Encore
+        // directory where compiled assets will be stored
+        .setOutputPath('public/build/')
+    -    // public path used by the web server to access the output path
+    -    .setPublicPath('/build')
+    -    // only needed for CDN's or sub-directory deploy
+    -    //.setManifestKeyPrefix('build/')
+
+        /*
+        * ENTRY CONFIG
     ```
 
 If the assets are not reachable, you may accept self signed certificate. To do so, open a new tab
