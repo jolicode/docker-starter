@@ -10,7 +10,7 @@ extra_domains = []
 project_directory = 'application'
 
 # Usually, you should not edit the file above this point
-php_version = '8.0'
+php_version = '8.1'
 docker_compose_files = [
     'docker-compose.yml',
     'docker-compose.worker.yml',
