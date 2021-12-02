@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.5.0 (not released yet)
+
+* Update PHP to version 8.1
+
 ## 3.4.0 (2021-10-13)
 
 * Fix `COMPOSER_CACHE_DIR` default value when composer is not installed on host
