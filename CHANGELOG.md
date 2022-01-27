@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## 3.5.0 (not released yet)
+## 3.6.0 (not yet released)
+
+## 3.5.0 (2022-01-27)
 
 * Update PHP to version 8.1
 * Generate SSL certificates with mkcert when available (self-signed otherwise)
