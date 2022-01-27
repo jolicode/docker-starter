@@ -74,7 +74,27 @@ inv start
 > Note: the first start of the stack should take a few minutes.
 
 The site is now accessible at the hostnames your have configured over HTTPS
-(you may need to accept self-signed SSL certificate).
+(you may need to accept self-signed SSL certificate if you do not have mkcert
+installed on your computer - see below).
+
+### SSL certificates
+
+This stack no longer embeds self-signed SSL certificates. Instead they will be
+generated the first time you start the infrastructure (`inv start`) or if you
+run `inv generate-certificates`. So *HTTPS will work out of the box*.
+
+If you have `mkcert` installed on your computer, it will be used to generate
+locally trusted certificates. See [`mkcert` documentation](https://github.com/FiloSottile/mkcert#installation)
+to understand how to install it. Do not forget to install CA root from mkcert
+by running `mkcert -install`.
+
+If you don't have `mkcert`, then self-signed certificates will instead be
+generated with openssl. You can configure [infrastructure/docker/services/router/openssl.cnf](infrastructure/docker/services/router/openssl.cnf)
+to tweak certificates.
+
+You can run `inv generate-certificates --force` to recreate new certificates
+if some were already generated. Remember to restart the infrastructure to make
+use of the new certificates with `inv up` or `inv start`.
 
 ### Builder
 

@@ -3,6 +3,7 @@
 ## 3.5.0 (not released yet)
 
 * Update PHP to version 8.1
+* Generate SSL certificates with mkcert when available (self-signed otherwise)
 
 ## 3.4.0 (2021-10-13)
 

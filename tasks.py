@@ -1,6 +1,7 @@
 from invoke import task
 from shlex import quote
 from colorama import Fore
+from distutils.spawn import find_executable
 import json
 import os
 import re
@@ -47,6 +48,7 @@ def start(c):
             c.run('docker-machine ssh dinghy "echo \'nameserver 8.8.8.8\' | sudo tee -a /etc/resolv.conf && sudo /etc/init.d/docker restart"')
 
     stop_workers(c)
+    generate_certificates(c)
     up(c)
     cache_clear(c)
     install(c)
@@ -199,6 +201,46 @@ def help(c):
         print('')
     except:
         pass
+
+
+@task
+def generate_certificates(c, force=False):
+    """
+    Generate SSL certificates (with mkcert if available or self-signed if not)
+    """
+    with Builder(c):
+        if (os.path.isfile(c.root_dir + '/infrastructure/docker/services/router/etc/ssl/certs/cert.pem') and not force):
+            print(Fore.GREEN + 'SSL certificates found in infrastructure/docker/services/router/etc/ssl/certs/*.pem.')
+            print('Run "inv generate-certificates --force" to generate new certificates.')
+            return
+
+        if force:
+            if os.path.isfile(c.root_dir + '/infrastructure/docker/services/router/etc/ssl/certs/cert.pem'):
+                print('Removing existing certificates in infrastructure/docker/services/router/etc/ssl/certs/*.pem.')
+                os.remove('infrastructure/docker/services/router/etc/ssl/certs/cert.pem')
+
+            if os.path.isfile(c.root_dir + '/infrastructure/docker/services/router/etc/ssl/certs/key.pem'):
+                os.remove('infrastructure/docker/services/router/etc/ssl/certs/key.pem')
+
+        if find_executable('mkcert') is not None:
+            path_caroot = c.run('mkcert -CAROOT', hide=True).stdout.strip()
+
+            if not os.path.isdir(path_caroot):
+                print(Fore.RED + 'You must have mkcert CA Root installed on your host with `mkcert -install` command')
+                return
+
+            c.run('mkcert -cert-file infrastructure/docker/services/router/etc/ssl/certs/cert.pem -key-file infrastructure/docker/services/router/etc/ssl/certs/key.pem %s "*.%s" %s' % (c.root_domain, c.root_domain, ' '.join(c.extra_domains)))
+            print(Fore.GREEN + 'Successfully generated SSL certificates with mkcert.')
+            if force:
+                print('Please restart the infrastructure to use the new certificates with "inv up" or "inv start".')
+            return
+
+        c.run('infrastructure/docker/services/router/generate-ssl.sh')
+
+        print(Fore.GREEN + 'Successfully generated self-signed SSL certificates in infrastructure/docker/services/router/etc/ssl/certs/*.pem.')
+        print(Fore.YELLOW + 'Consider installing mkcert to generate locally trusted SSL certificates and run "inv generate-certificates --force".')
+        if force:
+            print('Please restart the infrastructure to use the new certificates with "inv up" or "inv start".')
 
 
 def run_in_docker_or_locally_for_dinghy(c, command, no_deps=False):
