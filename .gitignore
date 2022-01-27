@@ -1,2 +1,3 @@
 *.pyc
 /infrastructure/docker/docker-compose.override.yml
+/infrastructure/docker/services/router/etc/ssl/certs/*.pem
