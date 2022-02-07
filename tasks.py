@@ -168,6 +168,7 @@ def destroy(c, force=False):
 
     with Builder(c):
         docker_compose(c, 'down --remove-orphans --volumes --rmi=local')
+        c.run('rm -f infrastructure/docker/services/router/etc/ssl/certs/*.pem')
 
 
 @task(default=True)
