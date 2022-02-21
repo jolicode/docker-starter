@@ -359,7 +359,8 @@ services:
     mercure:
         image: dunglas/mercure
         environment:
-            - "JWT_KEY=password"
+            - "MERCURE_PUBLISHER_JWT_KEY=password"
+            - "MERCURE_SUBSCRIBER_JWT_KEY=password"
             - "ALLOW_ANONYMOUS=1"
             - "CORS_ALLOWED_ORIGINS=*"
         labels:
