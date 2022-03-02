@@ -2,14 +2,13 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-ARG NODEJS_VERSION=14.x
-RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} bullseye main" > /etc/apt/sources.list.d/nodejs.list \
-    && apt-key adv --fetch-keys https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+ARG NODEJS_VERSION=16.x
+RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODEJS_VERSION} bullseye main" > /etc/apt/sources.list.d/nodejs.list
 
 # Default toys
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        curl \
         git \
         make \
         nodejs \
