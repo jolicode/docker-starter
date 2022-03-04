@@ -2,6 +2,8 @@
 
 ## 3.6.0 (not yet released)
 
+* Upgrade NodeJS to version 16.x LTS and remove deprecated apt-key usage
+
 ## 3.5.0 (2022-01-27)
 
 * Update PHP to version 8.1
