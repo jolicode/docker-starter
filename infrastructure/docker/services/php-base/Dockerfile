@@ -2,10 +2,11 @@ FROM debian:11.0-slim
 
 RUN apt-get update \
     && apt install -y --no-install-recommends \
+        curl \
         ca-certificates \
         gnupg \
-    && echo "deb https://packages.sury.org/php bullseye main" > /etc/apt/sources.list.d/sury.list \
-    && apt-key adv --fetch-keys https://packages.sury.org/php/apt.gpg
+    && curl -s https://packages.sury.org/php/apt.gpg | gpg --dearmor > /usr/share/keyrings/deb.sury.org-php.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php bullseye main" > /etc/apt/sources.list.d/sury.list
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
