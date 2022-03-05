@@ -38,7 +38,7 @@ the tasks `install`, `migrate` and `cache_clear` to your project.
 
 ## Usage documentation
 
-We provide a [README.dist.md](./README.dist.md) to explain what anyone need
+We provide a [README.dist.md](./README.dist.md) to explain what anyone needs
 to know to start and interact with the infrastructure.
 
 You should probably use this README.dist.md as a base for your project's README.md:
@@ -47,7 +47,7 @@ You should probably use this README.dist.md as a base for your project's README.
 mv README.{dist.md,md}
 ```
 
-Somes files will not be needed for your project and should be deleted:
+Some files will not be needed for your project and should be deleted:
 
 ```bash
 rm -rf .github/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-3.0.md
@@ -167,7 +167,7 @@ If you want to use Webpack Encore in a Symfony project,
         * ENTRY CONFIG
     ```
 
-If the assets are not reachable, you may accept self signed certificate. To do so, open a new tab
+If the assets are not reachable, you may accept self-signed certificate. To do so, open a new tab
 at https://encore.app.test and click on accept.
 
 </details>
@@ -226,20 +226,31 @@ In your application, you can use the following configuration:
 
 <summary>Read the cookbook</summary>
 
-In order to use RabbitMQ and its dashboard, you should add the following content
-to the `docker-compose.yml` file:
+In order to use RabbitMQ and its dashboard, you should add a new service:
 
+```Dockerfile
+# services/rabbitmq/Dockerfile
+FROM rabbitmq:3-management-alpine
+
+COPY etc/. /etc/
+```
+
+And you can add specific RabbitMQ configuration in the `services/rabbitmq/etc/rabbitmq/rabbitmq.conf` file:
+```
+# services/rabbitmq/etc/rabbitmq/rabbitmq.conf
+vm_memory_high_watermark.absolute = 1GB
+```
+
+Finally, add the following content to the `docker-compose.yml` file:
 ```yaml
 volumes:
     rabbitmq-data: {}
 
 services:
     rabbitmq:
-        image: rabbitmq:3-management-alpine
+        build: services/rabbitmq
         volumes:
             - rabbitmq-data:/var/lib/rabbitmq
-        environment:
-            - "RABBITMQ_VM_MEMORY_HIGH_WATERMARK=1024MiB"
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.rule=Host(`rabbitmq.${PROJECT_ROOT_DOMAIN}`)"
@@ -603,7 +614,7 @@ index a1c26c4..0000000
 
 </details>
 
-### How to solves build dependencies
+### How to solve build dependencies
 
 <details>
 
