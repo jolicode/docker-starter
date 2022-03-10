@@ -1,8 +1,12 @@
 # CHANGELOG
 
-## 3.6.0 (not yet released)
+## 3.7.0 (not released yet)
+
+## 3.6.0 (2022-03-10)
 
 * Upgrade NodeJS to version 16.x LTS and remove deprecated apt-key usage
+* Various fix in the documentation
+* Remove certificates when destroying infrastructure
 
 ## 3.5.0 (2022-01-27)
 
