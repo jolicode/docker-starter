@@ -29,17 +29,6 @@ jobs:
             -
                 uses: actions/checkout@v2
 
-            # Cache
-
-            -
-                name: 'Cache Composer'
-                id: cache-composer
-                uses: actions/cache@v2
-                with:
-                    path: ~/.composer/cache/
-                    key: "composer-${{ hashFiles('**/composer.lock') }}"
-                    restore-keys: composer-
-
             # Setup
 
             -
