@@ -3,6 +3,9 @@
 ## 3.7.0 (not released yet)
 
 * Add documentation cookbook for installing redirection.io
+* Upgrade to Traefik v2.7.0
+* Upgrade to PostgreSQL v14
+* Upgrade to Composer v2.3
 
 ## 3.6.0 (2022-03-10)
 
