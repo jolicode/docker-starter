@@ -389,6 +389,90 @@ MERCURE_JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjc
 
 </details>
 
+### How to add redirection.io
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use redirection.io, you should add the following content to the
+`docker-compose.yml` file to run the agent:
+
+```yaml
+services:
+    redirectionio-agent:
+        build: services/redirectionio-agent
+```
+
+Add the following file `infrastructure/docker/services/redirectionio-agent/Dockerfile`:
+
+```Dockerfile
+FROM alpine:3.12 as alpine
+
+WORKDIR /tmp
+
+RUN apk add --no-cache wget ca-certificates \
+    && wget https://packages.redirection.io/dist/stable/2/any/redirectionio-agent-latest_any_amd64.tar.gz \
+    && tar -xzvf redirectionio-agent-latest_any_amd64.tar.gz
+
+FROM scratch
+
+# Binary copied from tar
+COPY --from=alpine /tmp/redirection-agent/redirectionio-agent /usr/local/bin/redirectionio-agent
+
+# Configuration, can be replaced by your own
+COPY etc /etc
+
+# Root SSL Certificates, needed as we do HTTPS requests to our service
+COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+CMD ["/usr/local/bin/redirectionio-agent"]
+```
+
+Add `infrastructure/docker/services/redirectionio-agent/etc/redirectionio/agent.yml`:
+
+```yaml
+instance_name: "my-instance-dev" ### You may want to change this
+listen: 0.0.0.0:10301
+```
+
+Then you'll need `wget`. In
+`infrastructure/docker/services/frontend/Dockerfile`:
+
+```Dockerfile
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+```
+
+You can group this command with another one.
+
+Then, **after** installing nginx, you need to install the module:
+
+```Dockerfile
+RUN wget -q -O - https://packages.redirection.io/gpg.key | apt-key add - \
+    && echo "deb https://packages.redirection.io/deb/stable/2 focal main" | tee -a /etc/apt/sources.list.d/packages_redirection_io_deb.list \
+    && apt-get update \
+    && apt-get install libnginx-mod-redirectionio \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+```
+
+Finally, you need to edit
+`infrastructure/docker/services/frontend/etc/nginx/nginx.conf` to add the
+following configuration in the `server` block:
+
+```
+redirectionio_pass redirectionio-agent:10301;
+redirectionio_project_key "AAAAAAAAAAAAAAAA:BBBBBBBBBBBBBBBB";
+```
+
+**Don't forget to change the project key**.
+
+</details>
+
 ### How to add Blackfire.io
 
 <details>

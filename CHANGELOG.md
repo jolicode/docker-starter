@@ -2,6 +2,8 @@
 
 ## 3.7.0 (not released yet)
 
+* Add documentation cookbook for installing redirection.io
+
 ## 3.6.0 (2022-03-10)
 
 * Upgrade NodeJS to version 16.x LTS and remove deprecated apt-key usage
