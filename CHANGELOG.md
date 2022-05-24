@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## 3.7.0 (not released yet)
+## 3.8.0 (not released yet)
+
+## 3.7.0 (2022-05-24)
 
 * Add documentation cookbook for installing redirection.io
 * Upgrade to Traefik v2.7.0
