@@ -1,3 +1,3 @@
-FROM traefik:v2.2
+FROM traefik:v2.7
 
 COPY etc/. /etc/
