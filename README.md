@@ -594,6 +594,42 @@ services:
 
 </details>
 
+### How to pg_activity for monitoring PostgreSQL
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to install pg_activity, you should add the following content to the
+`infrastructure/docker/services/postgres/Dockerfile` file:
+
+```Dockerfile
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        pg-activity \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+```
+
+Then, you can add the following content to the `tasks.py` file:
+
+```py
+@task
+def pg_activity(c):
+    """
+    Monitor PostgreSQL
+    """
+    docker_compose(c, 'exec postgres pg_activity -U app', bare_run=True)
+```
+
+Finally you can use the following command:
+
+```
+inv pg-activity
+```
+
+</details>
+
 ### How to use MySQL instead of PostgreSQL
 
 <details>

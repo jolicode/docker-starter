@@ -2,6 +2,8 @@
 
 ## 3.8.0 (not released yet)
 
+* Add documentation cookbook for using pg_activity
+
 ## 3.7.0 (2022-05-24)
 
 * Add documentation cookbook for installing redirection.io
