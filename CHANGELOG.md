@@ -3,6 +3,7 @@
 ## 3.8.0 (not released yet)
 
 * Add documentation cookbook for using pg_activity
+* Forward CI env vars in Docker containers
 
 ## 3.7.0 (2022-05-24)
 
