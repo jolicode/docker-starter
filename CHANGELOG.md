@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## 3.8.0 (not released yet)
+## 3.9.0 (not released yet)
+
+## 3.8.0 (2022-06-15)
 
 * Add documentation cookbook for using pg_activity
 * Forward CI env vars in Docker containers
