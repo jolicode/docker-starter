@@ -11,6 +11,7 @@ name: CI
 
 jobs:
     check-python-cs:
+        name: Check Python CS
         runs-on: ubuntu-latest
         steps:
             -
@@ -24,6 +25,11 @@ jobs:
             -
                 run: 'pycodestyle --ignore=E501,W605,E722 invoke.py tasks.py'
     ci:
+        name: Test with PHP ${{ matrix.php-version }}
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: ['7.4', '8.0', '8.1']
         runs-on: ubuntu-latest
         steps:
             -
@@ -38,6 +44,9 @@ jobs:
             -
                 run: 'pip3 install pipenv'
 
+            -   name: Set PHP version
+                run: sed -i "s/^php_version = .*/php_version = '${{ matrix.php-version }}'/" invoke.py
+
             # Install the stack and run the tests
 
             -
@@ -50,6 +59,7 @@ jobs:
                     set -e
                     set -o pipefail
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
+                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "${{ matrix.php-version }}"
             -
                 name: 'Test communication with DB'
                 run: |
