@@ -20,6 +20,7 @@ services_to_build_first = [
     'builder',
 ]
 dinghy = False
+macos = False
 power_shell = False
 user_id = 1000
 root_dir = '.'
@@ -46,6 +47,8 @@ def __extract_runtime_configuration(config):
         config['composer_cache_dir'] = composer_cache_dir_from_host.strip()
 
     if platform == "darwin":
+        config['macos'] = True
+
         try:
             docker_kernel = run('docker version --format "{{.Server.KernelVersion}}"', hide=True).stdout
         except:

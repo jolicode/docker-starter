@@ -68,9 +68,9 @@ def install(c):
         if os.path.isfile(c.root_dir + '/' + c.project_directory + '/composer.json'):
             docker_compose_run(c, 'composer install -n --prefer-dist --optimize-autoloader', no_deps=True)
         if os.path.isfile(c.root_dir + '/' + c.project_directory + '/yarn.lock'):
-            run_in_docker_or_locally_for_dinghy(c, 'yarn', no_deps=True)
+            run_in_docker_or_locally_for_mac(c, 'yarn', no_deps=True)
         elif os.path.isfile(c.root_dir + '/' + c.project_directory + '/package.json'):
-            run_in_docker_or_locally_for_dinghy(c, 'npm install', no_deps=True)
+            run_in_docker_or_locally_for_mac(c, 'npm install', no_deps=True)
 
 
 @task
@@ -244,11 +244,11 @@ def generate_certificates(c, force=False):
             print('Please restart the infrastructure to use the new certificates with "inv up" or "inv start".')
 
 
-def run_in_docker_or_locally_for_dinghy(c, command, no_deps=False):
+def run_in_docker_or_locally_for_mac(c, command, no_deps=False):
     """
     Mac users have a lot of problems running Yarn / Webpack on the Docker stack so this func allow them to run these tools on their host
     """
-    if c.dinghy:
+    if c.macos:
         with c.cd(c.project_directory):
             c.run(command)
     else:
