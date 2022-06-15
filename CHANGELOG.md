@@ -5,6 +5,7 @@
 * Add documentation cookbook for using pg_activity
 * Forward CI env vars in Docker containers
 * Run the npm/yarn/webpack commands on the host for all mac users (even the ones not using Dinghy)
+* Tests with PHP 7.4, 8.0, and 8.1
 
 ## 3.7.0 (2022-05-24)
 
