@@ -2,19 +2,23 @@
     <img width="500" height="180" src="https://jolicode.com/media/original/docker-starter-logo.png" alt="Docker starter kit logo" />
 </p>
 
-# JoliCode's Docker starter kit
+<p align="center">
+<i>Collection of Dockerfile and docker-compose configurations wrapped in an easy to use command line, oriented for PHP projects.</i>
+</p>
+
+## What is Docker Starter Kit
+
+This repository provide a Docker infrastructure for your PHP projects with built-in support for HTTPS, custom domain, databases, workers... 
+and is used at the pedestal for our projects here at [JoliCode](https://jolicode.com/).
+
+Learn more about it and why we created and open-sourced this starter-kit in our blog posts: 
+[in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit) or 
+[in French 🇫🇷](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker).
 
 **WARNING**: You are reading the README of version 3 that uses [Invoke](https://www.pyinvoke.org/).
 
 * If you are using [Fabric](https://www.fabfile.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v2.0.0);
-
 * If you want to migrate from docker-starter v2.x to v3.0, you can read the [dedicated guide](./UPGRADE-3.0.md);
-
-## Introduction
-
-Read [in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit)
-or [in French 🇫🇷](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker)
-why we created and open-sourced this starter-kit.
 
 ## Project configuration
 
@@ -33,15 +37,26 @@ application will be available;
 * `project_directory` (optional, default: `application`): This is the host
 directory containing your PHP application.
 
+For example:
+
+```py
+project_name = 'foobar'
+root_domain = project_name + '.test'
+extra_domains = ['api.' + root_domain]
+project_directory = 'application'
+```
+
+Will give you `https://foobar.test` and `https://api.foobar.test` pointing at your `application/` directory.
+
 *Note*: Some Invoke tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project.
 
 ## Usage documentation
 
-We provide a [README.dist.md](./README.dist.md) to explain what anyone needs
+We provide a [README.dist.md](./README.dist.md) to bootstrap your project documentation, with everything you need 
 to know to start and interact with the infrastructure.
 
-You should probably use this README.dist.md as a base for your project's README.md:
+To use this README.dist.md as a base for your project's README.md:
 
 ```bash
 mv README.{dist.md,md}
