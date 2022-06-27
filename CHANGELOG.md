@@ -2,6 +2,9 @@
 
 ## 3.9.0 (not released yet)
 
+* Increase the number of FPM worker from 4 to 25
+* Enabled PHP FPM status page on `/php-fpm-status`
+
 ## 3.8.0 (2022-06-15)
 
 * Add documentation cookbook for using pg_activity
