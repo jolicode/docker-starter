@@ -594,6 +594,44 @@ services:
 
 </details>
 
+### How to use PHP FPM status page?
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+If you wan to use the [PHP FPM status
+page](https://www.php.net/manual/en/fpm.status.php) you need to remove a
+configuration block in the
+`infrastructure/docker/services/frontend/etc/nginx/nginx.conf` file:
+
+```diff
+-        # Remove this block if you want to access to PHP FPM monitoring
+-        # dashboarsh (on URL: /php-fpm-status). WARNING: on production, you must
+-        # secure this page (by user IP address, with a password, for example)
+-        location ~ ^/php-fpm-status$ {
+-            deny all;
+-        }
+-
+```
+
+And if your application uses the front controller pattern, and you want to see
+the real request URI, you also need to uncomment the following configuration
+block:
+
+```diff
+-            # # Uncomment if you want to use /php-fpm-status endpoint **with**
+-            # # real request URI. It may have some side effects, that's why it's
+-            # # commented by default
+-            # fastcgi_param SCRIPT_NAME $request_uri;
++            # Uncomment if you want to use /php-fpm-status endpoint **with**
++            # real request URI. It may have some side effects, that's why it's
++            # commented by default
++            fastcgi_param SCRIPT_NAME $request_uri;
+```
+
+</details>
+
 ### How to pg_activity for monitoring PostgreSQL
 
 <details>
