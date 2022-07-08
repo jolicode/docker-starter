@@ -467,8 +467,8 @@ You can group this command with another one.
 Then, **after** installing nginx, you need to install the module:
 
 ```Dockerfile
-RUN wget -q -O - https://packages.redirection.io/gpg.key | apt-key add - \
-    && echo "deb https://packages.redirection.io/deb/stable/2 focal main" | tee -a /etc/apt/sources.list.d/packages_redirection_io_deb.list \
+RUN wget -q -O - https://packages.redirection.io/gpg.key | gpg --dearmor > /usr/share/keyrings/redirection.io.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/redirection.io.gpg] https://packages.redirection.io/deb/stable/2 focal main" | tee -a /etc/apt/sources.list.d/packages_redirection_io_deb.list \
     && apt-get update \
     && apt-get install libnginx-mod-redirectionio \
     && apt-get clean \
@@ -525,8 +525,8 @@ You can group this command with another one.
 Then, **after** installing PHP, you need to install the probe:
 
 ```Dockerfile
-RUN sh -c 'wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add -' \
-    && sh -c 'echo "deb http://packages.blackfire.io/debian any main" > /etc/apt/sources.list.d/blackfire.list' \
+RUN wget -q -O - https://packages.blackfire.io/gpg.key | gpg --dearmor > /usr/share/keyrings/blackfire.io.gpg \
+    && sh -c 'echo "deb [signed-by=/usr/share/keyrings/blackfire.io.gpg] http://packages.blackfire.io/debian any main" > /etc/apt/sources.list.d/blackfire.list' \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         blackfire-php \
