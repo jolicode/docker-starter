@@ -29,7 +29,7 @@ RUN adduser app sudo \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.3.9 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.4.0 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
