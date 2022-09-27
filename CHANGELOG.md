@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.0.0 (not released yet)
+
+* Use `docker compose` instead of `docker-compose`.
+
 ## 3.9.0 (not released yet)
 
 * Update documentation cookbook for installing redirection.io and blackfire to remove deprecated apt-key usage

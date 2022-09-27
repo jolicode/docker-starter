@@ -1,6 +1,6 @@
 ARG PROJECT_NAME
 
-FROM ${PROJECT_NAME}_php-base
+FROM ${PROJECT_NAME}-php-base
 
 ARG NODEJS_VERSION=16.x
 RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg \
