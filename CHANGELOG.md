@@ -3,7 +3,7 @@
 ## 3.9.0 (not released yet)
 
 * Update documentation cookbook for installing redirection.io and blackfire to remove deprecated apt-key usage
-* Update Composer to version 2.4.2
+* Update Composer to version 2.4.3
 * Increase the number of FPM worker from 4 to 25
 * Enabled PHP FPM status page on `/php-fpm-status`
 
