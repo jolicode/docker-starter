@@ -6,6 +6,7 @@
 * Update Composer to version 2.5.0
 * Increase the number of FPM worker from 4 to 25
 * Enabled PHP FPM status page on `/php-fpm-status`
+* Added support for PHP 8.2
 
 ## 3.8.0 (2022-06-15)
 
