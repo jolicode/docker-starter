@@ -5,6 +5,7 @@ RUN apt-get update \
         curl \
         ca-certificates \
         gnupg \
+    && apt-key adv --fetch-keys 'https://packages.sury.org/php/apt.gpg' \
     && curl -s https://packages.sury.org/php/apt.gpg | gpg --dearmor > /usr/share/keyrings/deb.sury.org-php.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php bullseye main" > /etc/apt/sources.list.d/sury.list
 
