@@ -3,13 +3,13 @@
 </p>
 
 <p align="center">
-<i>Collection of Dockerfile and docker-compose configurations wrapped in an easy to use command line, oriented for PHP projects.</i>
+<i>Collection of Dockerfile and docker-compose configurations wrapped in an easy-to-use command line, oriented for PHP projects.</i>
 </p>
 
 ## What is Docker Starter Kit
 
-This repository provide a Docker infrastructure for your PHP projects with built-in support for HTTPS, custom domain, databases, workers...
-and is used at the pedestal for our projects here at [JoliCode](https://jolicode.com/).
+This repository provides a Docker infrastructure for your PHP projects with built-in support for HTTPS, custom domain, databases, workers...
+and is used as a foundation for our projects here at [JoliCode](https://jolicode.com/).
 
 Learn more about it and why we created and open-sourced this starter-kit in our blog posts:
 [in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit) or
@@ -23,7 +23,7 @@ Learn more about it and why we created and open-sourced this starter-kit in our 
 
 ## Project configuration
 
-Before executing any command, you need to configure few parameters in the
+Before executing any command, you need to configure a few parameters in the
 `invoke.py` file:
 
 * `project_name` (**required**): This will be used to prefix all docker
@@ -632,7 +632,7 @@ services:
 
 <summary>Read the cookbook</summary>
 
-In order to set up workers, you should define their service in the `docker-compose.worker.yml` file:
+In order to set up workers, you should define their services in the `docker-compose.worker.yml` file:
 
 ```yaml
 services:
@@ -653,7 +653,7 @@ services:
 
 <summary>Read the cookbook</summary>
 
-If you wan to use the [PHP FPM status
+If you want to use the [PHP FPM status
 page](https://www.php.net/manual/en/fpm.status.php) you need to remove a
 configuration block in the
 `infrastructure/docker/services/frontend/etc/nginx/nginx.conf` file:
@@ -859,13 +859,13 @@ This starter kit is compatible with Docker for Windows, so you can enjoy native 
 
 <summary>Read the cookbook</summary>
 
-Let's say you have a container (`frontend`) that responds to many hostname:
+Let's say you have a container (`frontend`) that responds to many hostnames:
 `app.test`, `api.app.test`, `admin.app.test`. And you have another container
-(`builder`) that need to call the `frontend` with a specific hostname - or with
+(`builder`) that needs to call the `frontend` with a specific hostname - or with
 HTTPS. This is usually the case when you have a functional test suite.
 
 To enable this feature, you need to add `extra_hosts` to the `builder` container
-like following:
+like so:
 
 ```yaml
 services:
