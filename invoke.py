@@ -9,7 +9,7 @@ extra_domains = []
 # This is the host directory containing your PHP application
 project_directory = 'application'
 
-# Usually, you should not edit the file above this point
+# Usually, you should not edit the file below this point
 php_version = '8.1'
 docker_compose_files = [
     'docker-compose.yml',
@@ -61,7 +61,7 @@ def __extract_runtime_configuration(config):
     elif platform in ["win32", "win64"]:
         config['docker_compose_files'] += ['docker-compose.docker-for-x.yml']
         config['power_shell'] = True
-        # # Python can't set the vars correctly on PowerShell and local() always calls cmd.exe
+        # Python can't set the vars correctly on PowerShell and local() always calls cmd.exe
         shellProjectName = run('echo %PROJECT_NAME%', hide=True).stdout
 
         if (shellProjectName.rstrip() != config['project_name']):
