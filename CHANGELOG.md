@@ -3,6 +3,7 @@
 ## 3.10.0 (not released yet)
 
 * Fix workers detection in docker v23
+* Use NodeJS 18.x LTS version
 
 ## 3.9.0 (2022-12-21)
 
