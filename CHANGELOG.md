@@ -3,6 +3,7 @@
 ## 3.10.0 (not released yet)
 
 * Fix workers detection in docker v23
+* Update Composer to version 2.5.5
 
 ## 3.9.0 (2022-12-21)
 
