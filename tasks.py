@@ -313,6 +313,9 @@ def get_workers(c):
     Find worker containers for the current project
     """
     cmd = c.run('docker ps -a --filter "label=docker-starter.worker.%s" --quiet' % c.project_name, hide='both')
+    if re.compile('^NAMES').search(cmd.stdout):
+        return list(filter(None, cmd.stdout.rsplit("\n")))[1::]
+
     return list(filter(None, cmd.stdout.rsplit("\n")))
 
 
