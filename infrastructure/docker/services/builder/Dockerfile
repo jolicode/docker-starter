@@ -2,7 +2,7 @@ ARG PROJECT_NAME
 
 FROM ${PROJECT_NAME}_php-base
 
-ARG NODEJS_VERSION=16.x
+ARG NODEJS_VERSION=18.x
 RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODEJS_VERSION} bullseye main" > /etc/apt/sources.list.d/nodejs.list
 
@@ -29,7 +29,7 @@ RUN adduser app sudo \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.5.0 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.5.5 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
