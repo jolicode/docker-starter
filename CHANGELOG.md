@@ -2,6 +2,8 @@
 
 ## 3.10.0 (not released yet)
 
+* Fix workers detection in docker v23
+
 ## 3.9.0 (2022-12-21)
 
 * Update documentation cookbook for installing redirection.io and Blackfire to
