@@ -3,6 +3,7 @@
 ## 3.10.0 (not released yet)
 
 * Fix workers detection in docker v23
+* Update Invoke to version 2.1
 * Update Composer to version 2.5.5
 * Upgrade NodeJS to 18.x LTS version
 

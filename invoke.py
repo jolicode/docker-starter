@@ -33,10 +33,11 @@ def __extract_runtime_configuration(config):
     from sys import platform
     import os
     import sys
+    import inspect
     from colorama import init, Fore
     init(autoreset=True)
 
-    config['root_dir'] = os.path.dirname(os.path.abspath(__file__))
+    config['root_dir'] = os.path.dirname(inspect.getfile(lambda: None))
 
     if os.path.exists(config['root_dir'] + '/infrastructure/docker/docker-compose.override.yml'):
         config['docker_compose_files'] += ['docker-compose.override.yml']
