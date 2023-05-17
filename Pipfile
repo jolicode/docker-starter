@@ -4,7 +4,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-docker-compose = ">=1.23.0"
 docker = "*"
 invoke = ">=1.4"
 # https://github.com/docker/compose/issues/6839
