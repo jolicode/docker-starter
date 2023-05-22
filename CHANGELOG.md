@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## 3.10.0 (not released yet)
+## 3.11.0 (not released yet)
+
+## 3.10.0 (2023-05-22)
 
 * Fix workers detection in docker v23
 * Update Invoke to version 2.1
