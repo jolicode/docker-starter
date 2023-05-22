@@ -3,7 +3,9 @@ version: '3.7'
 # this is a template to factorize the service definitions
 x-services-templates:
     worker_base: &worker_base
-        build: services/worker
+        build:
+            context: services/php
+            target: worker
         depends_on:
             - postgres
             #- rabbitmq

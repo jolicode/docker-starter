@@ -4,11 +4,10 @@ volumes:
     builder-data: {}
 
 services:
-    php-base:
-        build: services/php-base
-
     builder:
-        build: services/builder
+        build:
+            context: services/php
+            target: builder
         depends_on:
             - postgres
         environment:

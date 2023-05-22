@@ -20,9 +20,6 @@ def build(c):
     command += ' --build-arg PHP_VERSION=%s' % c.php_version
 
     with Builder(c):
-        for service in c.services_to_build_first:
-            docker_compose(c, '%s %s' % (command, service))
-
         docker_compose(c, command)
 
 
