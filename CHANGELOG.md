@@ -6,6 +6,7 @@
 * Update Invoke to version 2.1
 * Update Composer to version 2.5.5
 * Upgrade NodeJS to 18.x LTS version
+* Migrate to Compose V2
 
 ## 3.9.0 (2022-12-21)
 
