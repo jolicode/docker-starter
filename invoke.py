@@ -15,10 +15,6 @@ docker_compose_files = [
     'docker-compose.yml',
     'docker-compose.worker.yml',
 ]
-services_to_build_first = [
-    'php-base',
-    'builder',
-]
 dinghy = False
 macos = False
 power_shell = False

@@ -11,7 +11,9 @@ services:
         network_mode: host
 
     frontend:
-        build: services/frontend
+        build:
+            context: services/php
+            target: frontend
         depends_on:
             - postgres
         volumes:

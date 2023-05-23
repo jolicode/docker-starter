@@ -137,7 +137,9 @@ If you want to use Webpack Encore in a Symfony project,
     ```yaml
     services:
         encore:
-            build: services/builder
+            build:
+                context: services/php
+                target: builder
             volumes:
                 - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
             command: "yarn run dev-server --hot --host 0.0.0.0 --allowed-hosts encore.${PROJECT_ROOT_DOMAIN} --allowed-hosts ${PROJECT_ROOT_DOMAIN} --client-web-socket-url-hostname encore.${PROJECT_ROOT_DOMAIN} --client-web-socket-url-port 443 --client-web-socket-url-protocol wss"
@@ -243,10 +245,10 @@ In your application, you can use the following configuration:
 
 <summary>Read the cookbook</summary>
 
-Add the php extension `gd` to `infrastructure/docker/services/php-base/Dockerfile`
+Add the php extension `gd` to `infrastructure/docker/services/php/Dockerfile`
 
 ```
-php${PHP_VERSION}-gd \ 
+php${PHP_VERSION}-gd \
 ```
 
 If you want to create a new Sylius project, you need to enter a builder (`inv
@@ -272,7 +274,7 @@ builder`) and run the following commands
     ```
 
 </details>
-    
+
 ### How to add RabbitMQ and its dashboard
 
 <details>
@@ -312,7 +314,7 @@ services:
 ```
 
 In order to publish and consume messages with PHP, you need to install the
-`php${PHP_VERSION}-amqp` in the `php-base` image.
+`php${PHP_VERSION}-amqp` in the `php` image.
 
 Then, you will be able to browse:
 
@@ -361,7 +363,7 @@ services:
 ```
 
 In order to communicate with Redis, you need to install the
-`php${PHP_VERSION}-redis` in the `php-base` image.
+`php${PHP_VERSION}-redis` in the `php` image.
 
 Then, you will be able to browse:
 
@@ -490,7 +492,7 @@ listen: 0.0.0.0:10301
 ```
 
 Then you'll need `wget`. In
-`infrastructure/docker/services/frontend/Dockerfile`:
+`infrastructure/docker/services/php/Dockerfile`, in stage `frontend`:
 
 ```Dockerfile
 RUN apt-get update \
@@ -514,7 +516,7 @@ RUN wget -q -O - https://packages.redirection.io/gpg.key | gpg --dearmor > /usr/
 ```
 
 Finally, you need to edit
-`infrastructure/docker/services/frontend/etc/nginx/nginx.conf` to add the
+`infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf` to add the
 following configuration in the `server` block:
 
 ```
@@ -548,7 +550,7 @@ services:
 ```
 
 Then you'll need `wget`. In
-`infrastructure/docker/services/php-base/Dockerfile`:
+`infrastructure/docker/services/php/Dockerfile`, in stage `base`:
 
 ```Dockerfile
 RUN apt-get update \
@@ -574,7 +576,7 @@ RUN wget -q -O - https://packages.blackfire.io/gpg.key | gpg --dearmor > /usr/sh
 ```
 
 If you want to profile HTTP calls, you need to enable the probe with PHP-FPM.
-So in `infrastructure/docker/services/frontend/Dockerfile`:
+So in `infrastructure/docker/services/php/Dockerfile`:
 
 ```Dockerfile
 RUN phpenmod blackfire
@@ -593,10 +595,9 @@ Here also, You can group this command with another one.
 In order to set up crontab, you should add a new container:
 
 ```Dockerfile
-# services/cron/Dockerfile
-ARG PROJECT_NAME
+# services/php/Dockerfile
 
-FROM ${PROJECT_NAME}_php-base
+FROM php-base as cron
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -610,7 +611,7 @@ RUN crontab /etc/cron.d/crontab
 CMD ["cron", "-f"]
 ```
 
-And you can add all your crons in the `services/cron/crontab` file:
+And you can add all your crons in the `services/php/crontab` file:
 ```crontab
 * * * * * su app -c "/usr/local/bin/php -r 'echo time().PHP_EOL;'" > /proc/1/fd/1 2>&1
 ```
@@ -619,7 +620,9 @@ Finally, add the following content to the `docker-compose.yml` file:
 ```yaml
 services:
     cron:
-        build: services/cron
+        build:
+            context: services/php
+            target: cron
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
 ```
@@ -656,7 +659,7 @@ services:
 If you want to use the [PHP FPM status
 page](https://www.php.net/manual/en/fpm.status.php) you need to remove a
 configuration block in the
-`infrastructure/docker/services/frontend/etc/nginx/nginx.conf` file:
+`infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf` file:
 
 ```diff
 -        # Remove this block if you want to access to PHP FPM monitoring
@@ -801,10 +804,10 @@ index 0000000..e9e0245
 +FROM mariadb:10.4
 +
 +ENV MYSQL_ALLOW_EMPTY_PASSWORD=1
-diff --git a/infrastructure/docker/services/php-base/Dockerfile b/infrastructure/docker/services/php-base/Dockerfile
+diff --git a/infrastructure/docker/services/php/Dockerfile b/infrastructure/docker/services/php/Dockerfile
 index 56e1835..95fee78 100644
---- a/infrastructure/docker/services/php-base/Dockerfile
-+++ b/infrastructure/docker/services/php-base/Dockerfile
+--- a/infrastructure/docker/services/php/Dockerfile
++++ b/infrastructure/docker/services/php/Dockerfile
 @@ -24,7 +24,7 @@ RUN apk add --no-cache \
      php${PHP_VERSION}-intl \
      php${PHP_VERSION}-mbstring \
@@ -822,23 +825,6 @@ index a1c26c4..0000000
 -
 -EXPOSE 5432
 ```
-
-</details>
-
-### How to solve build dependencies
-
-<details>
-
-<summary>Read the cookbook</summary>
-
-Docker-compose is not a tool to build images. This is why you can hit the
-following bug:
-
-> ERROR: Service 'frontend' failed to build: pull access denied for app_basephp, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
-
-In order to fix this issue, you can update the `services_to_build_first` variable
-in the `invoke.py` file. This will force docker-compose to build these
-services first.
 
 </details>
 
