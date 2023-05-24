@@ -69,10 +69,6 @@ CMD ["runsvdir", "-P", "/etc/service"]
 
 FROM php-base as worker
 
-COPY worker/entrypoint.sh /var/lib/entrypoint.sh
-
-ENTRYPOINT ["/var/lib/entrypoint.sh"]
-
 FROM php-base as builder
 
 ARG NODEJS_VERSION=18.x

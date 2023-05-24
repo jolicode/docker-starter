@@ -1,29 +1,29 @@
-name: CI
+name: Continuous Integration
 
 'on':
     push:
-        branches:
-            - main
-    pull_request: null
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main" ]
     schedule:
-        -
-            cron: '0 0 * * MON'
+        - cron: '0 0 * * MON'
+
+permissions:
+    contents: read
 
 jobs:
-    check-python-cs:
-        name: Check Python CS
+    check-cs:
+        name: Check Coding Standards
         runs-on: ubuntu-latest
         steps:
-            -
-                uses: actions/checkout@v3
-            -
-                uses: actions/setup-python@v4
-                with:
-                    python-version: '3.x'
-            -
-                run: 'pip install pycodestyle'
-            -
-                run: 'pycodestyle --ignore=E501,W605,E722 invoke.py tasks.py'
+        -   name: Checkout
+            uses: actions/checkout@v3
+
+        -   name: PHP-CS-Fixer
+            uses: docker://oskarstark/php-cs-fixer-ga
+            with:
+                args: --config=.php-cs-fixer.php --diff --dry-run
+
     ci:
         name: Test with PHP ${{ matrix.php-version }}
         strategy:
@@ -31,6 +31,10 @@ jobs:
             matrix:
                 php-version: ['7.4', '8.0', '8.1', '8.2']
         runs-on: ubuntu-latest
+        env:
+            DS_PHP_VERSION: ${{ matrix.php-version }}
+            BUILDKIT_PROGRESS: plain
+            CI: 1
         steps:
             -
                 uses: actions/checkout@v3
@@ -38,21 +42,20 @@ jobs:
             # Setup
 
             -
-                uses: actions/setup-python@v4
+                name: Setup PHP
+                uses: shivammathur/setup-php@v2
                 with:
-                    python-version: '3.9'
-            -
-                run: 'pip3 install pipenv'
+                    php-version: 8.2
+                    tools: jolicode/castor
 
-            -   name: Set PHP version
-                run: sed -i "s/^php_version = .*/php_version = '${{ matrix.php-version }}'/" invoke.py
-
-            # Install the stack and run the tests
+            # -
+            #     name: 'Download castor'
+            #     run: 'wget https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar && chmod +x castor.linux-amd64.phar && sudo mv castor.linux-amd64.phar /usr/local/bin/castor'
 
             -
-                run: 'pipenv install --deploy --dev'
-            -
-                run: 'pipenv run inv start && sleep 5'
+                name: 'Build and start the infrastructure'
+                run: 'castor start && sleep 5'
+
             -
                 name: 'Test the infrastructure is working'
                 run: |
@@ -60,6 +63,7 @@ jobs:
                     set -o pipefail
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "${{ matrix.php-version }}"
+
             -
                 name: 'Test communication with DB'
                 run: |

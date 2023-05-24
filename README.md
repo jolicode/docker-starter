@@ -3,60 +3,78 @@
 </p>
 
 <p align="center">
-<i>Collection of Dockerfile and docker-compose configurations wrapped in an easy-to-use command line, oriented for PHP projects.</i>
+    <i>Collection of Dockerfile and docker-compose configurations wrapped in an easy-to-use command line, oriented for PHP projects.</i>
 </p>
 
 ## What is Docker Starter Kit
 
-This repository provides a Docker infrastructure for your PHP projects with built-in support for HTTPS, custom domain, databases, workers...
-and is used as a foundation for our projects here at [JoliCode](https://jolicode.com/).
+This repository provides a Docker infrastructure for your PHP projects with
+built-in support for HTTPS, custom domain, databases, workers... and is used as
+a foundation for our projects at [JoliCode](https://jolicode.com/).
 
 Learn more about it and why we created and open-sourced this starter-kit in our blog posts:
 [in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit) or
 [in French 🇫🇷](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker).
 
 > **Warning**
-> You are reading the README of version 3 that uses [Invoke](https://www.pyinvoke.org/).
+> You are reading the README of version 4 that uses [castor](https://github.com/jolicode/castor).
 
+* If you are using [Invoke](https://www.pyinvoke.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v3.0.0);
 * If you are using [Fabric](https://www.fabfile.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v2.0.0);
-* If you want to migrate from docker-starter v2.x to v3.0, you can read the [dedicated guide](./UPGRADE-3.0.md);
 
 ## Project configuration
 
 Before executing any command, you need to configure a few parameters in the
-`invoke.py` file:
+`castor.php` file, in the `create_default_parameters()` function:
 
-* `project_name` (**required**): This will be used to prefix all docker
-objects (network, images, containers);
+* `project_name` (**required**): This will be used to prefix all docker objects
+(network, images, containers);
 
-* `root_domain` (optional, default: `project_name + '.test'`): This is the
-root domain where the application will be available;
+* `root_domain` (optional, default: `project_name + '.test'`): This is the root
+domain where the application will be available;
 
-* `extra_domains` (optional): This contains extra domains where the
-application will be available;
+* `extra_domains` (optional): This contains extra domains where the application
+will be available;
 
 * `project_directory` (optional, default: `application`): This is the host
-directory containing your PHP application.
+directory containing your PHP application;
+
+* `php_version` (optional, default: `8.2`): This is PHP version.
 
 For example:
 
-```py
-project_name = 'foobar'
-root_domain = project_name + '.test'
-extra_domains = ['api.' + root_domain]
-project_directory = 'application'
+```php
+function create_default_parameters(): Context
+{
+    $projectName = 'app';
+    $tld = 'test';
+
+    return [
+        'project_name' => $projectName,
+        'root_domain' => "{$projectName}.{$tld}",
+        'extra_domains' => [
+            "www.{$projectName}.{$tld}",
+            "admin.{$projectName}.{$tld}",
+            "api.{$projectName}.{$tld}",
+        ],
+        'php_version' => 8.2,
+    ];
+)
 ```
 
-Will give you `https://foobar.test` and `https://api.foobar.test` pointing at your `application/` directory.
+Will give you `https://app.test`,  `https://www.app.test`,
+`https://api.app.test` and `https://admin.app.test` pointing at your
+`application/` directory.
 
 > **Note**
-> Some Invoke tasks have been added for DX purposes. Checkout and adapt
+> Some castor tasks have been added for DX purposes. Checkout and adapt
 the tasks `install`, `migrate` and `cache_clear` to your project.
 
 ## Usage documentation
 
-We provide a [README.dist.md](./README.dist.md) to bootstrap your project documentation, with everything you need
-to know to start and interact with the infrastructure.
+We provide a [README.dist.md](./README.dist.md) to bootstrap your project
+documentation, with everything you need to know to start and interact with the
+infrastructure.
 
 To use this README.dist.md as a base for your project's README.md:
 
@@ -67,21 +85,22 @@ mv README.{dist.md,md}
 Some files will not be needed for your project and should be deleted:
 
 ```bash
-rm -rf .github/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-3.0.md
+rm -rf .github/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-4.0.md
 ```
 
-Also, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+Also, in order to improve your usage of castor scripts, you can install console
+autocompletion script.
 
 If you are using bash:
 
 ```bash
-invoke --print-completion-script=bash > /etc/bash_completion.d/invoke
+castor completion | sudo tee /etc/bash_completion.d/castor
 ```
 
-If you are using something else, please refer to your shell documentation.
-You may need to use `invoke --print-completion-script=zsh > /to/somewhere`.
+If you are using something else, please refer to your shell documentation. You
+may need to use `castor completion > /to/somewhere`.
 
-Invoke supports completion for `bash`, `zsh` & `fish` shells.
+Castor supports completion for `bash`, `zsh` & `fish` shells.
 
 ## Cookbooks
 
@@ -866,7 +885,7 @@ services:
 Note: `172.17.0.1` is the default IP of the `docker0` interface. It can be
 different on some installations. You can see this IP thanks to the following
 command `ip address show docker0`. Since `docker-compose.yml` file supports
-environment variables you may script this with Invoke.
+environment variables you may script this with Castor.
 
 </details>
 
