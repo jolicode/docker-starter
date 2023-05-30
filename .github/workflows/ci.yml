@@ -66,9 +66,6 @@ jobs:
                     set -e
                     set -o pipefail
 
-                    # Need to mount (replace the old one) the new directories layout to the web container
-                    pipenv run inv up
-
                     cat > application/public/index.php <<'EOPHP'
                     <?php
                     $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
@@ -76,5 +73,8 @@ jobs:
                     $pdo->exec('INSERT INTO test VALUES (1)');
                     echo $pdo->query('SELECT * from test')->fetchAll() ? 'database OK' : 'database KO';
                     EOPHP
+
+                    # FPM seems super slow to detect the change, we need to wait a bit
+                    sleep 3
 
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "database OK"
