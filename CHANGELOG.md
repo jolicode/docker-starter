@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## 3.11.0 (not released yet)
+## 4.0.0 (not released yet)
+
+## 3.11.0 (2025-05-30)
+
+* Use docker stages to build images
 
 ## 3.10.0 (2023-05-22)
 
