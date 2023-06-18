@@ -8,7 +8,7 @@ A Docker environment is provided and requires you to have these tools available:
 
  * Docker
  * Bash
- * pipenv (see [these instructions](https://pipenv.readthedocs.io/en/latest/install/) for how to install)
+ * pipenv (see [these instructions](https://pipenv.pypa.io/en/latest/installation/) for how to install)
 
 Install and run `pipenv` to install the required tools:
 
