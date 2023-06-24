@@ -8,33 +8,24 @@ A Docker environment is provided and requires you to have these tools available:
 
  * Docker
  * Bash
- * pipenv (see [these instructions](https://pipenv.pypa.io/en/latest/installation/) for how to install)
+ * PHP >= 8.1
+ * [Castor](https://github.com/jolicode/castor#installation)
 
-Install and run `pipenv` to install the required tools:
+#### Castor
 
-```bash
-pipenv --three install
-```
-
-You can configure your current shell to be able to use Invoke commands directly
-(without having to prefix everything by `pipenv run`)
-
-```bash
-pipenv shell
-```
-
-Optionally, in order to improve your usage of invoke scripts, you can install console autocompletion script.
+Once castor is installed, in order to improve your usage of castor scripts, you
+can install console autocompletion script.
 
 If you are using bash:
 
 ```bash
-invoke --print-completion-script=bash > /etc/bash_completion.d/invoke
+castor completion | sudo tee /etc/bash_completion.d/castor
 ```
 
-If you are using something else, please refer to your shell documentation.
-You may need to use `invoke --print-completion-script=zsh > /to/somewhere`.
+If you are using something else, please refer to your shell documentation. You
+may need to use `castor completion > /to/somewhere`.
 
-Invoke supports completion for `bash`, `zsh` & `fish` shells.
+Castor supports completion for `bash`, `zsh` & `fish` shells.
 
 ### Docker environment
 
@@ -68,7 +59,7 @@ Using dinghy? Run `dinghy ip` to get the IP of the VM.
 Launch the stack by running this command:
 
 ```bash
-inv start
+castor start
 ```
 
 > Note: the first start of the stack should take a few minutes.
@@ -80,8 +71,8 @@ installed on your computer - see below).
 ### SSL certificates
 
 This stack no longer embeds self-signed SSL certificates. Instead they will be
-generated the first time you start the infrastructure (`inv start`) or if you
-run `inv generate-certificates`. So *HTTPS will work out of the box*.
+generated the first time you start the infrastructure (`castor start`) or if you
+run `castor infra:generate-certificates`. So *HTTPS will work out of the box*.
 
 If you have `mkcert` installed on your computer, it will be used to generate
 locally trusted certificates. See [`mkcert` documentation](https://github.com/FiloSottile/mkcert#installation)
@@ -92,9 +83,9 @@ If you don't have `mkcert`, then self-signed certificates will instead be
 generated with openssl. You can configure [infrastructure/docker/services/router/openssl.cnf](infrastructure/docker/services/router/openssl.cnf)
 to tweak certificates.
 
-You can run `inv generate-certificates --force` to recreate new certificates
+You can run `castor infra:generate-certificates --force` to recreate new certificates
 if some were already generated. Remember to restart the infrastructure to make
-use of the new certificates with `inv up` or `inv start`.
+use of the new certificates with `castor up` or `castor start`.
 
 ### Builder
 
@@ -103,21 +94,9 @@ Start the builder which will give you access to a container with all these
 tools available:
 
 ```bash
-inv builder
-```
-
-Note: You can add as many Invoke commands as you want. If a command should be
-ran by the builder, don't forget to use `with Builder(c):`:
-```
-@task
-def mycommand(c):
-    """
-    My documentation
-    """
-    with Builder(c):
-        docker_compose_run(c, 'echo "HelloWorld")
+castor builder
 ```
 
 ### Other tasks
 
-Checkout `inv -l` to have the list of available Invoke tasks.
+Checkout `castor` to have the list of available tasks.
