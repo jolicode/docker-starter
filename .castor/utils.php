@@ -63,6 +63,11 @@ function builder(string $user = 'app'): void
 function create_default_context(): Context
 {
     $data = create_default_variables() + [
+        'project_name' => 'app',
+        'root_domain' => 'app.test',
+        'extra_domains' => [],
+        'project_directory' => 'application',
+        'php_version' => '8.2',
         'docker_compose_files' => [
             'docker-compose.yml',
             'docker-compose.worker.yml',
