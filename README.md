@@ -53,6 +53,7 @@ function create_default_parameters(): Context
             "admin.{$projectName}.{$tld}",
             "api.{$projectName}.{$tld}",
         ],
+        'project_directory' => 'application',
         'php_version' => 8.2,
     ];
 )
