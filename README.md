@@ -12,14 +12,10 @@ This repository provides a Docker infrastructure for your PHP projects with
 built-in support for HTTPS, custom domain, databases, workers... and is used as
 a foundation for our projects at [JoliCode](https://jolicode.com/).
 
-Learn more about it and why we created and open-sourced this starter-kit in our blog posts:
-[in English 🇬🇧](https://jolicode.com/blog/introducing-our-docker-starter-kit) or
-[in French 🇫🇷](https://jolicode.com/blog/presentation-de-notre-starter-kit-docker).
-
 > **Warning**
 > You are reading the README of version 4 that uses [castor](https://github.com/jolicode/castor).
 
-* If you are using [Invoke](https://www.pyinvoke.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v3.0.0);
+* If you are using [Invoke](https://www.pyinvoke.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v3.11.0);
 * If you are using [Fabric](https://www.fabfile.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v2.0.0);
 
 ## Project configuration
