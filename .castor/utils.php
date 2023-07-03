@@ -83,7 +83,15 @@ function create_default_context(): Context
         $data['docker_compose_files'][] = 'docker-compose.override.yml';
     }
 
-    $data['composer_cache_dir'] = cache('composer_cache_dir', fn () => capture(['composer', 'global', 'config', 'cache-dir', '-q'], onFailure: sys_get_temp_dir() . '/castor/composer'));
+    $data['composer_cache_dir'] = cache('composer_cache_dir', function () {
+        $composerCacheDir = capture(['composer', 'global', 'config', 'cache-dir', '-q'], onFailure: '');
+        // If PHP is broken, the output will not be a valid path but an error message
+        if (!is_dir($composerCacheDir)) {
+            $composerCacheDir = sys_get_temp_dir() . '/castor/composer';
+        }
+
+        return $composerCacheDir;
+    });
 
     $platform = strtolower(php_uname('s'));
     if (str_contains($platform, 'darwin')) {
