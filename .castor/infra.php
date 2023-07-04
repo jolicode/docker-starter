@@ -141,7 +141,7 @@ function generate_certificates(
         return;
     }
 
-    run(['infrastructure/docker/services/router/generate-ssl.sh']);
+    run(['infrastructure/docker/services/router/generate-ssl.sh'], quiet: true);
 
     io()->success('Successfully generated self-signed SSL certificates in infrastructure/docker/services/router/etc/ssl/certs/*.pem.');
     io()->comment('Consider installing mkcert to generate locally trusted SSL certificates and run "castor infra:generate-certificates --force".');
