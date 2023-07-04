@@ -3,6 +3,7 @@
 ## 4.0.0 (not released yet)
 
 * Migrate from Invoke to Castor
+* Add a dockerfile linter
 
 ## 3.11.0 (2023-05-30)
 
