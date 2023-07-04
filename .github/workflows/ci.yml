@@ -24,6 +24,18 @@ jobs:
             with:
                 args: --config=.php-cs-fixer.php --diff --dry-run
 
+    check-dockerfiles:
+        name: Check Dockerfile
+        runs-on: ubuntu-latest
+        steps:
+        -   name: Checkout
+            uses: actions/checkout@v3
+
+        -   name: Check php/Dockerfile
+            uses: hadolint/hadolint-action@v3.1.0
+            with:
+                dockerfile: infrastructure/docker/services/php/Dockerfile
+
     ci:
         name: Test with PHP ${{ matrix.php-version }}
         strategy:

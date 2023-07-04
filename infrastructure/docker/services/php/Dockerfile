@@ -1,7 +1,10 @@
+# hadolint global ignore=DL3008
 FROM debian:11.0-slim as php-base
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN apt-get update \
-    && apt install -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
         curl \
         ca-certificates \
         gnupg \
@@ -20,18 +23,18 @@ ARG PHP_VERSION
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        php${PHP_VERSION}-apcu \
-        php${PHP_VERSION}-bcmath \
-        php${PHP_VERSION}-cli \
-        php${PHP_VERSION}-common \
-        php${PHP_VERSION}-curl \
-        php${PHP_VERSION}-iconv \
-        php${PHP_VERSION}-intl \
-        php${PHP_VERSION}-mbstring \
-        php${PHP_VERSION}-pgsql \
-        php${PHP_VERSION}-uuid \
-        php${PHP_VERSION}-xml \
-        php${PHP_VERSION}-zip \
+        "php${PHP_VERSION}-apcu" \
+        "php${PHP_VERSION}-bcmath" \
+        "php${PHP_VERSION}-cli" \
+        "php${PHP_VERSION}-common" \
+        "php${PHP_VERSION}-curl" \
+        "php${PHP_VERSION}-iconv" \
+        "php${PHP_VERSION}-intl" \
+        "php${PHP_VERSION}-mbstring" \
+        "php${PHP_VERSION}-pgsql" \
+        "php${PHP_VERSION}-uuid" \
+        "php${PHP_VERSION}-xml" \
+        "php${PHP_VERSION}-zip" \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
@@ -50,11 +53,11 @@ FROM php-base as frontend
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         nginx \
-        php${PHP_VERSION}-fpm \
+        "php${PHP_VERSION}-fpm" \
         runit \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
-    && rm -r /etc/php/${PHP_VERSION}/fpm/pool.d/
+    && rm -r "/etc/php/${PHP_VERSION}/fpm/pool.d/"
 
 RUN useradd -s /bin/false nginx
 
@@ -73,6 +76,8 @@ FROM php-base as worker
 
 FROM php-base as builder
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 ARG NODEJS_VERSION=18.x
 RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODEJS_VERSION} bullseye main" > /etc/apt/sources.list.d/nodejs.list
@@ -86,7 +91,7 @@ RUN apt-get update \
         sudo \
         unzip \
     && apt-get clean \
-    && npm install -g yarn \
+    && npm install -g yarn@1.22 \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Config
