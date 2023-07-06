@@ -7,6 +7,7 @@
 * Do not store certificates in the router image
 * Upgrade to PostgreSQL v15
 * Update base Debian version to 11.7
+* Dynamically map user id and group id to the container, base on the host user
 
 ## 3.11.0 (2023-05-30)
 
