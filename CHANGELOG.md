@@ -4,6 +4,7 @@
 
 * Migrate from Invoke to Castor
 * Add a dockerfile linter
+* Update base Debian version to 11.7
 
 ## 3.11.0 (2023-05-30)
 
