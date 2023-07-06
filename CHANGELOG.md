@@ -5,6 +5,7 @@
 * Migrate from Invoke to Castor
 * Add a dockerfile linter
 * Do not store certificates in the router image
+* Upgrade to PostgreSQL v15
 
 ## 3.11.0 (2023-05-30)
 

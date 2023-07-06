@@ -30,7 +30,7 @@ services:
             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
 
     postgres:
-        image: postgres:14
+        image: postgres:15
         environment:
             - POSTGRES_USER=app
             - POSTGRES_PASSWORD=app
