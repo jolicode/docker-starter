@@ -6,6 +6,7 @@
 * Add a dockerfile linter
 * Do not store certificates in the router image
 * Upgrade to PostgreSQL v15
+* Update base Debian version to 11.7
 
 ## 3.11.0 (2023-05-30)
 
