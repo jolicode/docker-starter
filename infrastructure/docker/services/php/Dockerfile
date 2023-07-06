@@ -1,5 +1,6 @@
 # hadolint global ignore=DL3008
-FROM debian:11.0-slim as php-base
+
+FROM debian:11.7-slim as php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -40,13 +41,18 @@ RUN apt-get update \
 
 # Fake user to maps with the one on the host
 ARG USER_ID
-RUN addgroup --gid 1000 app && \
-    adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app
+COPY entrypoint /
+RUN addgroup --gid $USER_ID app && \
+    adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app && \
+    curl -Ls https://github.com/tianon/gosu/releases/download/1.16/gosu-amd64 | \
+        install /dev/stdin /usr/local/bin/gosu && \
+    sed "s/{{ application_user }}/app/g" -i /entrypoint
 
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
 
 WORKDIR /home/app/application
+ENTRYPOINT [ "/entrypoint" ]
 
 FROM php-base as frontend
 
@@ -107,5 +113,3 @@ RUN adduser app sudo \
 COPY --from=composer/composer:2.5.5 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
-
-USER app

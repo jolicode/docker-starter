@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -e
+set -u
+
+if [ $(id -u) != 0 ]; then
+    echo "Running this image as non root is not allowed"
+    exit 1
+fi
+
+: "${UID:=0}"
+: "${GID:=${UID}}"
+
+if [ "$#" = 0 ]; then
+    set -- "$(command -v bash 2>/dev/null || command -v sh)" -l
+fi
+
+if [ "$UID" != 0 ]; then
+    usermod -u "$UID" "{{ application_user }}" >/dev/null 2>/dev/null && {
+        groupmod -g "$GID" "{{ application_user }}" >/dev/null 2>/dev/null ||
+        usermod -a -G "$GID" "{{ application_user }}" >/dev/null 2>/dev/null
+    }
+    set -- gosu "${UID}:${GID}" "${@}"
+fi
+
+exec "$@"

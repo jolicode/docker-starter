@@ -60,21 +60,38 @@ jobs:
                     php-version: 8.2
                     tools: jolicode/castor
 
-            # -
-            #     name: 'Download castor'
-            #     run: 'wget https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar && chmod +x castor.linux-amd64.phar && sudo mv castor.linux-amd64.phar /usr/local/bin/castor'
-
             -
                 name: 'Build and start the infrastructure'
                 run: 'castor start && sleep 5'
 
             -
-                name: 'Test the infrastructure is working'
+                name: 'Test HTTP server'
                 run: |
                     set -e
                     set -o pipefail
+
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
                     curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "${{ matrix.php-version }}"
+
+            -
+                name: 'Test builder'
+                run: |
+                    set -e
+                    set -o pipefail
+
+                    cat > .castor/test.php <<'EOPHP'
+                    <?php
+
+                    use Castor\Attribute\AsTask;
+
+                    #[AsTask()]
+                    function test()
+                    {
+                        docker_compose_run('echo "Hello World"');
+                    }
+                    EOPHP
+
+                    castor test | grep "Hello World"
 
             -
                 name: 'Test communication with DB'

@@ -4,6 +4,7 @@
 
 * Migrate from Invoke to Castor
 * Add a dockerfile linter
+* Dynamically map user id and group id to the container, base on the host user
 
 ## 3.11.0 (2023-05-30)
 
