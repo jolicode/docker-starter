@@ -131,6 +131,25 @@ builder`) and run the following commands
 
 </details>
 
+### How to install third party tools with Composer
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+If you want to install some third party tools with Composer, it is recommended to install them in their dedicated directory.
+PHPStan and PHP-CS-Fixer are already installed in the `tools` directory.
+
+We suggest to:
+
+1. create a composer.json which requires only this tool in `tools/<tool name>/composer.json`;
+
+1. create a symbolic link to the tool executable in `tools/bin/<tool bin>`: `ln -s ../<tool name>/vendor/bin/<tool bin> tools/bin/<tool bin>`;
+
+Since `tools/bin` path is appended to the `$PATH`, tools will be available globally in the builder container.
+
+</details>
+
 ### How to use with Webpack Encore
 
 <details>
