@@ -404,8 +404,10 @@ to the `docker-compose.yml` file:
 ```yaml
 services:
     maildev:
-        image: djfarrelly/maildev
-        command: ["bin/maildev", "--web", "80", "--smtp", "25", "--hide-extensions", "STARTTLS"]
+        image: maildev/maildev
+        environment:
+            - MAILDEV_WEB_PORT=80
+            - MAILDEV_SMTP_PORT=25
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.${PROJECT_NAME}-maildev.rule=Host(`maildev.${PROJECT_ROOT_DOMAIN}`)"
