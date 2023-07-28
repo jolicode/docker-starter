@@ -59,6 +59,8 @@ function install(): void
     } elseif (is_file("{$basePath}/package.json")) {
         docker_compose_run('npm install');
     }
+
+    qa\install();
 }
 
 #[AsTask(description: 'Clear the application cache', namespace: 'app')]

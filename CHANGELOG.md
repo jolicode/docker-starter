@@ -9,6 +9,8 @@
 * Update base Debian version to 11.7
 * Dynamically map user id and group id to the container, base on the host user
 * Update maildev instructions
+* Drop support for PHP < 8.1
+* Add some PHP tooling (PHP-CS-Fixer, PHPStan)
 
 ## 3.11.0 (2023-05-30)
 

@@ -1,0 +1,12 @@
+{
+    "require": {
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-symfony": "^1.2"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    }
+}

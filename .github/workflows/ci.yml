@@ -12,18 +12,6 @@ permissions:
     contents: read
 
 jobs:
-    check-cs:
-        name: Check Coding Standards
-        runs-on: ubuntu-latest
-        steps:
-        -   name: Checkout
-            uses: actions/checkout@v3
-
-        -   name: PHP-CS-Fixer
-            uses: docker://oskarstark/php-cs-fixer-ga
-            with:
-                args: --config=.php-cs-fixer.php --diff --dry-run
-
     check-dockerfiles:
         name: Check Dockerfile
         runs-on: ubuntu-latest
@@ -41,7 +29,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ['7.4', '8.0', '8.1', '8.2']
+                php-version: ['8.1', '8.2']
         runs-on: ubuntu-latest
         env:
             DS_PHP_VERSION: ${{ matrix.php-version }}
@@ -63,6 +51,10 @@ jobs:
             -
                 name: 'Build and start the infrastructure'
                 run: 'castor start && sleep 5'
+
+            -
+                name: 'Check PHP coding standards'
+                run: 'castor qa:cs'
 
             -
                 name: 'Test HTTP server'

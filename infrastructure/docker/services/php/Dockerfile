@@ -113,3 +113,6 @@ RUN adduser app sudo \
 COPY --from=composer/composer:2.5.8 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
+
+# Third party tools
+ENV PATH="$PATH:/home/app/root/tools/bin"
