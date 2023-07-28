@@ -73,17 +73,15 @@ We provide a [README.dist.md](./README.dist.md) to bootstrap your project
 documentation, with everything you need to know to start and interact with the
 infrastructure.
 
-To use this README.dist.md as a base for your project's README.md:
+To replace this README with the dist, and remove all unnecessary files, you can
+run:
 
 ```bash
-mv README.{dist.md,md}
+castor init
 ```
 
-Some files will not be needed for your project and should be deleted:
-
-```bash
-rm -rf .github/ CHANGELOG.md CONTRIBUTING.md LICENSE UPGRADE-4.0.md
-```
+> **Note:**
+> This command can be run only once
 
 Also, in order to improve your usage of castor scripts, you can install console
 autocompletion script.
