@@ -22,7 +22,7 @@ function install(): void
 #[AsTask(description: 'Runs PHPStan')]
 function phpstan(): void
 {
-    docker_compose_run('phpstan', workDir: '/home/app/root');
+    docker_compose_run('phpstan --configuration=/home/app/root/phpstan.neon', workDir: '/home/app/application');
 }
 
 #[AsTask(description: 'Fixes Coding Style')]
