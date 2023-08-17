@@ -57,6 +57,10 @@ jobs:
                 run: 'castor qa:cs'
 
             -
+                name: 'Run PHPStan'
+                run: 'castor qa:phpstan'
+
+            -
                 name: 'Test HTTP server'
                 run: |
                     set -e

@@ -142,7 +142,10 @@ We suggest to:
 
 1. create a composer.json which requires only this tool in `tools/<tool name>/composer.json`;
 
-1. create a symbolic link to the tool executable in `tools/bin/<tool bin>`: `ln -s ../<tool name>/vendor/bin/<tool bin> tools/bin/<tool bin>`;
+1. create an executable symbolic link to the tool from the root directory of the project: `ln -s ../<tool name>/vendor/bin/<tool bin> tools/bin/<tool bin>`;
+
+> **Note**
+> Relative symlinks works here, because the first part of the command is relative to the second part, not to the current directory.
 
 Since `tools/bin` path is appended to the `$PATH`, tools will be available globally in the builder container.
 
