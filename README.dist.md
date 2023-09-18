@@ -44,15 +44,13 @@ The Docker infrastructure provides a web stack with:
 Before running the application for the first time, ensure your domain names
 point the IP of your Docker daemon by editing your `/etc/hosts` file.
 
-This IP is probably `127.0.0.1` unless you run Docker in a special VM (docker-machine, dinghy, etc).
+This IP is probably `127.0.0.1` unless you run Docker in a special VM (like docker-machine for example).
 
 Note: The router binds port 80 and 443, that's why it will work with `127.0.0.1`
 
 ```
 echo '127.0.0.1 <your hostnames>' | sudo tee -a /etc/hosts
 ```
-
-Using dinghy? Run `dinghy ip` to get the IP of the VM.
 
 ### Starting the stack
 
