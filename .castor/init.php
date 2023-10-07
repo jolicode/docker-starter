@@ -2,7 +2,9 @@
 
 use Castor\Attribute\AsTask;
 
+use function Castor\finder;
 use function Castor\fs;
+use function Castor\variable;
 
 #[AsTask(description: 'Initialize the project')]
 function init(): void
@@ -17,3 +19,27 @@ function init(): void
     ]);
     fs()->rename('README.dist.md', 'README.md');
 }
+
+#[AsTask(description: 'Install Symfony')]
+function symfony(bool $webApp = false): void
+{
+    $base = rtrim(variable('root_dir') . '/' . variable('project_directory'), '/');
+
+    $gitIgnore = $base . '/.gitignore';
+    $gitIgnoreContent = '';
+    if (file_exists($gitIgnore)) {
+        $gitIgnoreContent = file_get_contents($gitIgnore);
+    }
+
+    docker_compose_run('composer create-project symfony/skeleton sf');
+
+    fs()->mirror($base . '/sf/', $base);
+
+    if ($webApp) {
+        docker_compose_run('composer require webapp');
+    }
+    file_put_contents($gitIgnore, $gitIgnoreContent, FILE_APPEND);
+
+    fs()->remove($base . '/sf');
+}
+
