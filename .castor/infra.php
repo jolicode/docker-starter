@@ -50,6 +50,19 @@ function stop(): void
     docker_compose(['stop']);
 }
 
+#[AsTask(description: 'Opens a shell (bash) into a builder container')]
+function builder(): void
+{
+    $c = get_context()
+        ->withTimeout(null)
+        ->withTty()
+        ->withEnvironment($_ENV + $_SERVER)
+        ->withQuiet()
+        ->withAllowFailure()
+    ;
+    docker_compose_run('bash', c: $c);
+}
+
 #[AsTask(description: 'Displays infrastructure logs')]
 function logs(): void
 {

@@ -46,19 +46,6 @@ function about(): void
     io()->listing(array_map(fn ($url) => "https://{$url}", $urls));
 }
 
-#[AsTask(description: 'Opens a shell (bash) into a builder container')]
-function builder(): void
-{
-    $c = get_context()
-        ->withTimeout(null)
-        ->withTty()
-        ->withEnvironment($_ENV + $_SERVER)
-        ->withQuiet()
-        ->withAllowFailure()
-    ;
-    docker_compose_run('bash', c: $c);
-}
-
 #[AsContext(default: true)]
 function create_default_context(): Context
 {
