@@ -18,7 +18,6 @@ parameters:
                 project_name: string,
                 root_domain: string,
                 extra_domains: string[],
-                project_directory: string,
                 php_version: string,
                 docker_compose_files: string[],
                 macos: bool,

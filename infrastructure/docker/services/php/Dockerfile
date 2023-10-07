@@ -115,4 +115,4 @@ RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
 # Third party tools
-ENV PATH="$PATH:/home/app/root/tools/bin"
+ENV PATH="$PATH:/home/app/application/tools/bin"

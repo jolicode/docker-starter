@@ -18,7 +18,7 @@ services:
         depends_on:
             - postgres
         volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+            - "../..:/home/app/application:cached"
         environment:
             - "PHP_VERSION=${PHP_VERSION}"
         labels:

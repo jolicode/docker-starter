@@ -32,9 +32,6 @@ domain where the application will be available;
 * `extra_domains` (optional): This contains extra domains where the application
 will be available;
 
-* `project_directory` (optional, default: `application`): This is the host
-directory containing your PHP application;
-
 * `php_version` (optional, default: `8.2`): This is PHP version.
 
 For example:
@@ -53,7 +50,6 @@ function create_default_parameters(): Context
             "admin.{$projectName}.{$tld}",
             "api.{$projectName}.{$tld}",
         ],
-        'project_directory' => 'application',
         'php_version' => 8.2,
     ];
 )
@@ -177,7 +173,7 @@ If you want to use Webpack Encore in a Symfony project,
                 context: services/php
                 target: builder
             volumes:
-                - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+                - "../..:/home/app/application:cached"
             command: "yarn run dev-server --hot --host 0.0.0.0 --allowed-hosts encore.${PROJECT_ROOT_DOMAIN} --allowed-hosts ${PROJECT_ROOT_DOMAIN} --client-web-socket-url-hostname encore.${PROJECT_ROOT_DOMAIN} --client-web-socket-url-port 443 --client-web-socket-url-protocol wss"
             labels:
                 - "traefik.enable=true"
@@ -662,7 +658,7 @@ services:
             context: services/php
             target: cron
         volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+            - "../..:/home/app/application:cached"
 ```
 
 </details>
@@ -796,7 +792,7 @@ index 2eda814..59f8fed 100644
 +            - mysql
              #- rabbitmq
          volumes:
-             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+             - "../..:/home/app/application:cached"
 diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
 index 49a2661..1804a01 100644
 --- a/infrastructure/docker/docker-compose.yml
@@ -817,7 +813,7 @@ index 49a2661..1804a01 100644
 -            - postgres
 +            - mysql
          volumes:
-             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+             - "../..:/home/app/application:cached"
          labels:
 @@ -24,10 +24,7 @@ services:
              # Comment the next line to be able to access frontend via HTTP instead of HTTPS

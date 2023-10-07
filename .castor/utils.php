@@ -66,7 +66,6 @@ function create_default_context(): Context
         'project_name' => 'app',
         'root_domain' => 'app.test',
         'extra_domains' => [],
-        'project_directory' => 'application',
         'php_version' => '8.2',
         'docker_compose_files' => [
             'docker-compose.yml',
@@ -163,7 +162,6 @@ function docker_compose(array $subCommand, Context $c = null, bool $withBuilder 
         ->withTimeout(null)
         ->withEnvironment([
             'PROJECT_NAME' => variable('project_name'),
-            'PROJECT_DIRECTORY' => variable('project_directory'),
             'PROJECT_ROOT_DOMAIN' => variable('root_domain'),
             'PROJECT_DOMAINS' => $domains,
             'USER_ID' => variable('user_id'),

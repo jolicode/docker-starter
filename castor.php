@@ -23,7 +23,6 @@ function create_default_variables(): array
         'extra_domains' => [
             "www.{$projectName}.{$tld}",
         ],
-        'project_directory' => 'application',
         'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.2',
     ];
 }
@@ -49,14 +48,14 @@ function start(): void
 #[AsTask(description: 'Installs the application (composer, yarn, ...)', namespace: 'app')]
 function install(): void
 {
-    $basePath = sprintf('%s/%s', variable('root_dir'), variable('project_directory'));
+    $rootDir = variable('root_dir');
 
-    if (is_file("{$basePath}/composer.json")) {
+    if (is_file("{$rootDir}/composer.json")) {
         docker_compose_run('composer install -n --prefer-dist --optimize-autoloader');
     }
-    if (is_file("{$basePath}/yarn.lock")) {
+    if (is_file("{$rootDir}/yarn.lock")) {
         docker_compose_run('yarn');
-    } elseif (is_file("{$basePath}/package.json")) {
+    } elseif (is_file("{$rootDir}/package.json")) {
         docker_compose_run('npm install');
     }
 
