@@ -11,7 +11,6 @@ x-services-templates:
             #- rabbitmq
         volumes:
             - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
-        user: app
         labels:
             - "docker-starter.worker.${PROJECT_NAME}"
 
