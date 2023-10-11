@@ -2,6 +2,7 @@
 
 ## 4.0.0 (not released yet)
 
+* Upgrade Traefik from v2.7 to v3.0
 * Migrate from Invoke to Castor
 * Add a dockerfile linter
 * Do not store certificates in the router image

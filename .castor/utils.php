@@ -39,7 +39,7 @@ function about(): void
             if (!preg_match('{^Host\\(`(?P<hosts>.*)`\\)$}', $router['rule'], $matches)) {
                 continue;
             }
-            $hosts = explode('`, `', $matches['hosts']);
+            $hosts = explode('`) || Host(`', $matches['hosts']);
             $urls = [...$urls, ...$hosts];
         }
     }
@@ -144,7 +144,7 @@ function docker_compose(array $subCommand, Context $c = null, bool $withBuilder 
     $c ??= get_context();
 
     $domains = [variable('root_domain'), ...variable('extra_domains')];
-    $domains = '`' . implode('`, `', $domains) . '`';
+    $domains = '`' . implode('`) || Host(`', $domains) . '`';
 
     $c = $c
         ->withTimeout(null)
