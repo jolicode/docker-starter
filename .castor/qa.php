@@ -19,13 +19,13 @@ function install(): void
     docker_compose_run('composer install -o', workDir: '/home/app/root/tools/phpstan');
 }
 
-#[AsTask(description: 'Runs PHPStan')]
+#[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]
 function phpstan(): void
 {
     docker_compose_run('phpstan --configuration=/home/app/root/phpstan.neon', workDir: '/home/app/application');
 }
 
-#[AsTask(description: 'Fixes Coding Style')]
+#[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
 function cs(bool $dryRun = false): void
 {
     if ($dryRun) {
