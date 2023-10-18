@@ -50,7 +50,7 @@ function stop(): void
     docker_compose(['stop']);
 }
 
-#[AsTask(description: 'Opens a shell (bash) into a builder container')]
+#[AsTask(description: 'Opens a shell (bash) into a builder container', aliases: ['builder'])]
 function builder(): void
 {
     $c = get_context()
@@ -63,19 +63,19 @@ function builder(): void
     docker_compose_run('bash', c: $c);
 }
 
-#[AsTask(description: 'Displays infrastructure logs')]
+#[AsTask(description: 'Displays infrastructure logs', aliases: ['logs'])]
 function logs(): void
 {
     docker_compose(['logs', '-f', '--tail', '150'], c: get_context()->withTty());
 }
 
-#[AsTask(description: 'Lists containers status')]
+#[AsTask(description: 'Lists containers status', aliases: ['ps'])]
 function ps(): void
 {
     docker_compose(['ps'], withBuilder: false);
 }
 
-#[AsTask(description: 'Cleans the infrastructure (remove container, volume, networks)')]
+#[AsTask(description: 'Cleans the infrastructure (remove container, volume, networks)', aliases: ['destroy'])]
 function destroy(
     #[AsOption(description: 'Force the destruction without confirmation', shortcut: 'f')]
     bool $force = false,
@@ -164,7 +164,7 @@ function generate_certificates(
     }
 }
 
-#[AsTask(description: 'Starts the workers', namespace: 'infra:worker', name: 'start')]
+#[AsTask(description: 'Starts the workers', namespace: 'infra:worker', name: 'start', aliases: ['start-workers'])]
 function workers_start(): void
 {
     $workers = get_workers();
@@ -187,7 +187,7 @@ function workers_start(): void
     ], quiet: true);
 }
 
-#[AsTask(description: 'Stops the workers', namespace: 'infra:worker', name: 'stop')]
+#[AsTask(description: 'Stops the workers', namespace: 'infra:worker', name: 'stop', aliases: ['stop-workers'])]
 function workers_stop(): void
 {
     $workers = get_workers();

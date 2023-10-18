@@ -46,7 +46,7 @@ function start(): void
     about();
 }
 
-#[AsTask(description: 'Installs the application (composer, yarn, ...)', namespace: 'app')]
+#[AsTask(description: 'Installs the application (composer, yarn, ...)', namespace: 'app', aliases: ['install'])]
 function install(): void
 {
     $basePath = sprintf('%s/%s', variable('root_dir'), variable('project_directory'));
@@ -63,13 +63,13 @@ function install(): void
     qa\install();
 }
 
-#[AsTask(description: 'Clear the application cache', namespace: 'app')]
+#[AsTask(description: 'Clear the application cache', namespace: 'app', aliases: ['cache-clear'])]
 function cache_clear(): void
 {
     // docker_compose_run('rm -rf var/cache/ && bin/console cache:warmup');
 }
 
-#[AsTask(description: 'Migrates database schema', namespace: 'app:db')]
+#[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]
 function migrate(): void
 {
     // docker_compose_run('bin/console doctrine:database:create --if-not-exists');
