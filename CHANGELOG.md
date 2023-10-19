@@ -13,6 +13,7 @@
 * Drop support for PHP < 8.1
 * Add some PHP tooling (PHP-CS-Fixer, PHPStan)
 * Add `castor init` command to initialize a new project
+* Add `castor symfony` to install a Symfony application
 
 ## 3.11.0 (2023-05-30)
 

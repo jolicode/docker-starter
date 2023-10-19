@@ -73,6 +73,12 @@ We provide a [README.dist.md](./README.dist.md) to bootstrap your project
 documentation, with everything you need to know to start and interact with the
 infrastructure.
 
+If you want to install a Symfony project, you can run (before `castor init`):
+
+```
+castor symfony [--web-app]
+```
+
 To replace this README with the dist, and remove all unnecessary files, you can
 run:
 
@@ -98,36 +104,6 @@ may need to use `castor completion > /to/somewhere`.
 Castor supports completion for `bash`, `zsh` & `fish` shells.
 
 ## Cookbooks
-
-### How to use with Symfony
-
-<details>
-
-<summary>Read the cookbook</summary>
-
-If you want to create a new Symfony project, you need to enter a builder (`inv
-builder`) and run the following commands
-
-1. Remove the `application` folder:
-
-    ```bash
-    cd ..
-    rm -rf application/*
-    ```
-
-1. Create a new project:
-
-    ```bash
-    composer create-project symfony/website-skeleton application
-    ```
-
-1. Configure the `.env`
-
-    ```bash
-    sed -i 's#DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=12\&charset=utf8#' application/.env
-    ```
-
-</details>
 
 ### How to install third party tools with Composer
 
