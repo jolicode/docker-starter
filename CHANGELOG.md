@@ -6,7 +6,7 @@
 * Migrate from Invoke to Castor
 * Add a dockerfile linter
 * Do not store certificates in the router image
-* Upgrade to PostgreSQL v15
+* Upgrade to PostgreSQL v16
 * Update base Debian version to 11.7
 * Dynamically map user id and group id to the container, base on the host user
 * Update maildev instructions
