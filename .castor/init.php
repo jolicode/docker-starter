@@ -2,7 +2,6 @@
 
 use Castor\Attribute\AsTask;
 
-use function Castor\finder;
 use function Castor\fs;
 use function Castor\variable;
 
@@ -31,6 +30,7 @@ function symfony(bool $webApp = false): void
         $gitIgnoreContent = file_get_contents($gitIgnore);
     }
 
+    infra\build();
     docker_compose_run('composer create-project symfony/skeleton sf');
 
     fs()->mirror($base . '/sf/', $base);
