@@ -17,6 +17,11 @@ function init(): void
         __FILE__,
     ]);
     fs()->rename('README.dist.md', 'README.md');
+
+    $readMeContent = file_get_contents('README.md');
+    $urls = [variable('root_domain'), ...variable('extra_domains')];
+    $readMeContent = str_replace('<your hostnames>', implode(' ', $urls), $readMeContent);
+    file_put_contents('README.md', $readMeContent);
 }
 
 #[AsTask(description: 'Install Symfony')]
