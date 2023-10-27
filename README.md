@@ -203,6 +203,47 @@ at https://encore.app.test and click on accept.
 
 </details>
 
+### How to use with AssetMapper
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+1. Follow [instructions on symfony.com](https://symfony.com/doc/current/frontend/asset_mapper.html#installation) to install AssetMapper.
+
+1. Remove this block in the
+`infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf` file:
+
+    ```
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
+        access_log off;
+        add_header Cache-Control "no-cache";
+    }
+    ```
+
+1. Remove these lines in the `infrastructure/docker/services/php/Dockerfile` file:
+
+    ```diff
+    SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+    - ARG NODEJS_VERSION=18.x
+    - RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg \
+    -     && echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODEJS_VERSION} bullseye main" > /etc/apt/sources.list.d/nodejs.list
+
+    # Default toys
+    RUN apt-get update \
+        && apt-get install -y --no-install-recommends \
+            git \
+            make \
+    -       nodejs \
+            sudo \
+            unzip \
+        && apt-get clean \
+    -   && npm install -g yarn@1.22 \
+        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+    ```
+</details>
+
 ### How to add Elasticsearch and Kibana
 
 <details>
