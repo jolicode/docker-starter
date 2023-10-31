@@ -101,6 +101,28 @@ function create_default_context(): Context
     return new Context($data, pty: 'dev' === $data['env']);
 }
 
+function docker_exit_code(
+    string $runCommand,
+    Context $c = null,
+    string $service = 'builder',
+    bool $noDeps = true,
+    string $workDir = null,
+    bool $withBuilder = true,
+): int {
+    $c = ($c ?? get_context())->withAllowFailure();
+
+    $process = docker_compose_run(
+        runCommand: $runCommand,
+        c: $c,
+        service: $service,
+        noDeps: $noDeps,
+        workDir: $workDir,
+        withBuilder: $withBuilder,
+    );
+
+    return $process->getExitCode() ?? 0;
+}
+
 function docker_compose_run(
     string $runCommand,
     Context $c = null,

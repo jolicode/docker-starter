@@ -44,9 +44,8 @@ function symfony(bool $webApp = false): void
         docker_compose_run('composer require webapp');
     }
 
-    docker_compose_run("sed -i 's#^DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=16\&charset=utf8#' .env");
-    file_put_contents($gitIgnore, $gitIgnoreContent, FILE_APPEND);
+    docker_compose_run("sed -i 's#^DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\\?serverVersion=16\\&charset=utf8#' .env");
+    file_put_contents($gitIgnore, $gitIgnoreContent, \FILE_APPEND);
 
     fs()->remove($base . '/sf');
 }
-
