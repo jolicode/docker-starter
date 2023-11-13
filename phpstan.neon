@@ -1,8 +1,8 @@
 parameters:
     level: 6
     paths:
-        #- application/src
-        - application/public
+        #- src
+        - public
         - castor.php
         - .castor/
     scanFiles:
@@ -11,7 +11,7 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
 
     # symfony:
-    #    container_xml_path: application/var/cache/dev/App_KernelDevDebugContainer.xml'
+    #    container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml'
 
     typeAliases:
         ContextData: '''

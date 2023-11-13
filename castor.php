@@ -48,7 +48,7 @@ function start(): void
 #[AsTask(description: 'Installs the application (composer, yarn, ...)', namespace: 'app', aliases: ['install'])]
 function install(): void
 {
-    $basePath = sprintf('%s/application', variable('root_dir'));
+    $basePath = variable('root_dir');
 
     if (is_file("{$basePath}/composer.json")) {
         docker_compose_run('composer install -n --prefer-dist --optimize-autoloader');

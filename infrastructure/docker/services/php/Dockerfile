@@ -117,4 +117,4 @@ RUN mkdir -p "/home/app/.composer/cache" \
 # Third party tools
 ENV PATH="$PATH:/var/www/tools/bin"
 
-WORKDIR /var/www/application
+WORKDIR /var/www

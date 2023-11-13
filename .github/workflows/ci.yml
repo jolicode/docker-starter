@@ -95,7 +95,7 @@ jobs:
                     set -e
                     set -o pipefail
 
-                    cat > application/public/index.php <<'EOPHP'
+                    cat > public/index.php <<'EOPHP'
                     <?php
                     $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
                     $pdo->exec('CREATE TABLE test (id integer NOT NULL)');
