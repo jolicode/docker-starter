@@ -68,9 +68,9 @@ installed on your computer - see below).
 
 ### SSL certificates
 
-This stack no longer embeds self-signed SSL certificates. Instead they will be
-generated the first time you start the infrastructure (`castor start`) or if you
-run `castor infra:generate-certificates`. So *HTTPS will work out of the box*.
+HTTPS is supported out of the box. SSL certificates are not versioned and will
+be generated the first time you start the infrastructure (`castor start`) or if
+you run `castor infra:generate-certificates`.
 
 If you have `mkcert` installed on your computer, it will be used to generate
 locally trusted certificates. See [`mkcert` documentation](https://github.com/FiloSottile/mkcert#installation)
