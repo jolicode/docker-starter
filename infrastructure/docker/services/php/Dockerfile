@@ -51,7 +51,7 @@ RUN addgroup --gid $USER_ID app && \
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
 
-WORKDIR /home/app/application
+WORKDIR /var/www
 ENTRYPOINT [ "/entrypoint" ]
 
 FROM php-base as frontend
@@ -115,4 +115,6 @@ RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
 # Third party tools
-ENV PATH="$PATH:/home/app/root/tools/bin"
+ENV PATH="$PATH:/var/www/tools/bin"
+
+WORKDIR /var/www/application
