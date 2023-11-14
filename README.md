@@ -841,24 +841,17 @@ index 49a2661..1804a01 100644
              - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
 
 -    postgres:
--        build: services/postgres
+-        image: postgres:16
 -        environment:
 -            - POSTGRES_USER=app
 -            - POSTGRES_PASSWORD=app
 +    mysql:
-+        build: services/mysql
++        image: mysql:8
++        environment:
++            - MYSQL_ALLOW_EMPTY_PASSWORD=1
          volumes:
 -            - postgres-data:/var/lib/postgresql/data
 +            - mysql-data:/var/lib/mysql
-diff --git a/infrastructure/docker/services/mysql/Dockerfile b/infrastructure/docker/services/mysql/Dockerfile
-new file mode 100644
-index 0000000..e9e0245
---- /dev/null
-+++ b/infrastructure/docker/services/mysql/Dockerfile
-@@ -0,0 +1,3 @@
-+FROM mariadb:10.4
-+
-+ENV MYSQL_ALLOW_EMPTY_PASSWORD=1
 diff --git a/infrastructure/docker/services/php/Dockerfile b/infrastructure/docker/services/php/Dockerfile
 index 56e1835..95fee78 100644
 --- a/infrastructure/docker/services/php/Dockerfile
@@ -870,15 +863,6 @@ index 56e1835..95fee78 100644
 +    php${PHP_VERSION}-mysql \
      php${PHP_VERSION}-xml \
      php${PHP_VERSION}-zip \
-diff --git a/infrastructure/docker/services/postgres/Dockerfile b/infrastructure/docker/services/postgres/Dockerfile
-deleted file mode 100644
-index a1c26c4..0000000
---- a/infrastructure/docker/services/postgres/Dockerfile
-+++ /dev/null
-@@ -1,3 +0,0 @@
--FROM postgres:12
--
--EXPOSE 5432
 ```
 
 </details>
