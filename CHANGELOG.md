@@ -14,7 +14,7 @@
 * Add some PHP tooling (PHP-CS-Fixer, PHPStan)
 * Add `castor init` command to initialize a new project
 * Add `castor symfony` to install a Symfony application
-* Mount the application in `/var/www` instead of `/home/app`
+* Mount the project in `/var/www` instead of `/home/app`
 
 ## 3.11.0 (2023-05-30)
 
