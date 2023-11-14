@@ -4,4 +4,3 @@
 
 # Tools
 .php-cs-fixer.cache
-/tools/phpstan/var

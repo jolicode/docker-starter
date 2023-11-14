@@ -10,11 +10,11 @@ x-services-templates:
             - postgres
             #- rabbitmq
         volumes:
-            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
+            - "../..:/var/www:cached"
         labels:
             - "docker-starter.worker.${PROJECT_NAME}"
 
 # services:
 #    worker_messenger:
 #        <<: *worker_base
-#        command: php -d memory_limit=1G /home/app/application/bin/console messenger:consume async --memory-limit=128M
+#        command: php -d memory_limit=1G /var/www/application/bin/console messenger:consume async --memory-limit=128M

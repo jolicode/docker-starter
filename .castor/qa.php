@@ -17,22 +17,22 @@ function all(): int
 #[AsTask(description: 'Installs tooling')]
 function install(): void
 {
-    docker_compose_run('composer install -o', workDir: '/home/app/root/tools/php-cs-fixer');
-    docker_compose_run('composer install -o', workDir: '/home/app/root/tools/phpstan');
+    docker_compose_run('composer install -o', workDir: '/var/www/tools/php-cs-fixer');
+    docker_compose_run('composer install -o', workDir: '/var/www/tools/phpstan');
 }
 
 #[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]
 function phpstan(): int
 {
-    return docker_exit_code('phpstan --configuration=/home/app/root/phpstan.neon', workDir: '/home/app/application');
+    return docker_exit_code('phpstan', workDir: '/var/www');
 }
 
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
 function cs(bool $dryRun = false): int
 {
     if ($dryRun) {
-        return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/home/app/root');
+        return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/var/www');
     }
 
-    return docker_exit_code('php-cs-fixer fix', workDir: '/home/app/root');
+    return docker_exit_code('php-cs-fixer fix', workDir: '/var/www');
 }

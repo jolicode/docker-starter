@@ -172,7 +172,6 @@ function docker_compose(array $subCommand, Context $c = null, bool $withBuilder 
         ->withTimeout(null)
         ->withEnvironment([
             'PROJECT_NAME' => variable('project_name'),
-            'PROJECT_DIRECTORY' => variable('project_directory'),
             'PROJECT_ROOT_DOMAIN' => variable('root_domain'),
             'PROJECT_DOMAINS' => $domains,
             'USER_ID' => variable('user_id'),

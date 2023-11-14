@@ -22,5 +22,4 @@ services:
         volumes:
             - "builder-data:/home/app"
             - "${COMPOSER_CACHE_DIR}:/home/app/.composer/cache"
-            - "../../${PROJECT_DIRECTORY}:/home/app/application:cached"
-            - "../..:/home/app/root:cached"
+            - "../..:/var/www:cached"
