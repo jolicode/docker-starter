@@ -46,7 +46,8 @@ point the IP of your Docker daemon by editing your `/etc/hosts` file.
 
 This IP is probably `127.0.0.1` unless you run Docker in a special VM (like docker-machine for example).
 
-Note: The router binds port 80 and 443, that's why it will work with `127.0.0.1`
+> [!NOTE]
+> The router binds port 80 and 443, that's why it will work with `127.0.0.1`
 
 ```
 echo '127.0.0.1 <your hostnames>' | sudo tee -a /etc/hosts
@@ -60,7 +61,8 @@ Launch the stack by running this command:
 castor start
 ```
 
-> Note: the first start of the stack should take a few minutes.
+> [!NOTE]
+> the first start of the stack should take a few minutes.
 
 The site is now accessible at the hostnames your have configured over HTTPS
 (you may need to accept self-signed SSL certificate if you do not have mkcert
