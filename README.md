@@ -790,21 +790,20 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 ```
 
-Then, you can add the following content to the `tasks.py` file:
+Then, you can add the following content to the `castor.php` file:
 
-```py
-@task
-def pg_activity(c):
-    """
-    Monitor PostgreSQL
-    """
-    docker_compose(c, 'exec postgres pg_activity -U app', bare_run=True)
+```php
+#[AsTask(description: 'Monitor PostgreSQL', namespace: 'app:db')]
+function pg_activity(): void
+{
+    docker_compose('exec postgres pg_activity -U app');
+}
 ```
 
 Finally you can use the following command:
 
 ```
-inv pg-activity
+castor app:db:pg-activity
 ```
 
 </details>
