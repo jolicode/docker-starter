@@ -12,7 +12,7 @@ This repository provides a Docker infrastructure for your PHP projects with
 built-in support for HTTPS, custom domain, databases, workers... and is used as
 a foundation for our projects at [JoliCode](https://jolicode.com/).
 
-> **Warning**
+> [!WARNING]
 > You are reading the README of version 4 that uses [castor](https://github.com/jolicode/castor).
 
 * If you are using [Invoke](https://www.pyinvoke.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v3.11.0);
@@ -59,9 +59,9 @@ Will give you `https://app.test`,  `https://www.app.test`,
 `https://api.app.test` and `https://admin.app.test` pointing at your
 `application/` directory.
 
-> **Note**
+> [!NOTE]
 > Some castor tasks have been added for DX purposes. Checkout and adapt
-the tasks `install`, `migrate` and `cache_clear` to your project.
+> the tasks `install`, `migrate` and `cache_clear` to your project.
 
 ## Usage documentation
 
@@ -82,7 +82,7 @@ run:
 castor init
 ```
 
-> **Note:**
+> [!NOTE]
 > This command can be run only once
 
 Also, in order to improve your usage of castor scripts, you can install console
@@ -116,7 +116,7 @@ We suggest to:
 
 1. create an executable symbolic link to the tool from the root directory of the project: `ln -s ../<tool name>/vendor/bin/<tool bin> tools/bin/<tool bin>`;
 
-> **Note**
+> [!NOTE]
 > Relative symlinks works here, because the first part of the command is relative to the second part, not to the current directory.
 
 Since `tools/bin` path is appended to the `$PATH`, tools will be available globally in the builder container.
@@ -162,8 +162,9 @@ Usually, there is three places where you need to do it:
 
 <summary>Read the cookbook</summary>
 
-Note: this cookbook documents the integration of webpack 5+. For older version
-of webpack, use previous version of the docker starter.
+> [!NOTE]
+> this cookbook documents the integration of webpack 5+. For older version
+> of webpack, use previous version of the docker starter.
 
 If you want to use Webpack Encore in a Symfony project,
 
@@ -171,7 +172,7 @@ If you want to use Webpack Encore in a Symfony project,
 
     You will need to follow [these instructions](https://symfony.com/doc/current/frontend/encore/simple-example.html) too.
 
-1. Create a new service for encore:
+2. Create a new service for encore:
 
     Add the following content to the `docker-compose.yml` file:
 
@@ -191,7 +192,7 @@ If you want to use Webpack Encore in a Symfony project,
                 - "traefik.http.services.encore.loadbalancer.server.port=8080"
     ```
 
-1. Update the webpack configuration to specify the asset location in **dev**:
+3. Update the webpack configuration to specify the asset location in **dev**:
 
     ```diff
     diff --git a/application/webpack.config.js b/application/webpack.config.js
@@ -931,10 +932,11 @@ services:
             - "admin.app.test:172.17.0.1"
 ```
 
-Note: `172.17.0.1` is the default IP of the `docker0` interface. It can be
-different on some installations. You can see this IP thanks to the following
-command `ip address show docker0`. Since `docker-compose.yml` file supports
-environment variables you may script this with Castor.
+> [!NOTE]
+>  `172.17.0.1` is the default IP of the `docker0` interface. It can be
+> different on some installations. You can see this IP thanks to the following
+> command `ip address show docker0`. Since `docker-compose.yml` file supports
+> environment variables you may script this with Castor.
 
 </details>
 
