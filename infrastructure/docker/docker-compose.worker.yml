@@ -12,7 +12,7 @@ x-services-templates:
         volumes:
             - "../..:/var/www:cached"
         labels:
-            - "docker-starter.worker.${PROJECT_NAME}"
+            - "docker-starter.worker.${PROJECT_NAME}=true"
 
 # services:
 #    worker_messenger:
