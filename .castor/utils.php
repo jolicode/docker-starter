@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 
 use function Castor\cache;
 use function Castor\capture;
-use function Castor\get_context;
+use function Castor\context;
 use function Castor\io;
 use function Castor\log;
 use function Castor\run;
@@ -70,8 +70,12 @@ function create_default_context(): Context
         $data['docker_compose_files'][] = 'docker-compose.override.yml';
     }
 
-    $data['composer_cache_dir'] = cache('composer_cache_dir', function () {
-        $composerCacheDir = capture(['composer', 'global', 'config', 'cache-dir', '-q'], onFailure: '');
+    // We need an empty context to run command, since the default context has
+    // not been set in castor, since we ARE creating it right now
+    $emptyContext = new Context();
+
+    $data['composer_cache_dir'] = cache('composer_cache_dir', function () use ($emptyContext): string {
+        $composerCacheDir = capture(['composer', 'global', 'config', 'cache-dir', '-q'], onFailure: '', context: $emptyContext);
         // If PHP is broken, the output will not be a valid path but an error message
         if (!is_dir($composerCacheDir)) {
             $composerCacheDir = sys_get_temp_dir() . '/castor/composer';
@@ -109,7 +113,7 @@ function docker_exit_code(
     string $workDir = null,
     bool $withBuilder = true,
 ): int {
-    $c = ($c ?? get_context())->withAllowFailure();
+    $c = ($c ?? context())->withAllowFailure();
 
     $process = docker_compose_run(
         runCommand: $runCommand,
@@ -163,7 +167,7 @@ function docker_compose_run(
  */
 function docker_compose(array $subCommand, Context $c = null, bool $withBuilder = false): Process
 {
-    $c ??= get_context();
+    $c ??= context();
 
     $domains = [variable('root_domain'), ...variable('extra_domains')];
     $domains = '`' . implode('`) || Host(`', $domains) . '`';
@@ -204,7 +208,7 @@ function docker_compose(array $subCommand, Context $c = null, bool $withBuilder 
 // so this func allow them to run these tools on their host
 function run_in_docker_or_locally_for_mac(string $command, Context $c = null): void
 {
-    $c ??= get_context();
+    $c ??= context();
 
     if (variable('macos')) {
         run($command, context: $c->withPath(variable('root_dir')));
