@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 use function Castor\capture;
 use function Castor\finder;
 use function Castor\fs;
-use function Castor\get_context;
+use function Castor\context;
 use function Castor\io;
 use function Castor\run;
 use function Castor\variable;
@@ -53,7 +53,7 @@ function stop(): void
 #[AsTask(description: 'Opens a shell (bash) into a builder container', aliases: ['builder'])]
 function builder(): void
 {
-    $c = get_context()
+    $c = context()
         ->withTimeout(null)
         ->withTty()
         ->withEnvironment($_ENV + $_SERVER)
@@ -66,7 +66,7 @@ function builder(): void
 #[AsTask(description: 'Displays infrastructure logs', aliases: ['logs'])]
 function logs(): void
 {
-    docker_compose(['logs', '-f', '--tail', '150'], c: get_context()->withTty());
+    docker_compose(['logs', '-f', '--tail', '150'], c: context()->withTty());
 }
 
 #[AsTask(description: 'Lists containers status', aliases: ['ps'])]
