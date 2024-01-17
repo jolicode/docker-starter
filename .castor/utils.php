@@ -181,6 +181,7 @@ function docker_compose(array $subCommand, Context $c = null, bool $withBuilder 
             'USER_ID' => variable('user_id'),
             'COMPOSER_CACHE_DIR' => variable('composer_cache_dir'),
             'PHP_VERSION' => variable('php_version'),
+            'BUILDKIT_PROGRESS' => 'plain',
         ])
     ;
 
