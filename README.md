@@ -32,7 +32,7 @@ domain where the application will be available;
 * `extra_domains` (optional): This contains extra domains where the application
 will be available;
 
-* `php_version` (optional, default: `8.2`): This is PHP version.
+* `php_version` (optional, default: `8.3`): This is PHP version.
 
 For example:
 
@@ -50,7 +50,7 @@ function create_default_parameters(): Context
             "admin.{$projectName}.{$tld}",
             "api.{$projectName}.{$tld}",
         ],
-        'php_version' => 8.2,
+        'php_version' => 8.3,
     ];
 )
 ```
