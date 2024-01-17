@@ -8,9 +8,9 @@ use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\ExecutableFinder;
 
 use function Castor\capture;
+use function Castor\context;
 use function Castor\finder;
 use function Castor\fs;
-use function Castor\context;
 use function Castor\io;
 use function Castor\run;
 use function Castor\variable;
