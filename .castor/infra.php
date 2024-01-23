@@ -104,7 +104,9 @@ function generate_certificates(
     #[AsOption(description: 'Force the certificates re-generation without confirmation', shortcut: 'f')]
     bool $force = false,
 ): void {
-    if (file_exists(variable('root_dir') . '/infrastructure/docker/services/router/certs/cert.pem') && !$force) {
+    $sslDir = variable('root_dir') . '/infrastructure/development/services/router/certs';
+
+    if (file_exists("$sslDir/cert.pem") && !$force) {
         io()->comment('SSL certificates already exists.');
         io()->note('Run "castor infra:generate-certificates --force" to generate new certificates.');
 
@@ -112,12 +114,12 @@ function generate_certificates(
     }
 
     if ($force) {
-        if (file_exists($f = variable('root_dir') . '/infrastructure/docker/services/router/certs/cert.pem')) {
+        if (file_exists($f = "$sslDir/cert.pem")) {
             io()->comment('Removing existing certificates in infrastructure/docker/services/router/certs/*.pem.');
             unlink($f);
         }
 
-        if (file_exists($f = variable('root_dir') . '/infrastructure/docker/services/router/certs/key.pem')) {
+        if (file_exists($f = "$sslDir/key.pem")) {
             unlink($f);
         }
     }
@@ -138,8 +140,8 @@ function generate_certificates(
 
         run([
             'mkcert',
-            '-cert-file', 'infrastructure/docker/services/router/certs/cert.pem',
-            '-key-file', 'infrastructure/docker/services/router/certs/key.pem',
+            '-cert-file', "$sslDir/cert.pem",
+            '-key-file', "$sslDir/key.pem",
             $rootDomain,
             "*.{$rootDomain}",
             ...variable('extra_domains'),
