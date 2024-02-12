@@ -16,7 +16,7 @@
 * Add `castor init` command to initialize a new project
 * Add `castor symfony` to install a Symfony application
 * Mount the project in `/var/www` instead of `/home/app`
-* Update Composer to version 2.6.6
+* Update Composer to version 2.7
 
 ## 3.11.0 (2023-05-30)
 
