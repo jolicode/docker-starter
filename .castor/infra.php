@@ -57,7 +57,6 @@ function builder(): void
         ->withTimeout(null)
         ->withTty()
         ->withEnvironment($_ENV + $_SERVER)
-        ->withQuiet()
         ->withAllowFailure()
     ;
     docker_compose_run('bash', c: $c);
