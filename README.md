@@ -907,7 +907,7 @@ This starter kit is compatible with Docker for Windows, so you can enjoy native 
 - You will be prompted to run the env vars manually if you use PowerShell.
 </details>
 
-### How to access a container via a custom hostname from another container
+### How to access a container via hostname from another container
 
 <details>
 
@@ -926,16 +926,10 @@ services:
     builder:
         # [...]
         extra_hosts:
-            - "app.test:172.17.0.1"
-            - "api.app.test:172.17.0.1"
-            - "admin.app.test:172.17.0.1"
+            - "app.test:host-gateway"
+            - "api.app.test:host-gateway"
+            - "admin.app.test:host-gateway"
 ```
-
-> [!NOTE]
->  `172.17.0.1` is the default IP of the `docker0` interface. It can be
-> different on some installations. You can see this IP thanks to the following
-> command `ip address show docker0`. Since `docker-compose.yml` file supports
-> environment variables you may script this with Castor.
 
 </details>
 
