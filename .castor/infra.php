@@ -103,7 +103,7 @@ function generate_certificates(
     #[AsOption(description: 'Force the certificates re-generation without confirmation', shortcut: 'f')]
     bool $force = false,
 ): void {
-    $sslDir = variable('root_dir') . '/infrastructure/development/services/router/certs';
+    $sslDir = variable('root_dir') . '/infrastructure/docker/services/router/certs';
 
     if (file_exists("$sslDir/cert.pem") && !$force) {
         io()->comment('SSL certificates already exists.');
