@@ -54,9 +54,9 @@ function install(): void
         docker_compose_run('composer install -n --prefer-dist --optimize-autoloader');
     }
     if (is_file("{$basePath}/yarn.lock")) {
-        docker_compose_run('yarn');
+        docker_compose_run('yarn install --frozen-lockfile');
     } elseif (is_file("{$basePath}/package.json")) {
-        docker_compose_run('npm install');
+        docker_compose_run('npm ci');
     }
     if (is_file("{$basePath}/importmap.php")) {
         docker_compose_run('bin/console importmap:install');
