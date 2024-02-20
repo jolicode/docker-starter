@@ -3,6 +3,8 @@
 namespace qa;
 
 use Castor\Attribute\AsTask;
+use function docker\docker_compose_run;
+use function docker\docker_exit_code;
 
 #[AsTask(description: 'Runs all QA tasks')]
 function all(): int

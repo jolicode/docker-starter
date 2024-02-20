@@ -6,6 +6,13 @@ use function Castor\import;
 use function Castor\io;
 use function Castor\notify;
 use function Castor\variable;
+use function docker\about;
+use function docker\build;
+use function docker\docker_compose_run;
+use function docker\generate_certificates;
+use function docker\up;
+use function docker\workers_start;
+use function docker\workers_stop;
 
 import(__DIR__ . '/.castor');
 
@@ -30,14 +37,14 @@ function create_default_variables(): array
 #[AsTask(description: 'Builds and starts the infrastructure, then install the application (composer, yarn, ...)')]
 function start(): void
 {
-    infra\workers_stop();
-    infra\generate_certificates(false);
-    infra\build();
-    infra\up();
+    workers_stop();
+    generate_certificates(force: false);
+    build();
+    up();
     cache_clear();
     install();
     migrate();
-    infra\workers_start();
+    workers_start();
 
     notify('The stack is now up and running.');
     io()->success('The stack is now up and running.');

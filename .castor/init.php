@@ -4,6 +4,8 @@ use Castor\Attribute\AsTask;
 
 use function Castor\fs;
 use function Castor\variable;
+use function docker\build;
+use function docker\docker_compose_run;
 
 #[AsTask(description: 'Initialize the project')]
 function init(): void
@@ -35,7 +37,7 @@ function symfony(bool $webApp = false): void
         $gitIgnoreContent = file_get_contents($gitIgnore);
     }
 
-    infra\build();
+    build();
     docker_compose_run('composer create-project symfony/skeleton sf');
 
     fs()->mirror($base . '/sf/', $base);
