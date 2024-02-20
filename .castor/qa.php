@@ -24,15 +24,15 @@ function install(): void
 #[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]
 function phpstan(): int
 {
-    return docker_exit_code('phpstan', workDir: '/var/www');
+    return docker_exit_code('phpstan');
 }
 
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
 function cs(bool $dryRun = false): int
 {
     if ($dryRun) {
-        return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/var/www');
+        return docker_exit_code('php-cs-fixer fix --dry-run --diff');
     }
 
-    return docker_exit_code('php-cs-fixer fix', workDir: '/var/www');
+    return docker_exit_code('php-cs-fixer fix');
 }
