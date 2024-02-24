@@ -20,7 +20,7 @@ use function Castor\log;
 use function Castor\run;
 use function Castor\variable;
 
-#[AsTask(description: 'Displays some help and available urls for the current project')]
+#[AsTask(description: 'Displays some help and available urls for the current project', namespace: '')]
 function about(): void
 {
     io()->section('About this project');
@@ -75,7 +75,7 @@ function up(): void
         docker_compose(['up', '--remove-orphans', '--detach', '--no-build']);
     } catch (ExceptionInterface $e) {
         io()->error('An error occured while starting the infrastructure.');
-        io()->note('Did you forget to run "castor infra:build"?');
+        io()->note('Did you forget to run "castor docker:build"?');
         io()->note('Or you forget to login to the registry?');
 
         throw $e;
@@ -143,20 +143,20 @@ function generate_certificates(
 ): void {
     $sslDir = variable('root_dir') . '/infrastructure/docker/services/router/certs';
 
-    if (file_exists("$sslDir/cert.pem") && !$force) {
+    if (file_exists("{$sslDir}/cert.pem") && !$force) {
         io()->comment('SSL certificates already exists.');
-        io()->note('Run "castor infra:generate-certificates --force" to generate new certificates.');
+        io()->note('Run "castor docker:generate-certificates --force" to generate new certificates.');
 
         return;
     }
 
     if ($force) {
-        if (file_exists($f = "$sslDir/cert.pem")) {
+        if (file_exists($f = "{$sslDir}/cert.pem")) {
             io()->comment('Removing existing certificates in infrastructure/docker/services/router/certs/*.pem.');
             unlink($f);
         }
 
-        if (file_exists($f = "$sslDir/key.pem")) {
+        if (file_exists($f = "{$sslDir}/key.pem")) {
             unlink($f);
         }
     }
@@ -177,8 +177,8 @@ function generate_certificates(
 
         run([
             'mkcert',
-            '-cert-file', "$sslDir/cert.pem",
-            '-key-file', "$sslDir/key.pem",
+            '-cert-file', "{$sslDir}/cert.pem",
+            '-key-file', "{$sslDir}/key.pem",
             $rootDomain,
             "*.{$rootDomain}",
             ...variable('extra_domains'),
@@ -196,14 +196,14 @@ function generate_certificates(
     run(['infrastructure/docker/services/router/generate-ssl.sh'], quiet: true);
 
     io()->success('Successfully generated self-signed SSL certificates in infrastructure/docker/services/router/certs/*.pem.');
-    io()->comment('Consider installing mkcert to generate locally trusted SSL certificates and run "castor infra:generate-certificates --force".');
+    io()->comment('Consider installing mkcert to generate locally trusted SSL certificates and run "castor docker:generate-certificates --force".');
 
     if ($force) {
         io()->note('Please restart the infrastructure to use the new certificates with "castor up" or "castor start".');
     }
 }
 
-#[AsTask(description: 'Starts the workers', namespace: 'infra:worker', name: 'start', aliases: ['start-workers'])]
+#[AsTask(description: 'Starts the workers', namespace: 'docker:worker', name: 'start', aliases: ['start-workers'])]
 function workers_start(): void
 {
     $workers = get_workers();
@@ -226,7 +226,7 @@ function workers_start(): void
     ], quiet: true);
 }
 
-#[AsTask(description: 'Stops the workers', namespace: 'infra:worker', name: 'stop', aliases: ['stop-workers'])]
+#[AsTask(description: 'Stops the workers', namespace: 'docker:worker', name: 'stop', aliases: ['stop-workers'])]
 function workers_stop(): void
 {
     $workers = get_workers();
@@ -265,7 +265,7 @@ function create_default_context(): Context
         'macos' => false,
         'power_shell' => false,
         'user_id' => posix_geteuid(),
-        'root_dir' => dirname(__DIR__),
+        'root_dir' => \dirname(__DIR__),
         'env' => $_SERVER['CI'] ?? false ? 'ci' : 'dev',
     ];
 
@@ -291,7 +291,7 @@ function create_default_context(): Context
     if (str_contains($platform, 'darwin')) {
         $data['macos'] = true;
         $data['docker_compose_files'][] = 'docker-compose.docker-for-x.yml';
-    } elseif (in_array($platform, ['win32', 'win64'])) {
+    } elseif (\in_array($platform, ['win32', 'win64'])) {
         $data['docker_compose_files'][] = 'docker-compose.docker-for-x.yml';
         $data['power_shell'] = true;
     }
@@ -308,67 +308,10 @@ function create_default_context(): Context
     return new Context($data, pty: 'dev' === $data['env']);
 }
 
-function docker_exit_code(
-    string $runCommand,
-    Context $c = null,
-    string $service = 'builder',
-    bool $noDeps = true,
-    string $workDir = null,
-    bool $withBuilder = true,
-): int {
-    $c = ($c ?? context())->withAllowFailure();
-
-    $process = docker_compose_run(
-        runCommand: $runCommand,
-        c: $c,
-        service: $service,
-        noDeps: $noDeps,
-        workDir: $workDir,
-        withBuilder: $withBuilder,
-    );
-
-    return $process->getExitCode() ?? 0;
-}
-
-function docker_compose_run(
-    string $runCommand,
-    Context $c = null,
-    string $service = 'builder',
-    bool $noDeps = true,
-    string $workDir = null,
-    bool $portMapping = false,
-    bool $withBuilder = true,
-): Process {
-    $command = [
-        'run',
-        '--rm',
-    ];
-
-    if ($noDeps) {
-        $command[] = '--no-deps';
-    }
-
-    if ($portMapping) {
-        $command[] = '--service-ports';
-    }
-
-    if (null !== $workDir) {
-        $command[] = '-w';
-        $command[] = $workDir;
-    }
-
-    $command[] = $service;
-    $command[] = '/bin/sh';
-    $command[] = '-c';
-    $command[] = "exec {$runCommand}";
-
-    return docker_compose($command, c: $c, withBuilder: $withBuilder);
-}
-
 /**
  * @param array<string> $subCommand
  */
-function docker_compose(array $subCommand, Context $c = null, bool $withBuilder = false): Process
+function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder = false): Process
 {
     $c ??= context();
 
@@ -409,9 +352,66 @@ function docker_compose(array $subCommand, Context $c = null, bool $withBuilder 
     return run($command, context: $c);
 }
 
+function docker_compose_run(
+    string $runCommand,
+    ?Context $c = null,
+    string $service = 'builder',
+    bool $noDeps = true,
+    ?string $workDir = null,
+    bool $portMapping = false,
+    bool $withBuilder = true,
+): Process {
+    $command = [
+        'run',
+        '--rm',
+    ];
+
+    if ($noDeps) {
+        $command[] = '--no-deps';
+    }
+
+    if ($portMapping) {
+        $command[] = '--service-ports';
+    }
+
+    if (null !== $workDir) {
+        $command[] = '-w';
+        $command[] = $workDir;
+    }
+
+    $command[] = $service;
+    $command[] = '/bin/sh';
+    $command[] = '-c';
+    $command[] = "exec {$runCommand}";
+
+    return docker_compose($command, c: $c, withBuilder: $withBuilder);
+}
+
+function docker_exit_code(
+    string $runCommand,
+    ?Context $c = null,
+    string $service = 'builder',
+    bool $noDeps = true,
+    ?string $workDir = null,
+    bool $withBuilder = true,
+): int {
+    $c = ($c ?? context())->withAllowFailure();
+
+    $process = docker_compose_run(
+        runCommand: $runCommand,
+        c: $c,
+        service: $service,
+        noDeps: $noDeps,
+        workDir: $workDir,
+        withBuilder: $withBuilder,
+    );
+
+    return $process->getExitCode() ?? 0;
+}
+
 // Mac users have a lot of problems running Yarn / Webpack on the Docker stack
 // so this func allow them to run these tools on their host
-function run_in_docker_or_locally_for_mac(string $command, Context $c = null): void
+function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): void
 {
     $c ??= context();
 
