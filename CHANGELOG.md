@@ -7,7 +7,6 @@
 * Add a dockerfile linter
 * Do not store certificates in the router image
 * Upgrade to PostgreSQL v16
-* Update base Debian version to 11.7
 * Dynamically map user id and group id to the container, base on the host user
 * Update maildev instructions
 * Drop support for PHP < 8.1
@@ -17,6 +16,8 @@
 * Add `castor symfony` to install a Symfony application
 * Mount the project in `/var/www` instead of `/home/app`
 * Update Composer to version 2.7
+* Update NodeJS to version 20.x LTS
+* Upgrade base to Debian Bookworm (12.5)
 
 ## 3.11.0 (2023-05-30)
 
