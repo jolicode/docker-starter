@@ -37,6 +37,8 @@ function create_default_variables(): array
 #[AsTask(description: 'Builds and starts the infrastructure, then install the application (composer, yarn, ...)')]
 function start(): void
 {
+    io()->title('Starting the stack');
+
     workers_stop();
     generate_certificates(force: false);
     build();
@@ -55,17 +57,23 @@ function start(): void
 #[AsTask(description: 'Installs the application (composer, yarn, ...)', namespace: 'app', aliases: ['install'])]
 function install(): void
 {
+    io()->title('Installing the application');
+
     $basePath = sprintf('%s/application', variable('root_dir'));
 
     if (is_file("{$basePath}/composer.json")) {
+        io()->section('Installing PHP dependencies');
         docker_compose_run('composer install -n --prefer-dist --optimize-autoloader');
     }
     if (is_file("{$basePath}/yarn.lock")) {
+        io()->section('Installing Node.js dependencies');
         docker_compose_run('yarn install --frozen-lockfile');
     } elseif (is_file("{$basePath}/package.json")) {
+        io()->section('Installing Node.js dependencies');
         docker_compose_run('npm ci');
     }
     if (is_file("{$basePath}/importmap.php")) {
+        io()->section('Installing importmap');
         docker_compose_run('bin/console importmap:install');
     }
 
@@ -75,12 +83,16 @@ function install(): void
 #[AsTask(description: 'Clear the application cache', namespace: 'app', aliases: ['cache-clear'])]
 function cache_clear(): void
 {
+    // io()->title('Clearing the application cache');
+
     // docker_compose_run('rm -rf var/cache/ && bin/console cache:warmup');
 }
 
 #[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]
 function migrate(): void
 {
+    // io()->title('Migrating the database schema');
+
     // docker_compose_run('bin/console doctrine:database:create --if-not-exists');
     // docker_compose_run('bin/console doctrine:migration:migrate -n --allow-no-migration');
 }
