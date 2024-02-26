@@ -23,7 +23,7 @@ use function Castor\variable;
 #[AsTask(description: 'Displays some help and available urls for the current project', namespace: '')]
 function about(): void
 {
-    io()->section('About this project');
+    io()->title('About this project');
 
     io()->comment('Run <comment>castor</comment> to display all available commands.');
     io()->comment('Run <comment>castor about</comment> to display this project help.');
@@ -53,9 +53,17 @@ function about(): void
     io()->listing(array_map(fn ($url) => "https://{$url}", $urls));
 }
 
+#[AsTask(description: 'Opens the project in your browser', namespace: '')]
+function open(): void
+{
+    run(['open', 'https://' . variable('root_domain')], quiet: true);
+}
+
 #[AsTask(description: 'Builds the infrastructure', aliases: ['build'])]
 function build(): void
 {
+    io()->title('Building infrastructure');
+
     $userId = variable('user_id');
     $phpVersion = variable('php_version');
 
@@ -71,8 +79,10 @@ function build(): void
 #[AsTask(description: 'Builds and starts the infrastructure', aliases: ['up'])]
 function up(): void
 {
+    io()->title('Starting infrastructure');
+
     try {
-        docker_compose(['up', '--remove-orphans', '--detach', '--no-build']);
+        docker_compose(['up', '--detach', '--no-build']);
     } catch (ExceptionInterface $e) {
         io()->error('An error occured while starting the infrastructure.');
         io()->note('Did you forget to run "castor docker:build"?');
@@ -85,6 +95,8 @@ function up(): void
 #[AsTask(description: 'Stops the infrastructure', aliases: ['stop'])]
 function stop(): void
 {
+    io()->title('Stopping infrastructure');
+
     docker_compose(['stop']);
 }
 
@@ -117,6 +129,8 @@ function destroy(
     #[AsOption(description: 'Force the destruction without confirmation', shortcut: 'f')]
     bool $force = false,
 ): void {
+    io()->title('Destroying infrastructure');
+
     if (!$force) {
         io()->warning('This will permanently remove all containers, volumes, networks... created for this project.');
         io()->note('You can use the --force option to avoid this confirmation.');
@@ -136,7 +150,7 @@ function destroy(
     fs()->remove($files);
 }
 
-#[AsTask(description: 'Generates SSL certificates (with mkcert if available or self-signed if not)')]
+#[AsTask(description: 'Generates SSL certificates (with mkcert if available or self-signed if not)', namespace: '')]
 function generate_certificates(
     #[AsOption(description: 'Force the certificates re-generation without confirmation', shortcut: 'f')]
     bool $force = false,
@@ -149,6 +163,8 @@ function generate_certificates(
 
         return;
     }
+
+    io()->title('Generating SSL certificates');
 
     if ($force) {
         if (file_exists($f = "{$sslDir}/cert.pem")) {
@@ -206,6 +222,8 @@ function generate_certificates(
 #[AsTask(description: 'Starts the workers', namespace: 'docker:worker', name: 'start', aliases: ['start-workers'])]
 function workers_start(): void
 {
+    io()->title('Starting workers');
+
     $workers = get_workers();
 
     if (!$workers) {
@@ -229,6 +247,8 @@ function workers_start(): void
 #[AsTask(description: 'Stops the workers', namespace: 'docker:worker', name: 'stop', aliases: ['stop-workers'])]
 function workers_stop(): void
 {
+    io()->title('Stopping workers');
+
     $workers = get_workers();
 
     if (!$workers) {
