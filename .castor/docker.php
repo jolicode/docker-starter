@@ -23,6 +23,7 @@ use function Castor\log;
 use function Castor\open;
 use function Castor\run;
 use function Castor\variable;
+use function Castor\yaml_parse;
 
 #[AsTask(description: 'Displays some help and available urls for the current project', namespace: '')]
 function about(): void
@@ -84,7 +85,6 @@ function build(
     $command = [
         ...$command,
         'build',
-        '--build-arg', 'USER_ID=' . variable('user_id'),
         '--build-arg', 'PHP_VERSION=' . variable('php_version'),
         '--build-arg', 'PROJECT_NAME=' . variable('project_name'),
     ];
@@ -295,6 +295,103 @@ function workers_stop(): void
     stop(profiles: ['worker']);
 }
 
+#[AsTask(description: 'Push images cache to the registry', namespace: 'docker', name: 'push', aliases: ['push'])]
+function push(): void
+{
+    // Generate bake file
+    $composeFile = context()->data['docker_compose_files'];
+    $composeFile[] = 'docker-compose.builder.yml';
+
+    $targets = [];
+
+    foreach ($composeFile as $file) {
+        $path = variable('root_dir') . '/infrastructure/docker/' . $file;
+        $content = file_get_contents($path);
+        $data = yaml_parse($content);
+
+        foreach ($data['services'] ?? [] as $service => $config) {
+            $cacheFrom = $config['build']['cache_from'][0] ?? null;
+
+            if (null === $cacheFrom) {
+                continue;
+            }
+
+            $cacheFrom = explode(',', $cacheFrom);
+            $reference = null;
+            $type = null;
+
+            if (count($cacheFrom) === 1) {
+                $reference = $cacheFrom[0];
+                $type = 'registry';
+            } else {
+                foreach ($cacheFrom as $part) {
+                    $from = explode('=', $part);
+
+                    if (count($from) !== 2) {
+                        continue;
+                    }
+
+                    if ($from[0] === 'type') {
+                        $type = $from[1];
+                    }
+
+                    if ($from[0] === 'ref') {
+                        $reference = $from[1];
+                    }
+                }
+            }
+
+            $targets[] = [
+                'reference' => $reference,
+                'type' => $type,
+                'context' => $config['build']['context'],
+                'dockerfile' => $config['build']['dockerfile'] ?? 'Dockerfile',
+                'target' => $config['build']['target'] ?? null
+            ];
+        }
+    }
+
+    /** @var string|null $registry */
+    $registry = variable('registry');
+
+    $content = sprintf(<<<EOHCL
+group "default" {
+    targets = [%s]
+}
+
+
+EOHCL
+    , implode(', ', array_map(fn ($target) => sprintf('"%s"', $target['target']), $targets)));
+
+
+    foreach ($targets as $target) {
+        $reference = str_replace('${REGISTRY:-}', $registry ?? '', $target['reference'] ?? '');
+
+        $content .= sprintf(<<<EOHCL
+target "%s" {
+    context    = "infrastructure/docker/%s"
+    dockerfile = "%s"
+    cache-from = ["%s"]
+    cache-to   = ["type=%s,ref=%s,mode=max"]
+    target     = "%s"
+    args = {
+        PHP_VERSION = "%s"
+    }
+}
+
+
+EOHCL
+        , $target['target'], $target['context'], $target['dockerfile'], $reference, $target['type'], $reference, $target['target'], variable('php_version'));
+    }
+
+    // write bake file in tmp file
+    $bakeFile = tempnam(sys_get_temp_dir(), 'bake');
+    file_put_contents($bakeFile, $content);
+
+    // Run bake
+    run(['docker', 'buildx', 'bake', '-f', $bakeFile]);
+}
+
 #[AsContext(default: true)]
 function create_default_context(): Context
 {
@@ -401,6 +498,7 @@ function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder
             'USER_ID' => variable('user_id'),
             'COMPOSER_CACHE_DIR' => variable('composer_cache_dir'),
             'PHP_VERSION' => variable('php_version'),
+            'REGISTRY' => variable('registry'),
         ])
     ;
 

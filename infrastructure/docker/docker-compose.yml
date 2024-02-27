@@ -15,12 +15,17 @@ services:
         build:
             context: services/php
             target: frontend
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/frontend:cache"
+        user: "${USER_ID}:${USER_ID}"
         depends_on:
             - postgres
         volumes:
             - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
         environment:
             - "PHP_VERSION=${PHP_VERSION}"
+            - HOME=/home/app
         profiles:
             - default
         labels:

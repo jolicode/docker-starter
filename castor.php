@@ -35,6 +35,7 @@ function create_default_variables(): array
             "www.{$projectName}.{$tld}",
         ],
         'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.3',
+        'registry' => $_SERVER['DS_REGISTRY'] ?? null,
     ];
 }
 
