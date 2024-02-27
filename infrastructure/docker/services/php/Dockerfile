@@ -40,20 +40,10 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Fake user to maps with the one on the host
-ARG USER_ID
-COPY entrypoint /
-RUN addgroup --gid $USER_ID app && \
-    adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app && \
-    curl -Ls https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 | \
-        install /dev/stdin /usr/local/bin/gosu && \
-    sed "s/{{ application_user }}/app/g" -i /entrypoint
-
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
 
 WORKDIR /var/www
-ENTRYPOINT [ "/entrypoint" ]
 
 FROM php-base as frontend
 
@@ -77,7 +67,7 @@ RUN phpenmod app-default \
 
 EXPOSE 80
 
-CMD ["runsvdir", "-P", "/etc/service"]
+CMD ["runsvdir", "-P", "/var/www/infrastructure/docker/services/php/frontend/etc/service"]
 
 FROM php-base as worker
 
@@ -104,16 +94,9 @@ RUN apt-get update \
 # Config
 COPY builder/etc/. /etc/
 COPY builder/php-configuration /etc/php/${PHP_VERSION}
-RUN adduser app sudo \
-    && mkdir /var/log/php \
-    && chmod 777 /var/log/php \
-    && phpenmod app-default \
-    && phpenmod app-builder
 
 # Composer
 COPY --from=composer/composer:2.7.1 /usr/bin/composer /usr/bin/composer
-RUN mkdir -p "/home/app/.composer/cache" \
-    && chown app: /home/app/.composer -R
 
 # Third party tools
 ENV PATH="$PATH:/var/www/tools/bin"
