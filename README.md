@@ -21,7 +21,7 @@ a foundation for our projects at [JoliCode](https://jolicode.com/).
 ## Project configuration
 
 Before executing any command, you need to configure a few parameters in the
-`castor.php` file, in the `create_default_parameters()` function:
+`castor.php` file, in the `create_default_variables()` function:
 
 * `project_name` (**required**): This will be used to prefix all docker objects
 (network, images, containers);
@@ -37,7 +37,7 @@ will be available;
 For example:
 
 ```php
-function create_default_parameters(): Context
+function create_default_variables(): Context
 {
     $projectName = 'app';
     $tld = 'test';
