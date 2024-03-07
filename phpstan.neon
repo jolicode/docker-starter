@@ -7,6 +7,9 @@ parameters:
         - .castor/
     scanFiles:
         - .castor.stub.php
+#        - application/vendor/autoload.php
+#    scanDirectories:
+#        - application/vendor
     tmpDir: tools/phpstan/var
     inferPrivatePropertyTypeFromConstructor: true
 
