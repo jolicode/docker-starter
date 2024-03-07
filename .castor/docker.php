@@ -150,7 +150,7 @@ function destroy(
     fs()->remove($files);
 }
 
-#[AsTask(description: 'Generates SSL certificates (with mkcert if available or self-signed if not)', namespace: '')]
+#[AsTask(description: 'Generates SSL certificates (with mkcert if available or self-signed if not)')]
 function generate_certificates(
     #[AsOption(description: 'Force the certificates re-generation without confirmation', shortcut: 'f')]
     bool $force = false,
