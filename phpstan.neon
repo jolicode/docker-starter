@@ -1,19 +1,19 @@
 parameters:
     level: 6
     paths:
-        #- application/src
+        # - application/src
         - application/public
         - castor.php
         - .castor/
     scanFiles:
         - .castor.stub.php
-#    scanDirectories:
-#        - application/vendor
+    # scanDirectories:
+    #     - application/vendor
     tmpDir: tools/phpstan/var
     inferPrivatePropertyTypeFromConstructor: true
 
-#    symfony:
-#        container_xml_path: 'application/var/cache/dev/App_KernelDevDebugContainer.xml'
+    # symfony:
+    #     container_xml_path: 'application/var/cache/dev/App_KernelDevDebugContainer.xml'
 
     typeAliases:
         ContextData: '''
