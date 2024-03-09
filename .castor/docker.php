@@ -17,6 +17,7 @@ use function Castor\finder;
 use function Castor\fs;
 use function Castor\io;
 use function Castor\log;
+use function Castor\open;
 use function Castor\run;
 use function Castor\variable;
 
@@ -53,10 +54,10 @@ function about(): void
     io()->listing(array_map(fn ($url) => "https://{$url}", $urls));
 }
 
-#[AsTask(description: 'Opens the project in your browser', namespace: '')]
-function open(): void
+#[AsTask(description: 'Opens the project in your browser', namespace: '', aliases: ['open'])]
+function open_project(): void
 {
-    run(['open', 'https://' . variable('root_domain')], quiet: true);
+    open('https://' . variable('root_domain'));
 }
 
 #[AsTask(description: 'Builds the infrastructure', aliases: ['build'])]
