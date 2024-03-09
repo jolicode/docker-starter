@@ -2,6 +2,7 @@
 
 use Castor\Attribute\AsTask;
 
+use function Castor\guard_min_version;
 use function Castor\import;
 use function Castor\io;
 use function Castor\notify;
@@ -13,6 +14,8 @@ use function docker\generate_certificates;
 use function docker\up;
 use function docker\workers_start;
 use function docker\workers_stop;
+
+guard_min_version('0.14.0');
 
 import(__DIR__ . '/.castor');
 
