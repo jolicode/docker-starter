@@ -270,6 +270,24 @@ function workers_stop(): void
     ]);
 }
 
+#[AsTask(description: 'Push images cache to the registry', namespace: 'docker', name: 'push', aliases: ['push'])]
+function push(): void
+{
+    // Ensure docker buildx is enabled
+
+    // Generate bake file
+    $composeFile = context()->data['docker_compose_files'];
+
+    foreach ($composeFile as $file) {
+        $path = variable('root_dir') . '/infrastructure/docker/' . $file;
+        $content = file_get_contents($path);
+        // This does not work as we don't have a yaml parser
+        $data = \yaml_parse($content);
+    }
+
+    // Run bake
+}
+
 #[AsContext(default: true)]
 function create_default_context(): Context
 {

@@ -1,15 +1,15 @@
 version: '3.7'
 
-volumes:
-    builder-data: {}
-
 services:
     builder:
         build:
             context: services/php
             target: builder
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}builder:cache"
         depends_on:
             - postgres
+        user: "${USER_ID}:${USER_ID}"
         environment:
             - COMPOSER_MEMORY_LIMIT=-1
             - UID=${USER_ID}
@@ -19,7 +19,8 @@ services:
             - CONTINUOUS_INTEGRATION # Travis CI, Cirrus CI
             - BUILD_NUMBER # Jenkins, TeamCity
             - RUN_ID # TaskCluster, dsari
+            - HOME=/home/app
         volumes:
-            - "builder-data:/home/app"
             - "${COMPOSER_CACHE_DIR}:/home/app/.composer/cache"
             - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
