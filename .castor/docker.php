@@ -51,7 +51,7 @@ function about(): void
             $urls = [...$urls, ...$hosts];
         }
     }
-    io()->listing(array_map(fn ($url) => "https://{$url}", $urls));
+    io()->listing(array_map(fn ($url) => "https://{$url}", array_unique($urls)));
 }
 
 #[AsTask(description: 'Opens the project in your browser', namespace: '', aliases: ['open'])]
