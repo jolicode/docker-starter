@@ -7,6 +7,7 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -16,6 +17,7 @@ use function Castor\capture;
 use function Castor\context;
 use function Castor\finder;
 use function Castor\fs;
+use function Castor\http_client;
 use function Castor\io;
 use function Castor\log;
 use function Castor\open;
@@ -34,9 +36,11 @@ function about(): void
     io()->section('Available URLs for this project:');
     $urls = [variable('root_domain'), ...variable('extra_domains')];
 
-    $payload = @file_get_contents(sprintf('http://%s:8080/api/http/routers', variable('root_domain')));
-    if ($payload) {
-        $routers = json_decode($payload, true);
+    try {
+        $routers = http_client()
+            ->request('GET', sprintf('http://%s:8080/api/http/routers', variable('root_domain')))
+            ->toArray()
+        ;
         $projectName = variable('project_name');
         foreach ($routers as $router) {
             if (!preg_match("{^{$projectName}-(.*)@docker$}", $router['name'])) {
@@ -51,7 +55,9 @@ function about(): void
             $hosts = explode('`) || Host(`', $matches['hosts']);
             $urls = [...$urls, ...$hosts];
         }
+    } catch (HttpExceptionInterface) {
     }
+
     io()->listing(array_map(fn ($url) => "https://{$url}", array_unique($urls)));
 }
 
