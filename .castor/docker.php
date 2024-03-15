@@ -287,7 +287,6 @@ function create_default_context(): Context
         'power_shell' => false,
         'user_id' => posix_geteuid(),
         'root_dir' => \dirname(__DIR__),
-        'env' => $_SERVER['CI'] ?? false ? 'ci' : 'dev',
     ];
 
     if (file_exists($data['root_dir'] . '/infrastructure/docker/docker-compose.override.yml')) {
@@ -331,7 +330,28 @@ function create_default_context(): Context
         $data['user_id'] = 1000;
     }
 
-    return new Context($data, pty: 'dev' === $data['env']);
+    return new Context(
+        $data,
+        pty: Process::isPtySupported(),
+        environment: [
+            'BUILDKIT_PROGRESS' => 'plain',
+        ]
+    );
+}
+
+#[AsContext(name: 'ci')]
+function create_ci_context(): Context
+{
+    $c = create_default_context();
+
+    return $c
+        ->withData([
+            // override the default context here
+        ])
+        ->withEnvironment([
+            'COMPOSE_ANSI' => 'never',
+        ])
+    ;
 }
 
 /**
@@ -353,7 +373,6 @@ function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder
             'USER_ID' => variable('user_id'),
             'COMPOSER_CACHE_DIR' => variable('composer_cache_dir'),
             'PHP_VERSION' => variable('php_version'),
-            'BUILDKIT_PROGRESS' => 'plain',
         ])
     ;
 
