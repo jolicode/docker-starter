@@ -83,7 +83,7 @@ function up(): void
     io()->title('Starting infrastructure');
 
     try {
-        docker_compose(['up', '--detach', '--no-build']);
+        docker_compose(['--ansi', 'never', 'up', '--detach', '--no-build']);
     } catch (ExceptionInterface $e) {
         io()->error('An error occured while starting the infrastructure.');
         io()->note('Did you forget to run "castor docker:build"?');

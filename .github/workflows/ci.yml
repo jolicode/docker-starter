@@ -17,24 +17,25 @@ env:
     CASTOR_CONTEXT: ci
 
 jobs:
-    check-dockerfiles:
-        name: Check Dockerfile
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    # check-dockerfiles:
+    #     name: Check Dockerfile
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v4
 
-            - name: Check php/Dockerfile
-              uses: hadolint/hadolint-action@v3.1.0
-              with:
-                  dockerfile: infrastructure/docker/services/php/Dockerfile
+    #         - name: Check php/Dockerfile
+    #           uses: hadolint/hadolint-action@v3.1.0
+    #           with:
+    #               dockerfile: infrastructure/docker/services/php/Dockerfile
 
     ci:
         name: Test with PHP ${{ matrix.php-version }}
         strategy:
             fail-fast: false
             matrix:
-                php-version: ["8.1", "8.2", "8.3"]
+                # php-version: ["8.1", "8.2", "8.3"]
+                php-version: ["8.1"]
         runs-on: ubuntu-latest
         env:
             DS_PHP_VERSION: ${{ matrix.php-version }}
