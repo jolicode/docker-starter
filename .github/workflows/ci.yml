@@ -1,12 +1,12 @@
 name: Continuous Integration
 
-'on':
+"on":
     push:
-        branches: [ "main" ]
+        branches: ["main"]
     pull_request:
-        branches: [ "main" ]
+        branches: ["main"]
     schedule:
-        - cron: '0 0 * * MON'
+        - cron: "0 0 * * MON"
 
 permissions:
     contents: read
@@ -16,95 +16,87 @@ jobs:
         name: Check Dockerfile
         runs-on: ubuntu-latest
         steps:
-        -   name: Checkout
-            uses: actions/checkout@v4
+            - name: Checkout
+              uses: actions/checkout@v4
 
-        -   name: Check php/Dockerfile
-            uses: hadolint/hadolint-action@v3.1.0
-            with:
-                dockerfile: infrastructure/docker/services/php/Dockerfile
+            - name: Check php/Dockerfile
+              uses: hadolint/hadolint-action@v3.1.0
+              with:
+                  dockerfile: infrastructure/docker/services/php/Dockerfile
 
     ci:
         name: Test with PHP ${{ matrix.php-version }}
         strategy:
             fail-fast: false
             matrix:
-                php-version: ['8.1', '8.2', '8.3']
+                php-version: ["8.1", "8.2", "8.3"]
         runs-on: ubuntu-latest
         env:
             DS_PHP_VERSION: ${{ matrix.php-version }}
             BUILDKIT_PROGRESS: plain
             CI: 1
         steps:
-            -
-                uses: actions/checkout@v4
+            - uses: actions/checkout@v4
 
             # Setup
 
-            -
-                name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: 8.2
-                    tools: castor
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.2
+                  tools: castor
 
-            -
-                name: 'Build and start the infrastructure'
-                run: 'castor start && sleep 5'
+            - name: "Build and start the infrastructure"
+              run: "castor start && sleep 5"
 
-            -
-                name: 'Check PHP coding standards'
-                run: 'castor qa:cs'
+            - name: "Check PHP coding standards"
+              run: "castor qa:cs"
 
-            -
-                name: 'Run PHPStan'
-                run: 'castor qa:phpstan'
+            - name: "Run PHPStan"
+              run: "castor qa:phpstan"
 
-            -
-                name: 'Test HTTP server'
-                run: |
-                    set -e
-                    set -o pipefail
+            - name: "Test HTTP server"
+              run: |
+                  set -e
+                  set -o pipefail
 
-                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
-                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "${{ matrix.php-version }}"
+                  curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "Hello world"
+                  curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "${{ matrix.php-version }}"
 
-            -
-                name: 'Test builder'
-                run: |
-                    set -e
-                    set -o pipefail
+            - name: "Test builder"
+              run: |
+                  set -e
+                  set -o pipefail
 
-                    cat > .castor/test.php <<'EOPHP'
-                    <?php
+                  cat > .castor/test.php <<'EOPHP'
+                  <?php
 
-                    use Castor\Attribute\AsTask;
-                    use function docker\docker_compose_run;
+                  use Castor\Attribute\AsTask;
+                  use function docker\docker_compose_run;
 
-                    #[AsTask()]
-                    function test()
-                    {
-                        docker_compose_run('echo "Hello World"');
-                    }
-                    EOPHP
+                  #[AsTask()]
+                  function test()
+                  {
+                      docker_compose_run('echo "Hello World"');
+                  }
+                  EOPHP
 
-                    castor test | grep "Hello World"
+                  castor test | grep "Hello World"
 
-            -
-                name: 'Test communication with DB'
-                run: |
-                    set -e
-                    set -o pipefail
+            - name: "Test communication with DB"
+              run: |
+                  set -e
+                  set -o pipefail
 
-                    cat > application/public/index.php <<'EOPHP'
-                    <?php
-                    $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
-                    $pdo->exec('CREATE TABLE test (id integer NOT NULL)');
-                    $pdo->exec('INSERT INTO test VALUES (1)');
-                    echo $pdo->query('SELECT * from test')->fetchAll() ? 'database OK' : 'database KO';
-                    EOPHP
+                  cat > application/public/index.php <<'EOPHP'
+                  <?php
+                  $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
+                  $pdo->exec('CREATE TABLE test (id integer NOT NULL)');
+                  $pdo->exec('INSERT INTO test VALUES (1)');
+                  echo $pdo->query('SELECT * from test')->fetchAll() ? 'database OK' : 'database KO';
+                  EOPHP
 
-                    # FPM seems super slow to detect the change, we need to wait a bit
-                    sleep 3
+                  # FPM seems super slow to detect the change, we need to wait a bit
+                  sleep 3
 
-                    curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "database OK"
+                  curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "database OK"
