@@ -11,6 +11,11 @@ name: Continuous Integration
 permissions:
     contents: read
 
+env:
+    # Fix for symfony/color detection. We know GitHub Actions can handle it
+    ANSICON: 1
+    CASTOR_CONTEXT: ci
+
 jobs:
     check-dockerfiles:
         name: Check Dockerfile
@@ -33,8 +38,6 @@ jobs:
         runs-on: ubuntu-latest
         env:
             DS_PHP_VERSION: ${{ matrix.php-version }}
-            BUILDKIT_PROGRESS: plain
-            CI: 1
         steps:
             - uses: actions/checkout@v4
 
