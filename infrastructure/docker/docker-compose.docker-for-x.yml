@@ -1,7 +1,5 @@
 # This file is used only when using Docker for Mac or Windows
 
-version: '3.7'
-
 services:
     router:
         # Docker for Mac or Windows does not support the "network_mode=host"
