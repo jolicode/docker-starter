@@ -6,6 +6,7 @@ use Castor\Attribute\AsContext;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Context;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -61,29 +62,57 @@ function open_project(): void
 }
 
 #[AsTask(description: 'Builds the infrastructure', aliases: ['build'])]
-function build(): void
-{
+function build(
+    ?string $service = null,
+    ?string $profile = null,
+): void {
     io()->title('Building infrastructure');
+
+    $command = [];
+
+    if ($profile) {
+        $command[] = '--profile';
+        $command[] = $profile;
+    }
 
     $userId = variable('user_id');
     $phpVersion = variable('php_version');
 
     $command = [
+        ...$command,
         'build',
         '--build-arg', "USER_ID={$userId}",
         '--build-arg', "PHP_VERSION={$phpVersion}",
     ];
 
+    if ($service) {
+        $command[] = $service;
+    }
+
     docker_compose($command, withBuilder: true);
 }
 
+/**
+ * @param list<string> $profiles
+ */
 #[AsTask(description: 'Builds and starts the infrastructure', aliases: ['up'])]
-function up(): void
-{
-    io()->title('Starting infrastructure');
+function up(
+    ?string $service = null,
+    #[AsOption(mode: InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED)]
+    array $profiles = [],
+): void {
+    if (!$service && !$profiles) {
+        io()->title('Starting infrastructure');
+    }
+
+    $command = ['up', '--detach', '--no-build'];
+
+    if ($service) {
+        $command[] = $service;
+    }
 
     try {
-        docker_compose(['up', '--detach', '--no-build']);
+        docker_compose($command, profiles: $profiles);
     } catch (ExceptionInterface $e) {
         io()->error('An error occured while starting the infrastructure.');
         io()->note('Did you forget to run "castor docker:build"?');
@@ -93,12 +122,26 @@ function up(): void
     }
 }
 
+/**
+ * @param list<string> $profiles
+ */
 #[AsTask(description: 'Stops the infrastructure', aliases: ['stop'])]
-function stop(): void
-{
-    io()->title('Stopping infrastructure');
+function stop(
+    ?string $service = null,
+    #[AsOption(mode: InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED)]
+    array $profiles = [],
+): void {
+    if (!$service || !$profiles) {
+        io()->title('Stopping infrastructure');
+    }
 
-    docker_compose(['stop']);
+    $command = ['stop'];
+
+    if ($service) {
+        $command[] = $service;
+    }
+
+    docker_compose($command, profiles: $profiles);
 }
 
 #[AsTask(description: 'Opens a shell (bash) into a builder container', aliases: ['builder'])]
@@ -113,10 +156,22 @@ function builder(): void
     docker_compose_run('bash', c: $c);
 }
 
+/**
+ * @param list<string> $profiles
+ */
 #[AsTask(description: 'Displays infrastructure logs', aliases: ['logs'])]
-function logs(): void
-{
-    docker_compose(['logs', '-f', '--tail', '150'], c: context()->withTty());
+function logs(
+    ?string $service = null,
+    #[AsOption(mode: InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED)]
+    array $profiles = [],
+): void {
+    $command = ['logs', '-f', '--tail', '150'];
+
+    if ($service) {
+        $command[] = $service;
+    }
+
+    docker_compose($command, c: context()->withTty(), profiles: $profiles);
 }
 
 #[AsTask(description: 'Lists containers status', aliases: ['ps'])]
@@ -225,24 +280,7 @@ function workers_start(): void
 {
     io()->title('Starting workers');
 
-    $workers = get_workers();
-
-    if (!$workers) {
-        return;
-    }
-
-    run([
-        'docker',
-        'update',
-        '--restart=unless-stopped',
-        ...$workers,
-    ], quiet: true);
-
-    run([
-        'docker',
-        'start',
-        ...$workers,
-    ], quiet: true);
+    up(profiles: ['worker']);
 }
 
 #[AsTask(description: 'Stops the workers', namespace: 'docker:worker', name: 'stop', aliases: ['stop-workers'])]
@@ -250,24 +288,7 @@ function workers_stop(): void
 {
     io()->title('Stopping workers');
 
-    $workers = get_workers();
-
-    if (!$workers) {
-        return;
-    }
-
-    run([
-        'docker',
-        'update',
-        '--restart=no',
-        ...$workers,
-    ]);
-
-    run([
-        'docker',
-        'stop',
-        ...$workers,
-    ]);
+    stop(profiles: ['worker']);
 }
 
 #[AsContext(default: true)]
@@ -305,7 +326,7 @@ function create_default_context(): Context
             // If the directory does not exist, we create it. Otherwise, docker
             // will do, as root, and the user will not be able to write in it.
             if (!is_dir($composerCacheDir)) {
-                mkdir($composerCacheDir, 0777, true);
+                mkdir($composerCacheDir, 0o777, true);
             }
         }
 
@@ -355,11 +376,13 @@ function create_ci_context(): Context
 }
 
 /**
- * @param array<string> $subCommand
+ * @param list<string> $subCommand
+ * @param list<string> $profiles
  */
-function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder = false): Process
+function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder = false, array $profiles = []): Process
 {
     $c ??= context();
+    $profiles = $profiles ?: ['default'];
 
     $domains = [variable('root_domain'), ...variable('extra_domains')];
     $domains = '`' . implode('`) || Host(`', $domains) . '`';
@@ -381,6 +404,10 @@ function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder
         'compose',
         '-p', variable('project_name'),
     ];
+    foreach ($profiles as $profile) {
+        $command[] = '--profile';
+        $command[] = $profile;
+    }
 
     foreach (variable('docker_compose_files') as $file) {
         $command[] = '-f';
@@ -465,29 +492,4 @@ function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): 
     } else {
         docker_compose_run($command, c: $c);
     }
-}
-
-/**
- * Find worker containers for the current project.
- *
- * @return array<string>
- */
-function get_workers(): array
-{
-    $command = [
-        'docker',
-        'ps',
-        '-a',
-        '--filter', 'label=docker-starter.worker.' . variable('project_name'),
-        '--quiet',
-    ];
-    $out = capture($command);
-
-    if (!$out) {
-        return [];
-    }
-
-    $workers = explode("\n", $out);
-
-    return array_map('trim', $workers);
 }

@@ -9,8 +9,9 @@ x-services-templates:
             #- rabbitmq
         volumes:
             - "../..:/var/www:cached"
-        labels:
-            - "docker-starter.worker.${PROJECT_NAME}=true"
+        profiles:
+            - default
+            - worker
 
 # services:
 #    worker_messenger:

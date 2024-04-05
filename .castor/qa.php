@@ -16,7 +16,7 @@ function all(): int
     $phpstan = phpstan();
     // $phpunit = phpunit();
 
-    return max($cs, $phpstan/*, $phpunit*/);
+    return max($cs, $phpstan/* , $phpunit */);
 }
 
 #[AsTask(description: 'Installs tooling')]
