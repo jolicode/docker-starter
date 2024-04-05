@@ -42,14 +42,14 @@ function start(): void
 {
     io()->title('Starting the stack');
 
-    workers_stop();
+    // workers_stop();
     generate_certificates(force: false);
     build();
     up();
     cache_clear();
     install();
     migrate();
-    workers_start();
+    // workers_start();
 
     notify('The stack is now up and running.');
     io()->success('The stack is now up and running.');
