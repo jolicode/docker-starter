@@ -5,6 +5,7 @@ global:
 providers:
   docker:
     exposedByDefault: false
+    constraints: "Label(`project-name`,`{{ PROJECT_NAME }}`)"
   file:
     filename: /etc/traefik/dynamic_conf.yaml
 

@@ -187,9 +187,12 @@ If you want to use Webpack Encore in a Symfony project,
             command: "yarn run dev-server --hot --host 0.0.0.0 --allowed-hosts encore.${PROJECT_ROOT_DOMAIN} --allowed-hosts ${PROJECT_ROOT_DOMAIN} --client-web-socket-url-hostname encore.${PROJECT_ROOT_DOMAIN} --client-web-socket-url-port 443 --client-web-socket-url-protocol wss"
             labels:
                 - "traefik.enable=true"
+                - "project-name=${PROJECT_NAME}"
                 - "traefik.http.routers.${PROJECT_NAME}-encore.rule=Host(`encore.${PROJECT_ROOT_DOMAIN}`)"
                 - "traefik.http.routers.${PROJECT_NAME}-encore.tls=true"
                 - "traefik.http.services.encore.loadbalancer.server.port=8080"
+            profiles:
+                - default
     ```
 
 3. Update the webpack configuration to specify the asset location in **dev**:
@@ -296,8 +299,11 @@ services:
             - "discovery.type=single-node"
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.rule=Host(`elasticsearch.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.tls=true"
+        profiles:
+            - default
 
     kibana:
         image: kibana:7.8.0
@@ -305,8 +311,11 @@ services:
             - elasticsearch
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-kibana.rule=Host(`kibana.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-kibana.tls=true"
+        profiles:
+            - default
 ```
 
 Then, you will be able to browse:
@@ -391,9 +400,12 @@ services:
             - rabbitmq-data:/var/lib/rabbitmq
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.rule=Host(`rabbitmq.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.tls=true"
             - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+        profiles:
+            - default
 ```
 
 In order to publish and consume messages with PHP, you need to install the
@@ -440,8 +452,11 @@ services:
             - "redis-insight-data:/db"
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-redis.rule=Host(`redis.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-redis.tls=true"
+        profiles:
+            - default
 
 ```
 
@@ -477,9 +492,12 @@ services:
             - MAILDEV_SMTP_PORT=25
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-maildev.rule=Host(`maildev.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-maildev.tls=true"
             - "traefik.http.services.maildev.loadbalancer.server.port=80"
+        profiles:
+            - default
 ```
 
 Then, you will be able to browse:
@@ -516,8 +534,11 @@ services:
             - "CORS_ALLOWED_ORIGINS=*"
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-mercure.rule=Host(`mercure.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-mercure.tls=true"
+        profiles:
+            - default
 ```
 
 If you are using Symfony, you must put the following configuration in the `.env` file:
@@ -631,6 +652,8 @@ services:
             BLACKFIRE_SERVER_TOKEN: FIXME
             BLACKFIRE_CLIENT_ID: FIXME
             BLACKFIRE_CLIENT_TOKEN: FIXME
+        profiles:
+            - default
 
 ```
 
@@ -710,6 +733,8 @@ services:
             target: cron
         volumes:
             - "../..:/var/www:cached"
+        profiles:
+            - default
 ```
 
 </details>
