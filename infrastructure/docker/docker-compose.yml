@@ -25,6 +25,7 @@ services:
             - default
         labels:
             - "traefik.enable=true"
+            - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-frontend.rule=Host(${PROJECT_DOMAINS})"
             - "traefik.http.routers.${PROJECT_NAME}-frontend.tls=true"
             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.rule=Host(${PROJECT_DOMAINS})"
