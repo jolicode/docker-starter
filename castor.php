@@ -97,5 +97,5 @@ function migrate(): void
     // io()->title('Migrating the database schema');
 
     // docker_compose_run('bin/console doctrine:database:create --if-not-exists');
-    // docker_compose_run('bin/console doctrine:migration:migrate -n --allow-no-migration');
+    // docker_compose_run('bin/console doctrine:migration:migrate -n --allow-no-migration --all-or-nothing');
 }
