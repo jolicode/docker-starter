@@ -310,8 +310,8 @@ function create_default_context(): Context
         ],
         'macos' => false,
         'power_shell' => false,
-        'user_id' => getmyuid(), // replaced posix_geteuid as posix isn't available in PHP windows
-        // Windows 11 PHP 8.3.6
+        // check if posix_geteuid is available, if not, use getmyuid (windows)
+        'user_id' => function_exists('posix_geteuid') ? posix_geteuid() : getmyuid(),
         'root_dir' => \dirname(__DIR__),
     ];
 
