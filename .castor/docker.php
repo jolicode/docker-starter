@@ -310,7 +310,8 @@ function create_default_context(): Context
         ],
         'macos' => false,
         'power_shell' => false,
-        'user_id' => posix_geteuid(),
+        // check if posix_geteuid is available, if not, use getmyuid (windows)
+        'user_id' => function_exists('posix_geteuid') ? posix_geteuid() : getmyuid(),
         'root_dir' => \dirname(__DIR__),
     ];
 
