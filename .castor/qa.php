@@ -5,6 +5,7 @@ namespace qa;
 use Castor\Attribute\AsTask;
 
 use function Castor\io;
+use function Castor\variable;
 use function docker\docker_compose_run;
 use function docker\docker_exit_code;
 
@@ -37,12 +38,24 @@ function install(): void
 #[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]
 function phpstan(): int
 {
+    if (!is_dir(variable('root_dir') . '/tools/phpstan/vendor')) {
+        io()->error('PHPStan is not installed. Run `castor qa:install` first.');
+
+        return 1;
+    }
+
     return docker_exit_code('phpstan', workDir: '/var/www');
 }
 
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
 function cs(bool $dryRun = false): int
 {
+    if (!is_dir(variable('root_dir') . '/tools/php-cs-fixer/vendor')) {
+        io()->error('PHP-CS-Fixer is not installed. Run `castor qa:install` first.');
+
+        return 1;
+    }
+
     if ($dryRun) {
         return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/var/www');
     }
