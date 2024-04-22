@@ -1,1 +1,1 @@
-./tools/php-cs-fixer/vendor/bin/php-cs-fixer
+/var/www/tools/php-cs-fixer/vendor/bin/php-cs-fixer
