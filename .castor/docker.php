@@ -7,10 +7,10 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 
 use function Castor\cache;
 use function Castor\capture;
@@ -311,7 +311,7 @@ function create_default_context(): Context
         'macos' => false,
         'power_shell' => false,
         // check if posix_geteuid is available, if not, use getmyuid (windows)
-        'user_id' => function_exists('posix_geteuid') ? posix_geteuid() : getmyuid(),
+        'user_id' => \function_exists('posix_geteuid') ? posix_geteuid() : getmyuid(),
         'root_dir' => \dirname(__DIR__),
     ];
 
