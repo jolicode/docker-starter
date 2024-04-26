@@ -5,7 +5,7 @@ services:
     router:
         build: services/router
         volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock"
             - "./services/router/certs:/etc/ssl/certs"
         network_mode: host
         profiles:

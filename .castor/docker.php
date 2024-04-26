@@ -346,7 +346,7 @@ function push(): void
                 'type' => $type,
                 'context' => $config['build']['context'],
                 'dockerfile' => $config['build']['dockerfile'] ?? 'Dockerfile',
-                'target' => $config['build']['target'] ?? null
+                'target' => $config['build']['target'] ?? null,
             ];
         }
     }
