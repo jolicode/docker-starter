@@ -2,14 +2,14 @@ name: Push docker image to registry
 
 "on":
   push:
-    branches: ["main", "feat/registry-docker"]
+    # Only run this job when pushing to the main branch
+    branches: ["main"]
 
 permissions:
   contents: read
   packages: write
 
 env:
-  # Fix for symfony/color detection. We know GitHub Actions can handle it
   DS_REGISTRY: "ghcr.io/jolicode/docker-starter-cache"
   DS_PHP_VERSION: "8.3"
 

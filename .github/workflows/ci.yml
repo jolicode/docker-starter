@@ -43,11 +43,13 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            # Install official version of docker that correctly supports from-cache option in docker compose
             - name: Set up Docker
               uses: crazy-max/ghaction-setup-docker@v3
               with:
                   set-host: true
 
+            # Docker socket path is different when using setup docker
             - name: Set Docker Socket Host
               run: echo "DOCKER_SOCKET_PATH=${DOCKER_HOST:5}" >> $GITHUB_ENV
 
