@@ -43,6 +43,15 @@ RUN apt-get update \
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
 
+# Install a fake sudo command
+# This is commented out by default because it exposes a security risk if you use this image in production, but it may be useful for development
+# Use it at your own risk
+#COPY base/sudo.sh /usr/local/bin/sudo
+#RUN curl -L https://github.com/tianon/gosu/releases/download/1.16/gosu-amd64 -o /usr/local/bin/gosu && \
+#    chmod u+s /usr/local/bin/gosu && \
+#    chmod +x /usr/local/bin/gosu && \
+#    chmod +x /usr/local/bin/sudo
+
 WORKDIR /var/www
 
 FROM php-base as frontend
@@ -93,6 +102,8 @@ RUN apt-get update \
 # Config
 COPY builder/etc/. /etc/
 COPY builder/php-configuration /etc/php/${PHP_VERSION}
+
+RUN phpenmod app-default && phpenmod app-builder
 
 # Composer
 COPY --from=composer/composer:2.7.1 /usr/bin/composer /usr/bin/composer
