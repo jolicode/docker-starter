@@ -304,6 +304,13 @@ function push(): void
 
     $targets = [];
 
+    /** @var string|null $registry */
+    $registry = variable('registry');
+
+    if ($registry === null || $registry === '') {
+        throw new \RuntimeException('You must define a registry to push images.');
+    }
+
     foreach ($composeFile as $file) {
         $path = variable('root_dir') . '/infrastructure/docker/' . $file;
         $content = file_get_contents($path);
@@ -351,9 +358,6 @@ function push(): void
         }
     }
 
-    /** @var string|null $registry */
-    $registry = variable('registry');
-
     $content = sprintf(<<<EOHCL
         group "default" {
             targets = [%s]
@@ -365,7 +369,7 @@ function push(): void
 
 
     foreach ($targets as $target) {
-        $reference = str_replace('${REGISTRY:-}', $registry ?? '', $target['reference'] ?? '');
+        $reference = str_replace('${REGISTRY:-}', $registry, $target['reference'] ?? '');
 
         $content .= sprintf(<<<EOHCL
             target "%s" {
