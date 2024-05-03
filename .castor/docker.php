@@ -299,7 +299,7 @@ function workers_stop(): void
 function push(): void
 {
     // Generate bake file
-    $composeFile = context()->data['docker_compose_files'];
+    $composeFile = variable('docker_compose_files');
     $composeFile[] = 'docker-compose.builder.yml';
 
     $targets = [];
@@ -355,12 +355,12 @@ function push(): void
     $registry = variable('registry');
 
     $content = sprintf(<<<EOHCL
-group "default" {
-    targets = [%s]
-}
-
-
-EOHCL
+        group "default" {
+            targets = [%s]
+        }
+        
+        
+        EOHCL
     , implode(', ', array_map(fn ($target) => sprintf('"%s"', $target['target']), $targets)));
 
 
@@ -368,19 +368,19 @@ EOHCL
         $reference = str_replace('${REGISTRY:-}', $registry ?? '', $target['reference'] ?? '');
 
         $content .= sprintf(<<<EOHCL
-target "%s" {
-    context    = "infrastructure/docker/%s"
-    dockerfile = "%s"
-    cache-from = ["%s"]
-    cache-to   = ["type=%s,ref=%s,mode=max"]
-    target     = "%s"
-    args = {
-        PHP_VERSION = "%s"
-    }
-}
-
-
-EOHCL
+            target "%s" {
+                context    = "infrastructure/docker/%s"
+                dockerfile = "%s"
+                cache-from = ["%s"]
+                cache-to   = ["type=%s,ref=%s,mode=max"]
+                target     = "%s"
+                args = {
+                    PHP_VERSION = "%s"
+                }
+            }
+            
+            
+            EOHCL
         , $target['target'], $target['context'], $target['dockerfile'], $reference, $target['type'], $reference, $target['target'], variable('php_version'));
     }
 

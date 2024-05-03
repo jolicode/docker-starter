@@ -13,8 +13,6 @@ x-services-templates:
         volumes:
             - "../..:/var/www:cached"
             - "../../.home:/home/app:cached"
-        labels:
-          - "docker-starter.worker.${PROJECT_NAME}=true"
         environment:
           - HOME=/home/app
         profiles:
