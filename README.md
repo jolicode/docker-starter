@@ -37,7 +37,7 @@ will be available;
 For example:
 
 ```php
-function create_default_variables(): Context
+function create_default_variables(): array
 {
     $projectName = 'app';
     $tld = 'test';
