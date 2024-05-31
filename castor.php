@@ -74,7 +74,12 @@ function install(): void
         docker_compose_run('yarn install --frozen-lockfile');
     } elseif (is_file("{$basePath}/package.json")) {
         io()->section('Installing Node.js dependencies');
-        docker_compose_run('npm ci');
+
+        if (is_file("{$basePath}/package-lock.json")) {
+            docker_compose_run('npm ci');
+        } else {
+            docker_compose_run('npm install');
+        }
     }
     if (is_file("{$basePath}/importmap.php")) {
         io()->section('Installing importmap');
