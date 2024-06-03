@@ -474,43 +474,42 @@ In your application, you can use the following configuration:
 
 </details>
 
-### How to add Maildev
+### How to add Mailpit
 
 <details>
 
 <summary>Read the cookbook</summary>
 
-In order to use Maildev and its dashboard, you should add the following content
+In order to use Mailpit and its dashboard, you should add the following content
 to the `docker-compose.yml` file:
 
 ```yaml
 services:
-    maildev:
-        image: maildev/maildev
+    mail:
+        image: axllent/mailpit
         environment:
-            - MAILDEV_WEB_PORT=80
-            - MAILDEV_SMTP_PORT=25
+            - MP_SMTP_BIND_ADDR=0.0.0.0:25
         labels:
             - "traefik.enable=true"
             - "project-name=${PROJECT_NAME}"
-            - "traefik.http.routers.${PROJECT_NAME}-maildev.rule=Host(`maildev.${PROJECT_ROOT_DOMAIN}`)"
-            - "traefik.http.routers.${PROJECT_NAME}-maildev.tls=true"
-            - "traefik.http.services.maildev.loadbalancer.server.port=80"
+            - "traefik.http.routers.${PROJECT_NAME}-mail.rule=Host(`mail.${PROJECT_ROOT_DOMAIN}`)"
+            - "traefik.http.routers.${PROJECT_NAME}-mail.tls=true"
+            - "traefik.http.services.mail.loadbalancer.server.port=8025"
         profiles:
             - default
 ```
 
 Then, you will be able to browse:
 
-* `https://maildev.<root_domain>`
+* `https://mail.<root_domain>`
 
 In your application, you can use the following configuration:
 
 * scheme: `smtp`;
-* host: `maildev`;
+* host: `mail`;
 * port: `25`.
 
-For example in Symfony you can use: `MAILER_DSN=smtp://maildev:25`.
+For example in Symfony you can use: `MAILER_DSN=smtp://mail:25`.
 
 </details>
 
