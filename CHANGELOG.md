@@ -8,7 +8,7 @@
 * Do not store certificates in the router image
 * Upgrade to PostgreSQL v16
 * Dynamically map user id and group id to the container, base on the host user
-* Update maildev instructions
+* Replace maildev with Mailpit
 * Drop support for PHP < 8.1
 * Add support for PHP 8.3
 * Add some PHP tooling (PHP-CS-Fixer, PHPStan)
