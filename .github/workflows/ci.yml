@@ -41,13 +41,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            # Setup
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: 8.2
-                  tools: castor
+            - name: setup-castor
+              uses: castor-php/setup-castor@v0.1.0
 
             - name: "Build and start the infrastructure"
               run: "castor start && sleep 5"
