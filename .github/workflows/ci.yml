@@ -16,7 +16,7 @@ env:
     # Fix for symfony/color detection. We know GitHub Actions can handle it
     ANSICON: 1
     CASTOR_CONTEXT: ci
-    DS_REGISTRY: "ghcr.io/jolicode/docker-starter-cache"
+    DS_REGISTRY: "ghcr.io/jolicode/docker-starter"
 
 jobs:
     check-dockerfiles:

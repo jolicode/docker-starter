@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 env:
-  DS_REGISTRY: "ghcr.io/jolicode/docker-starter-cache"
+  DS_REGISTRY: "ghcr.io/jolicode/docker-starter"
   DS_PHP_VERSION: "8.3"
 
 jobs:
