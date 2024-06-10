@@ -5,7 +5,7 @@ services:
     router:
         build: services/router
         volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock"
             - "./services/router/certs:/etc/ssl/certs"
         network_mode: host
         profiles:
@@ -15,12 +15,17 @@ services:
         build:
             context: services/php
             target: frontend
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/frontend:cache"
+        user: "${USER_ID}:${USER_ID}"
         depends_on:
             - postgres
         volumes:
             - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
         environment:
             - "PHP_VERSION=${PHP_VERSION}"
+            - HOME=/home/app
         profiles:
             - default
         labels:

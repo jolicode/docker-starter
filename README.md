@@ -957,6 +957,128 @@ services:
 
 </details>
 
+### How to use a docker registry to cache images layer
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+You can use a docker registry to cache images layer, it can be useful to speed up the build process during the CI and 
+local development.
+
+First you need a docker registry, in following examples we will use the GitHub registry (ghcr.io).
+
+Then add the registry to the context variable of the `castor.php` file:
+
+```php
+function create_default_variables(): Context
+{
+    return [
+        // [...]
+        'registry' => 'ghcr.io/your-organization/your-project',
+    ];
+}
+```
+
+Once you have the registry, you can push the images to the registry:
+
+```bash
+castor docker:push
+```
+
+> [!WARNING] Pushing images cache from a dev environment to a registry is not recommended, as cache is highly sensitive 
+> to the environment and may not be compatible with other environments. It is recommended to push the cache from the CI
+> environment.
+
+This command will generate a bake file with the images to push from the `cache_from` directive of the `docker-compose.yml` file.
+If you want to add more images to push, you can add the `cache_from` directive to them.
+
+```yaml
+services:
+    my-service:
+        build:
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/my-service:cache"
+```
+</details>
+
+### How to use cached images in a GitHub action
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+If you are using a GitHub action to build your images, you can use the cached images from the registry to speed up the build process.
+However there are few steps to make it works nicely due to the docker binary limitations in GitHub actions.
+
+#### Pushing images to the registry from a GitHub action
+
+To push images to the registry in a github action you will need to do this : 
+
+1. Ensure that the github token have the `write:packages` scope.
+
+```yaml
+permissions:
+    contents: read
+    packages: write
+```
+
+
+2. Install Docker buildx in the github action
+
+```yaml
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+```
+
+3. Login to the registry
+
+```yaml
+    - name: Log in to registry
+      shell: bash
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+```
+
+#### Using the cached images in GitHub action
+
+Images layers built when using the Docker Buildx will have a different hash than the one built with the classic Docker build.
+Then you will need to use a more recent version of the Docker binary to use the cached images by either:
+
+* Use buildx in each GitHub action workflow step
+
+```yaml
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+```
+
+* Use the official Docker binary
+```yaml
+    # Install official version of docker that correctly supports from-cache option in docker compose
+    - name: Set up Docker
+      uses: crazy-max/ghaction-setup-docker@v3
+      with:
+          set-host: true
+
+    # Docker socket path is different when using setup docker
+    - name: Set Docker Socket Host
+      run: echo "DOCKER_SOCKET_PATH=${DOCKER_HOST:5}" >> $GITHUB_ENV
+```
+
+The second option is faster (there is no need to transfer images between buildx and local docker), but it is not 
+officially supported by GitHub actions and may break in the future.
+
+* Login to the registry
+
+```yaml
+    - name: Log in to registry
+      shell: bash
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+```
+
+By default images are private in the GitHub registry, you will need to login to the registry to pull the images.
+
+</details>
+
 ## Credits
 
 - Created at [JoliCode](https://jolicode.com/)

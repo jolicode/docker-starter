@@ -4,11 +4,17 @@ x-services-templates:
         build:
             context: services/php
             target: worker
+            cache_from:
+                - "${REGISTRY:-}/worker:cache"
         depends_on:
             - postgres
             #- rabbitmq
+        user: "${USER_ID}:${USER_ID}"
         volumes:
             - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
+        environment:
+          - HOME=/home/app
         profiles:
             - default
             - worker
