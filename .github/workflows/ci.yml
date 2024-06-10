@@ -53,6 +53,10 @@ jobs:
             - name: Set Docker Socket Host
               run: echo "DOCKER_SOCKET_PATH=${DOCKER_HOST:5}" >> $GITHUB_ENV
 
+            - name: Log in to registry
+              shell: bash
+              run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
             - name: setup-castor
               uses: castor-php/setup-castor@v0.1.0
 
