@@ -52,7 +52,10 @@ RUN addgroup --gid $USER_ID app && \
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
 
+ENV PHP_VERSION=${PHP_VERSION}
+
 WORKDIR /var/www
+
 ENTRYPOINT [ "/entrypoint" ]
 
 FROM php-base as frontend
