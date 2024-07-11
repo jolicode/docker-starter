@@ -1,6 +1,6 @@
 # hadolint global ignore=DL3008
 
-FROM debian:12.5-slim as php-base
+FROM debian:12.5-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -58,7 +58,7 @@ WORKDIR /var/www
 
 ENTRYPOINT [ "/entrypoint" ]
 
-FROM php-base as frontend
+FROM php-base AS frontend
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -82,9 +82,9 @@ EXPOSE 80
 
 CMD ["runsvdir", "-P", "/etc/service"]
 
-FROM php-base as worker
+FROM php-base AS worker
 
-FROM php-base as builder
+FROM php-base AS builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
