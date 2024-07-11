@@ -567,7 +567,7 @@ services:
 Add the following file `infrastructure/docker/services/redirectionio-agent/Dockerfile`:
 
 ```Dockerfile
-FROM alpine:3.12 as alpine
+FROM alpine:3.12 AS alpine
 
 WORKDIR /tmp
 
@@ -704,7 +704,7 @@ In order to set up crontab, you should add a new container:
 ```Dockerfile
 # services/php/Dockerfile
 
-FROM php-base as cron
+FROM php-base AS cron
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
