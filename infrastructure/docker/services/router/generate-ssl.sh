@@ -8,6 +8,7 @@ CERTS_DIR=$BASE/certs
 
 rm -rf $CERTS_DIR
 mkdir -p $CERTS_DIR
+touch $CERTS_DIR/.gitkeep
 
 openssl req -x509 -sha256 -newkey rsa:4096 \
     -keyout $CERTS_DIR/key.pem \
