@@ -19,8 +19,6 @@ services:
             - postgres
         volumes:
             - "../..:/var/www:cached"
-        environment:
-            - "PHP_VERSION=${PHP_VERSION}"
         profiles:
             - default
         labels:
