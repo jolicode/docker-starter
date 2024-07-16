@@ -118,4 +118,9 @@ RUN mkdir -p "/home/app/.composer/cache" \
 # Third party tools
 ENV PATH="$PATH:/var/www/tools/bin"
 
+# Good default customization
+RUN cat >> /etc/bash.bashrc <<EOF
+PS1='\[\e[01;33m\]\u \[\e[00;32m\]\w\[\e[0m\] '
+EOF
+
 WORKDIR /var/www/application
