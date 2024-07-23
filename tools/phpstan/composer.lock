@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2dc54cc61d8be20b324b7e8c130ff97",
+    "content-hash": "b1a9af5b722b51dfe048cacf92175f9a",
     "packages": [
         {
             "name": "phpstan/extension-installer",
-            "version": "1.3.1",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/extension-installer.git",
-                "reference": "f45734bfb9984c6c56c4486b71230355f066a58a"
+                "reference": "f6b87faf9fc7978eab2f7919a8760bc9f58f9203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/extension-installer/zipball/f45734bfb9984c6c56c4486b71230355f066a58a",
-                "reference": "f45734bfb9984c6c56c4486b71230355f066a58a",
+                "url": "https://api.github.com/repos/phpstan/extension-installer/zipball/f6b87faf9fc7978eab2f7919a8760bc9f58f9203",
+                "reference": "f6b87faf9fc7978eab2f7919a8760bc9f58f9203",
                 "shasum": ""
             },
             "require": {
@@ -46,22 +46,22 @@
             "description": "Composer plugin for automatic installation of PHPStan extensions",
             "support": {
                 "issues": "https://github.com/phpstan/extension-installer/issues",
-                "source": "https://github.com/phpstan/extension-installer/tree/1.3.1"
+                "source": "https://github.com/phpstan/extension-installer/tree/1.4.1"
             },
-            "time": "2023-05-24T08:59:17+00:00"
+            "time": "2024-06-10T08:20:49+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.66",
+            "version": "1.11.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "94779c987e4ebd620025d9e5fdd23323903950bd"
+                "reference": "52d2bbfdcae7f895915629e4694e9497d0f8e28d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/94779c987e4ebd620025d9e5fdd23323903950bd",
-                "reference": "94779c987e4ebd620025d9e5fdd23323903950bd",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/52d2bbfdcae7f895915629e4694e9497d0f8e28d",
+                "reference": "52d2bbfdcae7f895915629e4694e9497d0f8e28d",
                 "shasum": ""
             },
             "require": {
@@ -104,32 +104,28 @@
                 {
                     "url": "https://github.com/phpstan",
                     "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
-                    "type": "tidelift"
                 }
             ],
-            "time": "2024-03-28T16:17:31+00:00"
+            "time": "2024-07-06T11:17:41+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "1.3.9",
+            "version": "1.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "a32bc86da24495025d7aafd1ba62444d4a364a98"
+                "reference": "e909a075d69e0d4db262ac3407350ae2c6b6ab5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/a32bc86da24495025d7aafd1ba62444d4a364a98",
-                "reference": "a32bc86da24495025d7aafd1ba62444d4a364a98",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/e909a075d69e0d4db262ac3407350ae2c6b6ab5f",
+                "reference": "e909a075d69e0d4db262ac3407350ae2c6b6ab5f",
                 "shasum": ""
             },
             "require": {
                 "ext-simplexml": "*",
                 "php": "^7.2 || ^8.0",
-                "phpstan/phpstan": "^1.10.62"
+                "phpstan/phpstan": "^1.11.7"
             },
             "conflict": {
                 "symfony/framework-bundle": "<3.0"
@@ -180,9 +176,9 @@
             "description": "Symfony Framework extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-symfony/issues",
-                "source": "https://github.com/phpstan/phpstan-symfony/tree/1.3.9"
+                "source": "https://github.com/phpstan/phpstan-symfony/tree/1.4.6"
             },
-            "time": "2024-03-16T16:50:20+00:00"
+            "time": "2024-07-16T11:48:54+00:00"
         }
     ],
     "packages-dev": [],

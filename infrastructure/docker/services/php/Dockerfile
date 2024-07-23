@@ -1,6 +1,6 @@
 # hadolint global ignore=DL3008
 
-FROM debian:12.5-slim AS php-base
+FROM debian:12.6-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -114,7 +114,7 @@ RUN adduser app sudo \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.7.1 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.7.7 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
