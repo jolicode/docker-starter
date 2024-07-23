@@ -340,9 +340,7 @@ function create_default_context(): Context
     $platform = strtolower(php_uname('s'));
     if (str_contains($platform, 'darwin')) {
         $data['macos'] = true;
-        $data['docker_compose_files'][] = 'docker-compose.docker-for-x.yml';
     } elseif (\in_array($platform, ['win32', 'win64', 'windows nt'])) {
-        $data['docker_compose_files'][] = 'docker-compose.docker-for-x.yml';
         $data['power_shell'] = true;
     }
 

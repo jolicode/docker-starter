@@ -957,6 +957,55 @@ services:
 
 </details>
 
+### How to connect networks of two projects
+
+Let's say you have two projects `foo` and `bar`. You want to run both projects a
+the same time. And containers from `foo` project should be able to dialog with
+`bar` project via public network (host network).
+
+In the `foo` project, you'll need to declare the `bar_default` network in
+`docker-compose.yml`:
+
+```yaml
+networks:
+    bar_default:
+        external: true
+```
+
+Then, attach it to the the `foo` router:
+
+```yaml
+services:
+    router:
+        networks:
+            - default
+            - bar_default
+```
+
+Finally, you must remove the constraints on the router so it'll be able to
+discover containers from another docker compose project:
+
+```diff
+--- a/infrastructure/docker/services/router/traefik/traefik.yaml
++++ b/infrastructure/docker/services/router/traefik/traefik.yaml
+ providers:
+   docker:
+     exposedByDefault: false
+-    constraints: "Label(`project-name`,`{{ PROJECT_NAME }}`)"
+   file:
+```
+
+Finally, you must :
+
+1. build the project `foo`
+1. build the project `bar`
+1.  Create the network `bar_default` (first time only)
+    ```
+    docker network create bar_default
+    ```
+1. start the project `foo`
+1. start the project `bar`
+
 ## Credits
 
 - Created at [JoliCode](https://jolicode.com/)

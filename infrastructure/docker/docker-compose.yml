@@ -10,7 +10,12 @@ services:
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock"
             - "./services/router/certs:/etc/ssl/certs"
-        network_mode: host
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
+        networks:
+            - default
         profiles:
             - default
 
