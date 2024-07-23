@@ -306,7 +306,6 @@ function create_default_context(): Context
         'php_version' => '8.2',
         'docker_compose_files' => [
             'docker-compose.yml',
-            'docker-compose.worker.yml',
         ],
         'macos' => false,
         'power_shell' => false,
