@@ -302,6 +302,11 @@ services:
             - "project-name=${PROJECT_NAME}"
             - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.rule=Host(`elasticsearch.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-elasticsearch.tls=true"
+        healthcheck:
+            test: "curl --fail http://localhost:9200/_cat/health || exit 1"
+            interval: 5s
+            timeout: 5s
+            retries: 5
         profiles:
             - default
 
@@ -404,6 +409,11 @@ services:
             - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.rule=Host(`rabbitmq.${PROJECT_ROOT_DOMAIN}`)"
             - "traefik.http.routers.${PROJECT_NAME}-rabbitmq.tls=true"
             - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+        healthcheck:
+            test: "rabbitmqctl eval '{ true, rabbit_app_booted_and_running } = { rabbit:is_booted(node()), rabbit_app_booted_and_running }, { [], no_alarms } = { rabbit:alarms(), no_alarms }, [] /= rabbit_networking:active_listeners(), rabbitmq_node_is_healthy.' || exit 1"
+            interval: 5s
+            timeout: 5s
+            retries: 5
         profiles:
             - default
 ```
@@ -443,8 +453,15 @@ volumes:
 services:
     redis:
         image: redis:5
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
         volumes:
             - "redis-data:/data"
+        profiles:
+            - default
 
     redis-insight:
         image: redislabs/redisinsight
@@ -902,6 +919,11 @@ index 49a2661..1804a01 100644
 +        image: mysql:8
 +        environment:
 +            - MYSQL_ALLOW_EMPTY_PASSWORD=1
++        healthcheck:
++            test: "mysqladmin ping -h localhost"
++            interval: 5s
++            timeout: 5s
++            retries: 10
          volumes:
 -            - postgres-data:/var/lib/postgresql/data
 +            - mysql-data:/var/lib/mysql
