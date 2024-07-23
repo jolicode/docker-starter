@@ -45,7 +45,7 @@ jobs:
               uses: castor-php/setup-castor@v0.1.0
 
             - name: "Build and start the infrastructure"
-              run: "castor start && sleep 5"
+              run: "castor start"
 
             - name: "Check PHP coding standards"
               run: "castor qa:cs"

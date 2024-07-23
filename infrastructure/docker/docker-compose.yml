@@ -16,7 +16,8 @@ services:
             context: services/php
             target: frontend
         depends_on:
-            - postgres
+            postgres:
+                condition: service_healthy
         volumes:
             - "../..:/var/www:cached"
         profiles:
