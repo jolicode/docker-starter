@@ -1,3 +1,6 @@
+include:
+    - docker-compose.worker.yml
+
 volumes:
     postgres-data: {}
 
