@@ -109,7 +109,7 @@ function up(
         io()->title('Starting infrastructure');
     }
 
-    $command = ['up', '--detach', '--no-build'];
+    $command = ['up', '--detach', '--wait', '--no-build'];
 
     if ($service) {
         $command[] = $service;
