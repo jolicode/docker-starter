@@ -981,6 +981,10 @@ services:
 
 ### How to connect networks of two projects
 
+<details>
+
+<summary>Read the cookbook</summary>
+
 Let's say you have two projects `foo` and `bar`. You want to run both projects a
 the same time. And containers from `foo` project should be able to dialog with
 `bar` project via public network (host network).
@@ -1027,6 +1031,9 @@ Finally, you must :
     ```
 1. start the project `foo`
 1. start the project `bar`
+
+
+</details>
 
 ## Credits
 
