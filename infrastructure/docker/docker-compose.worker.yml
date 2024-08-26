@@ -4,8 +4,7 @@ x-services-templates:
         build:
             context: services/php
             target: worker
-        # Don't use depends_on, it does not work well when stopping containers
-        # with docker compose profiles
+        # Don't use depends_on, it does not work well with docker compose profiles
         volumes:
             - "../..:/var/www:cached"
         profiles:

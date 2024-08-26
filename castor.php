@@ -46,7 +46,7 @@ function start(): void
     // workers_stop();
     generate_certificates(force: false);
     build();
-    up();
+    up(profiles: ['default']); // We can't start worker now, they are not installed
     cache_clear();
     install();
     migrate();
