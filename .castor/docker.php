@@ -49,7 +49,7 @@ function about(): void
             if ("frontend-{$projectName}" === $router['service']) {
                 continue;
             }
-            if (!preg_match('{^Host\\(`(?P<hosts>.*)`\\)$}', $router['rule'], $matches)) {
+            if (!preg_match('{^Host\(`(?P<hosts>.*)`\)$}', $router['rule'], $matches)) {
                 continue;
             }
             $hosts = explode('`) || Host(`', $matches['hosts']);
@@ -79,6 +79,11 @@ function build(
     if ($profile) {
         $command[] = '--profile';
         $command[] = $profile;
+    } else {
+        $command[] = '--profile';
+        $command[] = 'default';
+        $command[] = '--profile';
+        $command[] = 'worker';
     }
 
     $command = [
