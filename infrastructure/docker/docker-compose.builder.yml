@@ -6,6 +6,7 @@ services:
         build:
             context: services/php
             target: builder
+        init: true
         depends_on:
             - postgres
         environment:
