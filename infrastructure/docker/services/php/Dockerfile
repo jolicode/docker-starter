@@ -17,6 +17,7 @@ RUN apt-get update \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        bash-completion \
         procps \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
@@ -118,11 +119,27 @@ COPY --from=composer/composer:2.7.7 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
+ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.2/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
+
+# Composer symfony/console version is too old, and doest not support "API version feature", so we remove it
+# Hey, while we are at it, let's add some more completion
+RUN sed /tmp/completion.bash \
+        -e "s/{{ COMMAND_NAME }}/composer/g" \
+        -e 's/"-a{{ VERSION }}"//g' \
+        -e "s/{{ VERSION }}/1/g"  \
+        > /etc/bash_completion.d/composer \
+    && sed /tmp/completion.bash \
+        -e "s/{{ COMMAND_NAME }}/console/g" \
+        -e "s/{{ VERSION }}/1/g"  \
+        > /etc/bash_completion.d/console
+
 # Third party tools
 ENV PATH="$PATH:/var/www/tools/bin"
 
 # Good default customization
 RUN cat >> /etc/bash.bashrc <<EOF
+. /etc/bash_completion
+
 PS1='\[\e[01;33m\]\u \[\e[00;32m\]\w\[\e[0m\] '
 EOF
 
