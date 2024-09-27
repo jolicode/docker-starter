@@ -18,6 +18,7 @@
 * Update Composer to version 2.7
 * Update NodeJS to version 20.x LTS
 * Upgrade base to Debian Bookworm (12.5)
+* Add support for autocomplete (composer & symfony)
 
 ## 3.11.0 (2023-05-30)
 
