@@ -1,5 +1,5 @@
 parameters:
-    level: 6
+    level: 8
     paths:
         # - application/src
         - application/public
@@ -28,7 +28,6 @@ parameters:
                 power_shell: bool,
                 user_id: int,
                 root_dir: string,
-                env: string,
                 composer_cache_dir: string,
             }
         '''

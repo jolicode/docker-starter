@@ -21,6 +21,11 @@ function init(): void
     fs()->rename('README.dist.md', 'README.md');
 
     $readMeContent = file_get_contents('README.md');
+
+    if (false === $readMeContent) {
+        return;
+    }
+
     $urls = [variable('root_domain'), ...variable('extra_domains')];
     $readMeContent = str_replace('<your hostnames>', implode(' ', $urls), $readMeContent);
     file_put_contents('README.md', $readMeContent);
