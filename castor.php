@@ -2,6 +2,7 @@
 
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\guard_min_version;
 use function Castor\import;
 use function Castor\io;
@@ -9,6 +10,7 @@ use function Castor\notify;
 use function Castor\variable;
 use function docker\about;
 use function docker\build;
+use function docker\docker_compose;
 use function docker\docker_compose_run;
 use function docker\generate_certificates;
 use function docker\up;
@@ -16,7 +18,7 @@ use function docker\up;
 // use function docker\workers_start;
 // use function docker\workers_stop;
 
-guard_min_version('0.15.0');
+guard_min_version('0.18.0');
 
 import(__DIR__ . '/.castor');
 
@@ -104,4 +106,20 @@ function migrate(): void
 
     // docker_compose_run('bin/console doctrine:database:create --if-not-exists');
     // docker_compose_run('bin/console doctrine:migration:migrate -n --allow-no-migration --all-or-nothing');
+}
+
+#[AsTask(description: 'Loads fixtures', namespace: 'app:db', aliases: ['fixture'])]
+function fixtures(): void
+{
+    // io()->title('Loads fixtures');
+
+    // docker_compose_run('bin/console doctrine:fixture:load -n');
+}
+
+#[AsTask(description: 'Connect to the PostgreSQL database', name: 'db:client', aliases: ['postgres', 'pg'])]
+function postgres_client(): void
+{
+    io()->title('Connecting to the PostgreSQL database');
+
+    docker_compose(['exec', 'postgres', 'psql', '-U', 'app', 'app'], context()->toInteractive());
 }
