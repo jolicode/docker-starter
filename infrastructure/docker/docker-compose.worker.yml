@@ -8,7 +8,6 @@ x-services-templates:
         volumes:
             - "../..:/var/www:cached"
         profiles:
-            - default
             - worker
 
 # services:
