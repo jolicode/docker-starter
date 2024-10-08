@@ -303,6 +303,7 @@ function workers_stop(): void
 #[AsContext(default: true)]
 function create_default_context(): Context
 {
+    /** @phpstan-var ContextData $data */
     $data = create_default_variables() + [
         'project_name' => 'app',
         'root_domain' => 'app.test',
