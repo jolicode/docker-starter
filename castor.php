@@ -96,7 +96,8 @@ function cache_clear(): void
 {
     // io()->title('Clearing the application cache');
 
-    // docker_compose_run('rm -rf var/cache/ && bin/console cache:warmup');
+    // docker_compose_run('rm -rf var/cache/');
+    // docker_compose_run('bin/console cache:warmup');
 }
 
 #[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]
