@@ -94,9 +94,6 @@ function install(): void
 #[AsTask(description: 'Clear the application cache', namespace: 'app', aliases: ['cache-clear'])]
 function cache_clear(): void
 {
-    docker_compose_run('echo a && echo b');
-    docker_compose_run('sleep 10');
-
     // io()->title('Clearing the application cache');
 
     // docker_compose_run('rm -rf var/cache/');
