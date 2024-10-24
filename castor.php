@@ -94,10 +94,16 @@ function install(): void
 #[AsTask(description: 'Clear the application cache', namespace: 'app', aliases: ['cache-clear'])]
 function cache_clear(): void
 {
+    docker_compose_run('echo a && echo b');
+    docker_compose_run('sleep 10');
+
     // io()->title('Clearing the application cache');
 
     // docker_compose_run('rm -rf var/cache/');
-    // docker_compose_run('bin/console cache:warmup');
+    // // On the very first run, the vendor does not exist yet
+    // if (is_dir(variable('root_dir') . '/application/vendor')) {
+    //     docker_compose_run('bin/console cache:warmup');
+    // }
 }
 
 #[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]
