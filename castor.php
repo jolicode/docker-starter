@@ -97,7 +97,10 @@ function cache_clear(): void
     // io()->title('Clearing the application cache');
 
     // docker_compose_run('rm -rf var/cache/');
-    // docker_compose_run('bin/console cache:warmup');
+    // // On the very first run, the vendor does not exist yet
+    // if (is_dir(variable('root_dir') . '/application/vendor')) {
+    //     docker_compose_run('bin/console cache:warmup');
+    // }
 }
 
 #[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]

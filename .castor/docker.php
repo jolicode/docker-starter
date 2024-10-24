@@ -459,9 +459,9 @@ function docker_compose_run(
     }
 
     $command[] = $service;
-    $command[] = '/bin/sh';
+    $command[] = '/bin/bash';
     $command[] = '-c';
-    $command[] = "exec {$runCommand}";
+    $command[] = "{$runCommand}";
 
     return docker_compose($command, c: $c, withBuilder: $withBuilder);
 }
