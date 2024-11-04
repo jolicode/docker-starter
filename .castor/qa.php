@@ -29,6 +29,15 @@ function install(): void
     docker_compose_run('composer install -o', workDir: '/var/www/tools/phpstan');
 }
 
+#[AsTask(description: 'Update tooling')]
+function update(): void
+{
+    io()->title('Update QA tooling');
+
+    docker_compose_run('composer update -o', workDir: '/var/www/tools/php-cs-fixer');
+    docker_compose_run('composer update -o', workDir: '/var/www/tools/phpstan');
+}
+
 // #[AsTask(description: 'Runs PHPUnit', aliases: ['phpunit'])]
 // function phpunit(): int
 // {

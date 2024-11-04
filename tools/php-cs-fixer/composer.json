@@ -1,12 +1,13 @@
 {
     "type": "project",
     "require": {
-        "friendsofphp/php-cs-fixer": "^3.59.3"
+        "friendsofphp/php-cs-fixer": "^3.64.0"
     },
     "config": {
         "platform": {
             "php": "8.1"
         },
+        "bump-after-update": true,
         "sort-packages": true
     }
 }
