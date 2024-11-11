@@ -38,7 +38,7 @@ function about(): void
 
     try {
         $routers = http_client()
-            ->request('GET', sprintf('http://%s:8080/api/http/routers', variable('root_domain')))
+            ->request('GET', \sprintf('http://%s:8080/api/http/routers', variable('root_domain')))
             ->toArray()
         ;
         $projectName = variable('project_name');
@@ -349,7 +349,7 @@ function create_default_context(): Context
         $data['power_shell'] = true;
     }
 
-    if ($data['user_id'] > 256000) {
+    if (false === $data['user_id'] || $data['user_id'] > 256000) {
         $data['user_id'] = 1000;
     }
 
