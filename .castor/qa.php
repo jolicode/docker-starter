@@ -48,9 +48,7 @@ function update(): void
 function phpstan(): int
 {
     if (!is_dir(variable('root_dir') . '/tools/phpstan/vendor')) {
-        io()->error('PHPStan is not installed. Run `castor qa:install` first.');
-
-        return 1;
+        install();
     }
 
     return docker_exit_code('phpstan', workDir: '/var/www');
@@ -60,9 +58,7 @@ function phpstan(): int
 function cs(bool $dryRun = false): int
 {
     if (!is_dir(variable('root_dir') . '/tools/php-cs-fixer/vendor')) {
-        io()->error('PHP-CS-Fixer is not installed. Run `castor qa:install` first.');
-
-        return 1;
+        install();
     }
 
     if ($dryRun) {
