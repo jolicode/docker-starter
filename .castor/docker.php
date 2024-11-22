@@ -206,7 +206,7 @@ function destroy(
         }
     }
 
-    docker_compose(['down', '--remove-orphans', '--volumes', '--rmi=local'], withBuilder: true);
+    docker_compose(['down', '--remove-orphans', '--volumes', '--rmi=local'], withBuilder: true, profiles: ['default', 'worker']);
     $files = finder()
         ->in(variable('root_dir') . '/infrastructure/docker/services/router/certs/')
         ->name('*.pem')
