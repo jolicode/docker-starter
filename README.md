@@ -729,8 +729,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-COPY crontab /etc/cron.d/crontab
+COPY --link cron/crontab /etc/cron.d/crontab
+COPY --link cron/entrypoint.sh /entrypoint.sh
 RUN crontab /etc/cron.d/crontab
+
+ENTRYPOINT [ "/entrypoint.sh" ]
 
 CMD ["cron", "-f"]
 ```
@@ -740,6 +743,17 @@ And you can add all your crons in the `services/php/crontab` file:
 * * * * * su app -c "/usr/local/bin/php -r 'echo time().PHP_EOL;'" > /proc/1/fd/1 2>&1
 ```
 
+And you can add the following content to the `services/php/entrypoint.sh` file:
+```bash
+#!/usr/bin/env bash
+
+if ! id -u ${USER_ID} &>/dev/null; then
+    useradd -u ${USER_ID} -o -m -s /bin/bash ${USER_ID}
+fi
+
+exec "$@"
+```
+
 Finally, add the following content to the `docker-compose.yml` file:
 ```yaml
 services:
@@ -747,6 +761,8 @@ services:
         build:
             context: services/php
             target: cron
+        environment:
+            - "USER_ID=${USER_ID}"
         volumes:
             - "../..:/var/www:cached"
         profiles:
