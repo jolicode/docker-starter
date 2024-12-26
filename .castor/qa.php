@@ -2,6 +2,7 @@
 
 namespace qa;
 
+// use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 
 use function Castor\io;
@@ -29,19 +30,22 @@ function install(): void
     docker_compose_run('composer install -o', workDir: '/var/www/tools/phpstan');
 }
 
-#[AsTask(description: 'Update tooling')]
+#[AsTask(description: 'Updates tooling')]
 function update(): void
 {
-    io()->title('Update QA tooling');
+    io()->title('Updating QA tooling');
 
     docker_compose_run('composer update -o', workDir: '/var/www/tools/php-cs-fixer');
     docker_compose_run('composer update -o', workDir: '/var/www/tools/phpstan');
 }
 
+// /**
+//  * @param string[] $rawTokens
+//  */
 // #[AsTask(description: 'Runs PHPUnit', aliases: ['phpunit'])]
-// function phpunit(): int
+// function phpunit(#[AsRawTokens] array $rawTokens = []): int
 // {
-//     return docker_exit_code('phpunit');
+//     return docker_exit_code('bin/phpunit ' . implode(' ', $rawTokens));
 // }
 
 #[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]

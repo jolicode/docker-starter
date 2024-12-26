@@ -12,7 +12,7 @@ A Docker environment is provided and requires you to have these tools available:
 
 #### Castor
 
-Once castor is installed, in order to improve your usage of castor scripts, you
+Once `castor` is installed, in order to improve your usage of `castor` scripts, you
 can install console autocompletion script.
 
 If you are using bash:
@@ -24,7 +24,7 @@ castor completion | sudo tee /etc/bash_completion.d/castor
 If you are using something else, please refer to your shell documentation. You
 may need to use `castor completion > /to/somewhere`.
 
-Castor supports completion for `bash`, `zsh` & `fish` shells.
+`castor` supports completion for `bash`, `zsh` & `fish` shells.
 
 ### Docker environment
 
@@ -63,8 +63,8 @@ castor start
 > [!NOTE]
 > the first start of the stack should take a few minutes.
 
-The site is now accessible at the hostnames your have configured over HTTPS
-(you may need to accept self-signed SSL certificate if you do not have mkcert
+The site is now accessible at the hostnames you have configured over HTTPS
+(you may need to accept self-signed SSL certificate if you do not have `mkcert`
 installed on your computer - see below).
 
 ### SSL certificates
@@ -75,11 +75,11 @@ you run `castor docker:generate-certificates`.
 
 If you have `mkcert` installed on your computer, it will be used to generate
 locally trusted certificates. See [`mkcert` documentation](https://github.com/FiloSottile/mkcert#installation)
-to understand how to install it. Do not forget to install CA root from mkcert
+to understand how to install it. Do not forget to install CA root from `mkcert`
 by running `mkcert -install`.
 
 If you don't have `mkcert`, then self-signed certificates will instead be
-generated with openssl. You can configure [infrastructure/docker/services/router/openssl.cnf](infrastructure/docker/services/router/openssl.cnf)
+generated with `openssl`. You can configure [infrastructure/docker/services/router/openssl.cnf](infrastructure/docker/services/router/openssl.cnf)
 to tweak certificates.
 
 You can run `castor docker:generate-certificates --force` to recreate new certificates
