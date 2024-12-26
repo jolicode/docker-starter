@@ -13,7 +13,7 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
 
     # symfony:
-    #     container_xml_path: 'application/var/cache/dev/App_KernelDevDebugContainer.xml'
+    #     containerXmlPath: 'application/var/cache/dev/App_KernelDevDebugContainer.xml'
 
     typeAliases:
         ContextData: '''
