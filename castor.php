@@ -97,7 +97,7 @@ function cache_clear(): void
     // docker_compose_run('rm -rf var/cache/');
     // // On the very first run, the vendor does not exist yet
     // if (is_dir(variable('root_dir') . '/application/vendor')) {
-    //     docker_compose_run('bin/console cache:warmup');
+    //     docker_compose_run('bin/console cache:warmup', c: context()->withAllowFailure());
     // }
 }
 
