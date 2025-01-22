@@ -48,7 +48,7 @@ jobs:
               run: "castor start"
 
             - name: "Check PHP coding standards"
-              run: "castor qa:cs"
+              run: "castor qa:cs --dry-run"
 
             - name: "Run PHPStan"
               run: "castor qa:phpstan"
