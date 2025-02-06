@@ -34,7 +34,7 @@ function init(): void
 #[AsTask(description: 'Install Symfony')]
 function symfony(bool $webApp = false): void
 {
-    $base = rtrim(variable('root_dir') . '/' . variable('project_directory'), '/');
+    $base = rtrim(variable('root_dir') . '/application');
 
     $gitIgnore = $base . '/.gitignore';
     $gitIgnoreContent = '';
