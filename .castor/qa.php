@@ -3,6 +3,7 @@
 namespace qa;
 
 // use Castor\Attribute\AsRawTokens;
+use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 
 use function Castor\io;
@@ -49,13 +50,20 @@ function update(): void
 // }
 
 #[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]
-function phpstan(): int
-{
+function phpstan(
+    #[AsOption(description: 'Generate baseline file', shortcut: 'b')]
+    bool $baseline = false,
+): int {
     if (!is_dir(variable('root_dir') . '/tools/phpstan/vendor')) {
         install();
     }
 
-    return docker_exit_code('phpstan', workDir: '/var/www');
+    io()->section('Running PHPStan...');
+
+    $options = $baseline ? '--generate-baseline --allow-empty-baseline' : '';
+    $command = \sprintf('phpstan analyse --memory-limit=-1 %s -v', $options);
+
+    return docker_exit_code($command, workDir: '/var/www');
 }
 
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
