@@ -23,6 +23,7 @@ parameters:
                 extra_domains: string[],
                 php_version: string,
                 docker_compose_files: string[],
+                docker_compose_run_environment: string[],
                 macos: bool,
                 power_shell: bool,
                 user_id: int,

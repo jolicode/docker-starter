@@ -313,6 +313,7 @@ function create_default_context(): Context
         'docker_compose_files' => [
             'docker-compose.yml',
         ],
+        'docker_compose_run_environment' => [],
         'macos' => false,
         'power_shell' => false,
         // check if posix_geteuid is available, if not, use getmyuid (windows)
@@ -372,7 +373,7 @@ function create_default_context(): Context
 #[AsContext(name: 'ci')]
 function create_ci_context(): Context
 {
-    $c = create_default_context();
+    $c = create_test_context();
 
     return $c
         ->withData([
@@ -380,6 +381,20 @@ function create_ci_context(): Context
         ])
         ->withEnvironment([
             'COMPOSE_ANSI' => 'never',
+        ])
+    ;
+}
+
+#[AsContext(name: 'test')]
+function create_test_context(): Context
+{
+    $c = create_default_context();
+
+    return $c
+        ->withData([
+            'docker_compose_run_environment' => [
+                'APP_ENV' => 'test',
+            ],
         ])
     ;
 }
@@ -458,6 +473,11 @@ function docker_compose_run(
     if (null !== $workDir) {
         $command[] = '-w';
         $command[] = $workDir;
+    }
+
+    foreach (variable('docker_compose_run_environment') as $key => $value) {
+        $command[] = '-e';
+        $command[] = "{$key}={$value}";
     }
 
     $command[] = $service;
