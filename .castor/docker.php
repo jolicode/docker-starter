@@ -369,7 +369,7 @@ function create_default_context(): Context
 #[AsContext(name: 'ci')]
 function create_ci_context(): Context
 {
-    $c = create_default_context();
+    $c = create_test_context();
 
     return $c
         ->withData([
@@ -377,6 +377,21 @@ function create_ci_context(): Context
         ])
         ->withEnvironment([
             'COMPOSE_ANSI' => 'never',
+        ])
+    ;
+}
+
+#[AsContext(name: 'test')]
+function create_test_context(): Context
+{
+    $c = create_default_context();
+
+    return $c
+        ->withData([
+            // override the default context here
+        ])
+        ->withEnvironment([
+            'APP_ENV' => 'test',
         ])
     ;
 }
