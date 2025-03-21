@@ -43,12 +43,12 @@ RUN apt-get update \
 
 # Fake user to maps with the one on the host
 ARG USER_ID
-COPY entrypoint /
 RUN addgroup --gid $USER_ID app && \
     adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app && \
     curl -Ls https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 | \
-        install /dev/stdin /usr/local/bin/gosu && \
-    sed "s/{{ application_user }}/app/g" -i /entrypoint
+        install /dev/stdin /usr/local/bin/gosu
+
+COPY entrypoint /
 
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
