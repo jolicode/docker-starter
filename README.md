@@ -1048,6 +1048,17 @@ Finally, you must :
 1. start the project `foo`
 1. start the project `bar`
 
+</details>
+
+### How to use FrankenPHP
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+Migrating to FrankenPHP involves a lot of changes. You can take inspiration from
+the following [repostory](https://github.com/lyrixx/async-messenger-mercure)
+and specifically [this commit](https://github.com/lyrixx/async-messenger-mercure/commit/9ac8776253f3950a6c57d457b3742923f9e096a7).
 
 </details>
 
