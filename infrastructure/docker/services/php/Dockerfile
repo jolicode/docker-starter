@@ -115,11 +115,11 @@ RUN adduser app sudo \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.8.4 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.8.9 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p "/home/app/.composer/cache" \
     && chown app: /home/app/.composer -R
 
-ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.2/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
+ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.3/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
 
 # Composer symfony/console version is too old, and doest not support "API version feature", so we remove it
 # Hey, while we are at it, let's add some more completion
