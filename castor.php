@@ -10,7 +10,6 @@ use function Castor\variable;
 use function docker\about;
 use function docker\build;
 use function docker\docker_compose_run;
-use function docker\generate_certificates;
 use function docker\up;
 
 // use function docker\workers_start;
@@ -44,7 +43,6 @@ function start(): void
     io()->title('Starting the stack');
 
     // workers_stop();
-    generate_certificates(force: false);
     build();
     up(profiles: ['default']); // We can't start worker now, they are not installed
     cache_clear();
