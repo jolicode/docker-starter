@@ -84,7 +84,7 @@ to tweak certificates.
 
 You can run `castor docker:generate-certificates --force` to recreate new certificates
 if some were already generated. Remember to restart the infrastructure to make
-use of the new certificates with `castor up` or `castor start`.
+use of the new certificates with `castor build && castor up` or `castor start`.
 
 ### Builder
 

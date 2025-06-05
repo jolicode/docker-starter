@@ -72,6 +72,8 @@ function build(
     ?string $service = null,
     ?string $profile = null,
 ): void {
+    generate_certificates(force: false);
+
     io()->title('Building infrastructure');
 
     $command = [];
