@@ -14,7 +14,6 @@ use function docker\docker_exit_code;
 #[AsTask(description: 'Runs all QA tasks')]
 function all(): int
 {
-    install();
     $cs = cs();
     $phpstan = phpstan();
     // $phpunit = phpunit();
