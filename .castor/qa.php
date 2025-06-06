@@ -46,6 +46,8 @@ function update(): void
 // #[AsTask(description: 'Runs PHPUnit', aliases: ['phpunit'])]
 // function phpunit(#[AsRawTokens] array $rawTokens = []): int
 // {
+//     io()->section('Running PHPUnit...');
+//
 //     return docker_exit_code('bin/phpunit ' . implode(' ', $rawTokens));
 // }
 
@@ -72,6 +74,8 @@ function cs(bool $dryRun = false): int
     if (!is_dir(variable('root_dir') . '/tools/php-cs-fixer/vendor')) {
         install();
     }
+
+    io()->section('Running PHP CS Fixer...');
 
     if ($dryRun) {
         return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/var/www');
