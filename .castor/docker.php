@@ -350,7 +350,8 @@ function create_default_context(): Context
         $data['power_shell'] = true;
     }
 
-    if (false === $data['user_id'] || $data['user_id'] > 256000) {
+    //                                                   2³² - 1
+    if (false === $data['user_id'] || $data['user_id'] > 4294967295) {
         $data['user_id'] = 1000;
     }
 
