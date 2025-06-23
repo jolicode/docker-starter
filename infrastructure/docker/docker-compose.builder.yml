@@ -1,7 +1,7 @@
 volumes:
     builder-data: {}
-    builder-yarn-data: {}
-
+    # Needed if $XDG_ env vars have been overridden
+    # builder-yarn-data: {}
 services:
     builder:
         build:
@@ -21,8 +21,10 @@ services:
             - RUN_ID # TaskCluster, dsari
         volumes:
             - "builder-data:/home/app"
-            # Needed to persist the yarn cache between builder and watcher
-            - "builder-yarn-data:/data/yarn"
+            # Needed when $XDG_ env vars have overridden, to persist the yarn
+            # cache between builder and watcher, adapt according to the location
+            # of $XDG_DATA_HOME
+            # - "builder-yarn-data:/data/yarn"
             - "${COMPOSER_CACHE_DIR}:/home/app/.composer/cache"
             - "../..:/var/www:cached"
         profiles:
