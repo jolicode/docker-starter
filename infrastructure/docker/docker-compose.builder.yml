@@ -1,5 +1,6 @@
 volumes:
     builder-data: {}
+    builder-yarn-data: {}
 
 services:
     builder:
@@ -20,6 +21,8 @@ services:
             - RUN_ID # TaskCluster, dsari
         volumes:
             - "builder-data:/home/app"
+            # Needed to persist the yarn cache between builder and watcher
+            - "builder-yarn-data:/data/yarn"
             - "${COMPOSER_CACHE_DIR}:/home/app/.composer/cache"
             - "../..:/var/www:cached"
         profiles:

@@ -94,6 +94,7 @@ RUN curl -s https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --de
     && echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODEJS_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
 
 # Default toys
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
@@ -102,8 +103,9 @@ RUN apt-get update \
         sudo \
         unzip \
     && apt-get clean \
-    && npm install -g yarn@1.22 \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
+    && corepack enable \
+    && yarn set version stable
 
 # Config
 COPY builder/etc/. /etc/
