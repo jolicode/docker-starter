@@ -44,9 +44,9 @@ function start(): void
 
     // workers_stop();
     build();
+    install();
     up(profiles: ['default']); // We can't start worker now, they are not installed
     cache_clear();
-    install();
     migrate();
     // workers_start();
 
