@@ -44,9 +44,8 @@ function start(): void
 
     // workers_stop();
     build();
-    up(profiles: ['default']); // We can't start worker now, they are not installed
-    cache_clear();
     install();
+    up(profiles: ['default']); // We can't start worker now, they are not installed
     migrate();
     // workers_start();
 
@@ -87,16 +86,24 @@ function install(): void
     qa\install();
 }
 
-#[AsTask(description: 'Clear the application cache', namespace: 'app', aliases: ['cache-clear'])]
-function cache_clear(): void
+#[AsTask(description: 'Clears the application cache', namespace: 'app', aliases: ['cache-clear'])]
+function cache_clear(bool $warm = true): void
 {
     // io()->title('Clearing the application cache');
 
     // docker_compose_run('rm -rf var/cache/');
-    // // On the very first run, the vendor does not exist yet
-    // if (is_dir(variable('root_dir') . '/application/vendor')) {
-    //     docker_compose_run('bin/console cache:warmup', c: context()->withAllowFailure());
+
+    // if ($warm) {
+    //     cache_warmup();
     // }
+}
+
+#[AsTask(description: 'Warms the application cache', namespace: 'app', aliases: ['cache-warmup'])]
+function cache_warmup(): void
+{
+    // io()->title('Warming the application cache');
+
+    // docker_compose_run('bin/console cache:warmup', c: context()->withAllowFailure());
 }
 
 #[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]
