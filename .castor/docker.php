@@ -81,10 +81,10 @@ function build(
         $command[] = '--profile';
         $command[] = $profile;
     } else {
-        $command[] = '--profile';
-        $command[] = 'default';
-        $command[] = '--profile';
-        $command[] = 'worker';
+        foreach (variable('docker_compose_build_profiles') as $profile) {
+            $command[] = '--profile';
+            $command[] = $profile;
+        }
     }
 
     $command = [
@@ -98,7 +98,7 @@ function build(
         $command[] = $service;
     }
 
-    docker_compose($command, withBuilder: true);
+    docker_compose($command);
 }
 
 /**
@@ -186,7 +186,7 @@ function logs(
 #[AsTask(description: 'Lists containers status', aliases: ['ps'])]
 function ps(): void
 {
-    docker_compose(['ps'], withBuilder: false);
+    docker_compose(['ps'], profiles: variable('docker_compose_build_profiles'));
 }
 
 #[AsTask(description: 'Cleans the infrastructure (remove container, volume, networks)', aliases: ['destroy'])]
@@ -206,7 +206,7 @@ function destroy(
         }
     }
 
-    docker_compose(['down', '--remove-orphans', '--volumes', '--rmi=local'], withBuilder: true, profiles: ['default', 'worker']);
+    docker_compose(['down', '--remove-orphans', '--volumes', '--rmi=local'], profiles: variable('docker_compose_build_profiles'));
     $files = finder()
         ->in(variable('root_dir') . '/infrastructure/docker/services/router/certs/')
         ->name('*.pem')
@@ -312,6 +312,11 @@ function create_default_context(): Context
             'docker-compose.yml',
         ],
         'docker_compose_run_environment' => [],
+        'docker_compose_build_profiles' => [
+            'default',
+            'worker',
+            'builder',
+        ],
         'macos' => false,
         'power_shell' => false,
         // check if posix_geteuid is available, if not, use getmyuid (windows)
@@ -386,7 +391,7 @@ function create_test_context(): Context
  * @param list<string> $subCommand
  * @param list<string> $profiles
  */
-function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder = false, array $profiles = []): Process
+function docker_compose(array $subCommand, ?Context $c = null, array $profiles = []): Process
 {
     $c ??= context();
     $profiles = $profiles ?: ['default'];
@@ -420,11 +425,6 @@ function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder
         $command[] = variable('root_dir') . '/infrastructure/docker/' . $file;
     }
 
-    if ($withBuilder) {
-        $command[] = '-f';
-        $command[] = variable('root_dir') . '/infrastructure/docker/docker-compose.builder.yml';
-    }
-
     $command = array_merge($command, $subCommand);
 
     return run($command, context: $c);
@@ -437,7 +437,6 @@ function docker_compose_run(
     bool $noDeps = true,
     ?string $workDir = null,
     bool $portMapping = false,
-    bool $withBuilder = true,
 ): Process {
     $command = [
         'run',
@@ -467,7 +466,7 @@ function docker_compose_run(
     $command[] = '-c';
     $command[] = "{$runCommand}";
 
-    return docker_compose($command, c: $c, withBuilder: $withBuilder);
+    return docker_compose($command, c: $c, profiles: variable('docker_compose_build_profiles'));
 }
 
 function docker_exit_code(
@@ -476,7 +475,6 @@ function docker_exit_code(
     string $service = 'builder',
     bool $noDeps = true,
     ?string $workDir = null,
-    bool $withBuilder = true,
 ): int {
     $c = ($c ?? context())->withAllowFailure();
 
@@ -486,7 +484,6 @@ function docker_exit_code(
         service: $service,
         noDeps: $noDeps,
         workDir: $workDir,
-        withBuilder: $withBuilder,
     );
 
     return $process->getExitCode() ?? 0;

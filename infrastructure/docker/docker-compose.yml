@@ -1,8 +1,20 @@
-include:
-    - docker-compose.worker.yml
+# Templates to factorize the service definitions
+x-templates:
+    worker_base: &worker_base
+        build:
+            context: services/php
+            target: worker
+        user: "${USER_ID}:${USER_ID}"
+        # Don't use depends_on, it does not work well with docker compose profiles
+        volumes:
+            - "../..:/var/www:cached"
+        profiles:
+            - worker
 
 volumes:
     postgres-data: {}
+    # # Needed if $XDG_ env vars have been overridden
+    # builder-yarn-data: {}
 
 services:
     router:
@@ -16,6 +28,21 @@ services:
             - "8080:8080"
         networks:
             - default
+        profiles:
+            - default
+
+    postgres:
+        image: postgres:16
+        environment:
+            - POSTGRES_USER=app
+            - POSTGRES_PASSWORD=app
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
         profiles:
             - default
 
@@ -41,17 +68,31 @@ services:
             # Comment the next line to be able to access frontend via HTTP instead of HTTPS
             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
 
-    postgres:
-        image: postgres:16
+    # worker_messenger:
+    #     <<: *worker_base
+    #     command: php -d memory_limit=1G /var/www/application/bin/console messenger:consume async --memory-limit=128M
+
+    builder:
+        build:
+            context: services/php
+            target: builder
+        init: true
+        user: "${USER_ID}:${USER_ID}"
         environment:
-            - POSTGRES_USER=app
-            - POSTGRES_PASSWORD=app
+            # The following list contains the common environment variables exposed by CI platforms
+            - GITHUB_ACTIONS
+            - CI # Travis CI, CircleCI, Cirrus CI, Gitlab CI, Appveyor, CodeShip, dsari
+            - CONTINUOUS_INTEGRATION # Travis CI, Cirrus CI
+            - BUILD_NUMBER # Jenkins, TeamCity
+            - RUN_ID # TaskCluster, dsari
         volumes:
-            - postgres-data:/var/lib/postgresql/data
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U postgres"]
-            interval: 5s
-            timeout: 5s
-            retries: 5
+            - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
+            # Needed when $XDG_ env vars have overridden, to persist the yarn
+            # cache between builder and watcher, adapt according to the location
+            # of $XDG_DATA_HOME
+            # - "builder-yarn-data:/data/yarn"
+        depends_on:
+            - postgres
         profiles:
-            - default
+            - builder
