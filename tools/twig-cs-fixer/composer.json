@@ -1,0 +1,13 @@
+{
+    "type": "project",
+    "require": {
+        "vincentlanglet/twig-cs-fixer": "^3.8.1"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2"
+        },
+        "bump-after-update": true,
+        "sort-packages": true
+    }
+}
