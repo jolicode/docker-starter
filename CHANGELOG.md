@@ -10,12 +10,12 @@
 * Dynamically map user id and group id to the container, base on the host user
 * Replace maildev with Mailpit
 * Drop support for PHP < 8.1
-* Add support for PHP 8.3
+* Add support for PHP 8.3, 8.4
 * Add some PHP tooling (PHP-CS-Fixer, PHPStan)
 * Add `castor init` command to initialize a new project
 * Add `castor symfony` to install a Symfony application
 * Mount the project in `/var/www` instead of `/home/app`
-* Update Composer to version 2.7
+* Update Composer to version 2.8
 * Update NodeJS to version 20.x LTS
 * Upgrade base to Debian Bookworm (12.5)
 * Add support for autocomplete (composer & symfony)
