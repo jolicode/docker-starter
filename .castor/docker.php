@@ -5,8 +5,10 @@ namespace docker;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Context;
+use Castor\Helper\PathHelper;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Exception\ExceptionInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
@@ -75,14 +77,11 @@ function build(
 
     $command = [];
 
+    $command[] = '--profile';
     if ($profile) {
-        $command[] = '--profile';
         $command[] = $profile;
     } else {
-        foreach (variable('docker_compose_build_profiles') as $profile) {
-            $command[] = '--profile';
-            $command[] = $profile;
-        }
+        $command[] = '*';
     }
 
     $command = [
@@ -121,7 +120,7 @@ function up(
     try {
         docker_compose($command, profiles: $profiles);
     } catch (ExceptionInterface $e) {
-        io()->error('An error occured while starting the infrastructure.');
+        io()->error('An error occurred while starting the infrastructure.');
         io()->note('Did you forget to run "castor docker:build"?');
         io()->note('Or you forget to login to the registry?');
 
@@ -194,7 +193,7 @@ function ps(bool $ports = false): void
         $command[2] .= '\t{{.Ports}}';
     }
 
-    docker_compose($command, profiles: variable('docker_compose_build_profiles'));
+    docker_compose($command, profiles: ['*']);
 
     if (!$ports) {
         io()->comment('You can use the "--ports" option to display ports.');
@@ -218,7 +217,7 @@ function destroy(
         }
     }
 
-    docker_compose(['down', '--remove-orphans', '--volumes', '--rmi=local'], profiles: variable('docker_compose_build_profiles'));
+    docker_compose(['down', '--remove-orphans', '--volumes', '--rmi=local'], profiles: ['*']);
     $files = finder()
         ->in(variable('root_dir') . '/infrastructure/docker/services/router/certs/')
         ->name('*.pem')
@@ -301,7 +300,36 @@ function workers_start(): void
 {
     io()->title('Starting workers');
 
-    up(profiles: ['worker']);
+    $command = ['up', '--detach', '--wait', '--no-build'];
+    $profiles = ['worker', 'default'];
+
+    try {
+        docker_compose($command, profiles: $profiles);
+    } catch (ProcessFailedException $e) {
+        preg_match('/service "(\w+)" depends on undefined service "(\w+)"/', $e->getProcess()->getErrorOutput(), $matches);
+        if (!$matches) {
+            throw $e;
+        }
+
+        $r = new \ReflectionFunction(__FUNCTION__);
+
+        io()->newLine();
+        io()->error('An error occurred while starting the workers.');
+        io()->warning(\sprintf(
+            <<<'EOT'
+                The "%1$s" service depends on the "%2$s" service, which is not defined in the current docker-compose configuration.
+
+                Usually, this means that the service "%2$s" is not defined in the same profile (%3$s) as the "%1$s" service.
+
+                You can try to add its profile in the current task: %4$s:%5$s
+                EOT,
+            $matches[1],
+            $matches[2],
+            implode(', ', $profiles),
+            PathHelper::makeRelative((string) $r->getFileName()),
+            $r->getStartLine(),
+        ));
+    }
 }
 
 #[AsTask(description: 'Stops the workers', namespace: 'docker:worker', name: 'stop', aliases: ['stop-workers'])]
@@ -309,7 +337,34 @@ function workers_stop(): void
 {
     io()->title('Stopping workers');
 
-    stop(profiles: ['worker']);
+    // Docker compose cannot stop a single service in a profile, if it depends
+    // on another service in another profile. To make it work, we need to select
+    // both profiles, and so stop both services
+
+    // So we find all services, in all profiles, and manually filter the one
+    // that has the "worker" profile, then we stop it
+
+    $services = json_decode(
+        docker_compose(
+            ['config', '--format', 'json'],
+            context()->withQuiet(),
+            profiles: ['*'],
+        )->getOutput(),
+        true,
+    )['services'];
+
+    $command = ['stop'];
+    foreach ($services as $name => $service) {
+        foreach ($service['profiles'] ?? [] as $profile) {
+            if ('worker' === $profile) {
+                $command[] = $name;
+
+                continue 2;
+            }
+        }
+    }
+
+    docker_compose($command, profiles: ['*']);
 }
 
 /**
@@ -324,16 +379,13 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
     $domains = [variable('root_domain'), ...variable('extra_domains')];
     $domains = '`' . implode('`) || Host(`', $domains) . '`';
 
-    $c = $c
-        ->withTimeout(null)
-        ->withEnvironment([
-            'PROJECT_NAME' => variable('project_name'),
-            'PROJECT_ROOT_DOMAIN' => variable('root_domain'),
-            'PROJECT_DOMAINS' => $domains,
-            'USER_ID' => variable('user_id'),
-            'PHP_VERSION' => variable('php_version'),
-        ])
-    ;
+    $c = $c->withEnvironment([
+        'PROJECT_NAME' => variable('project_name'),
+        'PROJECT_ROOT_DOMAIN' => variable('root_domain'),
+        'PROJECT_DOMAINS' => $domains,
+        'USER_ID' => variable('user_id'),
+        'PHP_VERSION' => variable('php_version'),
+    ]);
 
     $command = [
         'docker',
@@ -391,7 +443,7 @@ function docker_compose_run(
     $command[] = '-c';
     $command[] = "{$runCommand}";
 
-    return docker_compose($command, c: $c, profiles: variable('docker_compose_build_profiles'));
+    return docker_compose($command, c: $c, profiles: ['*']);
 }
 
 function docker_exit_code(
