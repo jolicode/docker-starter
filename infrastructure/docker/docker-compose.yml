@@ -5,7 +5,9 @@ x-templates:
             context: services/php
             target: worker
         user: "${USER_ID}:${USER_ID}"
-        # Don't use depends_on, it does not work well with docker compose profiles
+        depends_on:
+            postgres:
+                condition: service_healthy
         volumes:
             - "../..:/var/www:cached"
         profiles:

@@ -21,11 +21,6 @@ function create_default_context(): Context
             'docker-compose.dev.yml',
         ],
         'docker_compose_run_environment' => [],
-        'docker_compose_build_profiles' => [
-            'default',
-            'worker',
-            'builder',
-        ],
         'macos' => false,
         'power_shell' => false,
         // check if posix_geteuid is available, if not, use getmyuid (windows)
