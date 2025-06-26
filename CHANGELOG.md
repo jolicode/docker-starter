@@ -9,7 +9,7 @@
 * Upgrade to PostgreSQL v16
 * Do not hardcode a user in the Dockerfile (and so the image), map it dynamically
 * Replace maildev with Mailpit
-* Drop support for PHP < 8.1
+* Drop support for PHP < 8.2
 * Add support for PHP 8.3, 8.4
 * Add some PHP tooling (PHP-CS-Fixer, PHPStan)
 * Add `castor init` command to initialize a new project
