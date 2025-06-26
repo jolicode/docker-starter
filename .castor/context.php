@@ -15,7 +15,7 @@ function create_default_context(): Context
         'project_name' => 'app',
         'root_domain' => 'app.test',
         'extra_domains' => [],
-        'php_version' => '8.2',
+        'php_version' => '8.4',
         'docker_compose_files' => [
             'docker-compose.yml',
             'docker-compose.dev.yml',

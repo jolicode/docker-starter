@@ -33,7 +33,7 @@ function create_default_variables(): array
         'extra_domains' => [
             "www.{$projectName}.{$tld}",
         ],
-        'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.3',
+        'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.4',
     ];
 }
 
