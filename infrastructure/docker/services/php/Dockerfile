@@ -111,7 +111,6 @@ RUN apt-get update \
 #    chmod +x /usr/local/bin/sudo
 
 # Config
-COPY builder/etc/. /etc/
 COPY builder/php-configuration /etc/php/${PHP_VERSION}
 RUN phpenmod app-default \
     && phpenmod app-builder
