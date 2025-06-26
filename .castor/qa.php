@@ -16,9 +16,10 @@ function all(): int
 {
     $cs = cs();
     $phpstan = phpstan();
+    $twigCs = twigCs();
     // $phpunit = phpunit();
 
-    return max($cs, $phpstan/* , $phpunit */);
+    return max($cs, $phpstan, $twigCs/* , $phpunit */);
 }
 
 #[AsTask(description: 'Installs tooling')]
@@ -28,6 +29,7 @@ function install(): void
 
     docker_compose_run('composer install -o', workDir: '/var/www/tools/php-cs-fixer');
     docker_compose_run('composer install -o', workDir: '/var/www/tools/phpstan');
+    docker_compose_run('composer install -o', workDir: '/var/www/tools/twig-cs-fixer');
 }
 
 #[AsTask(description: 'Updates tooling')]
@@ -37,6 +39,7 @@ function update(): void
 
     docker_compose_run('composer update -o', workDir: '/var/www/tools/php-cs-fixer');
     docker_compose_run('composer update -o', workDir: '/var/www/tools/phpstan');
+    docker_compose_run('composer update -o', workDir: '/var/www/tools/twig-cs-fixer');
 }
 
 // /**
@@ -81,4 +84,20 @@ function cs(bool $dryRun = false): int
     }
 
     return docker_exit_code('php-cs-fixer fix', workDir: '/var/www');
+}
+
+#[AsTask(description: 'Fixes Twig Coding Style', aliases: ['twig-cs'])]
+function twigCs(bool $dryRun = false): int
+{
+    if (!is_dir(variable('root_dir') . '/tools/twig-cs-fixer/vendor')) {
+        install();
+    }
+
+    io()->section('Running Twig CS Fixer...');
+
+    if ($dryRun) {
+        return docker_exit_code('twig-cs-fixer', workDir: '/var/www');
+    }
+
+    return docker_exit_code('twig-cs-fixer --fix', workDir: '/var/www');
 }
