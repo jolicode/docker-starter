@@ -4,6 +4,7 @@ x-services-templates:
         build:
             context: services/php
             target: worker
+        user: "${USER_ID}:${USER_ID}"
         # Don't use depends_on, it does not work well with docker compose profiles
         volumes:
             - "../..:/var/www:cached"

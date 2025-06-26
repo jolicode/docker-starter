@@ -23,11 +23,13 @@ services:
         build:
             context: services/php
             target: frontend
+        user: "${USER_ID}:${USER_ID}"
+        volumes:
+            - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
         depends_on:
             postgres:
                 condition: service_healthy
-        volumes:
-            - "../..:/var/www:cached"
         profiles:
             - default
         labels:

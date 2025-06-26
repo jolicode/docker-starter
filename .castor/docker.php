@@ -12,7 +12,6 @@ use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 
-use function Castor\cache;
 use function Castor\capture;
 use function Castor\context;
 use function Castor\finder;
@@ -91,7 +90,6 @@ function build(
     $command = [
         ...$command,
         'build',
-        '--build-arg', 'USER_ID=' . variable('user_id'),
         '--build-arg', 'PHP_VERSION=' . variable('php_version'),
         '--build-arg', 'PROJECT_NAME=' . variable('project_name'),
     ];
@@ -329,21 +327,6 @@ function create_default_context(): Context
     // not been set in castor, since we ARE creating it right now
     $emptyContext = new Context();
 
-    $data['composer_cache_dir'] = cache('composer_cache_dir', function () use ($emptyContext): string {
-        $composerCacheDir = capture(['composer', 'global', 'config', 'cache-dir', '-q'], onFailure: '', context: $emptyContext);
-        // If PHP is broken, the output will not be a valid path but an error message
-        if (!is_dir($composerCacheDir)) {
-            $composerCacheDir = sys_get_temp_dir() . '/castor/composer';
-            // If the directory does not exist, we create it. Otherwise, docker
-            // will do, as root, and the user will not be able to write in it.
-            if (!is_dir($composerCacheDir)) {
-                mkdir($composerCacheDir, 0o777, true);
-            }
-        }
-
-        return $composerCacheDir;
-    });
-
     $platform = strtolower(php_uname('s'));
     if (str_contains($platform, 'darwin')) {
         $data['macos'] = true;
@@ -418,7 +401,6 @@ function docker_compose(array $subCommand, ?Context $c = null, bool $withBuilder
             'PROJECT_ROOT_DOMAIN' => variable('root_domain'),
             'PROJECT_DOMAINS' => $domains,
             'USER_ID' => variable('user_id'),
-            'COMPOSER_CACHE_DIR' => variable('composer_cache_dir'),
             'PHP_VERSION' => variable('php_version'),
         ])
     ;

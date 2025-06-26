@@ -7,7 +7,7 @@
 * Add a dockerfile linter
 * Do not store certificates in the router image
 * Upgrade to PostgreSQL v16
-* Dynamically map user id and group id to the container, base on the host user
+* Do not hardcode a user in the Dockerfile (and so the image), map it dynamically
 * Replace maildev with Mailpit
 * Drop support for PHP < 8.1
 * Add support for PHP 8.3, 8.4
