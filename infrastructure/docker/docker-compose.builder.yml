@@ -10,8 +10,6 @@ services:
         init: true
         user: "${USER_ID}:${USER_ID}"
         environment:
-            - COMPOSER_MEMORY_LIMIT=-1
-            - UID=${USER_ID}
             # The following list contains the common environment variables exposed by CI platforms
             - GITHUB_ACTIONS
             - CI # Travis CI, CircleCI, Cirrus CI, Gitlab CI, Appveyor, CodeShip, dsari
