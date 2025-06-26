@@ -11,6 +11,7 @@
 * Replace maildev with Mailpit
 * Drop support for PHP < 8.2
 * Add support for PHP 8.3, 8.4
+* Add support for pie
 * Add some PHP tooling (PHP-CS-Fixer, PHPStan, Twig-CS-Fixer)
 * Add `castor init` command to initialize a new project
 * Add `castor symfony` to install a Symfony application
