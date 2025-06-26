@@ -91,11 +91,12 @@ RUN curl -s https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --de
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        git \
-        make \
-        nodejs \
-        sudo \
-        unzip \
+        "git" \
+        "make" \
+        "nodejs" \
+        "php${PHP_VERSION}-dev" \
+        "sudo" \
+        "unzip" \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
     && corepack enable \
@@ -118,6 +119,11 @@ RUN phpenmod app-default \
 # Composer
 COPY --from=composer/composer:2.8.9 /usr/bin/composer /usr/bin/composer
 
+# Pie
+RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar \
+    && chmod +x /usr/local/bin/pie
+
+# Autocompletion
 ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.3/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
 
 # Composer symfony/console version is too old, and doest not support "API version feature", so we remove it
