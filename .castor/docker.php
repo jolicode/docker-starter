@@ -184,9 +184,23 @@ function logs(
 }
 
 #[AsTask(description: 'Lists containers status', aliases: ['ps'])]
-function ps(): void
+function ps(bool $ports = false): void
 {
-    docker_compose(['ps'], profiles: variable('docker_compose_build_profiles'));
+    $command = [
+        'ps',
+        '--format', 'table {{.Name}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.Command}}',
+        '--no-trunc',
+    ];
+
+    if ($ports) {
+        $command[2] .= '\t{{.Ports}}';
+    }
+
+    docker_compose($command, profiles: variable('docker_compose_build_profiles'));
+
+    if (!$ports) {
+        io()->comment('You can use the "--ports" option to display ports.');
+    }
 }
 
 #[AsTask(description: 'Cleans the infrastructure (remove container, volume, networks)', aliases: ['destroy'])]
