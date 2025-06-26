@@ -324,6 +324,7 @@ function create_default_context(): Context
         'php_version' => '8.2',
         'docker_compose_files' => [
             'docker-compose.yml',
+            'docker-compose.dev.yml',
         ],
         'docker_compose_run_environment' => [],
         'docker_compose_build_profiles' => [
@@ -381,6 +382,17 @@ function create_ci_context(): Context
         ->withData([
             // override the default context here
         ])
+        ->withData(
+            [
+                'docker_compose_files' => [
+                    'docker-compose.yml',
+                    // Usually, the following service is not be needed in the CI
+                    'docker-compose.dev.yml',
+                    // 'docker-compose.ci.yml',
+                ],
+            ],
+            recursive: false
+        )
         ->withEnvironment([
             'COMPOSE_ANSI' => 'never',
         ])
