@@ -41,23 +41,13 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Fake user to maps with the one on the host
-ARG USER_ID
-RUN addgroup --gid $USER_ID app && \
-    adduser --system --uid $USER_ID --home /home/app --shell /bin/bash app && \
-    curl -Ls https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 | \
-        install /dev/stdin /usr/local/bin/gosu
-
-COPY entrypoint /
-
 # Configuration
 COPY base/php-configuration /etc/php/${PHP_VERSION}
 
 ENV PHP_VERSION=${PHP_VERSION}
+ENV HOME=/home/app
 
 WORKDIR /var/www
-
-ENTRYPOINT [ "/entrypoint" ]
 
 FROM php-base AS frontend
 
@@ -74,7 +64,9 @@ RUN useradd -s /bin/false nginx
 
 COPY frontend/php-configuration /etc/php/${PHP_VERSION}
 COPY frontend/etc/nginx/. /etc/nginx/
+RUN rm -rf /etc/service/
 COPY frontend/etc/service/. /etc/service/
+RUN chmod 777 /etc/service/*/supervise/
 
 RUN phpenmod app-default \
     && phpenmod app-fpm
@@ -107,19 +99,23 @@ RUN apt-get update \
     && corepack enable \
     && yarn set version stable
 
+# Install a fake sudo command
+# This is commented out by default because it exposes a security risk if you use this image in production, but it may be useful for development
+# Use it at your own risk
+# COPY base/sudo.sh /usr/local/bin/sudo
+# RUN curl -L https://github.com/tianon/gosu/releases/download/1.16/gosu-amd64 -o /usr/local/bin/gosu && \
+#    chmod u+s /usr/local/bin/gosu && \
+#    chmod +x /usr/local/bin/gosu && \
+#    chmod +x /usr/local/bin/sudo
+
 # Config
 COPY builder/etc/. /etc/
 COPY builder/php-configuration /etc/php/${PHP_VERSION}
-RUN adduser app sudo \
-    && mkdir /var/log/php \
-    && chmod 777 /var/log/php \
-    && phpenmod app-default \
+RUN phpenmod app-default \
     && phpenmod app-builder
 
 # Composer
 COPY --from=composer/composer:2.8.9 /usr/bin/composer /usr/bin/composer
-RUN mkdir -p "/home/app/.composer/cache" \
-    && chown app: /home/app/.composer -R
 
 ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.3/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
 

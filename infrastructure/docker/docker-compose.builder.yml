@@ -1,15 +1,14 @@
-volumes:
-    builder-data: {}
-    # Needed if $XDG_ env vars have been overridden
-    # builder-yarn-data: {}
+# volumes:
+#     # Needed if $XDG_ env vars have been overridden
+#     builder-yarn-data: {}
+
 services:
     builder:
         build:
             context: services/php
             target: builder
         init: true
-        depends_on:
-            - postgres
+        user: "${USER_ID}:${USER_ID}"
         environment:
             - COMPOSER_MEMORY_LIMIT=-1
             - UID=${USER_ID}
@@ -20,12 +19,13 @@ services:
             - BUILD_NUMBER # Jenkins, TeamCity
             - RUN_ID # TaskCluster, dsari
         volumes:
-            - "builder-data:/home/app"
+            - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
             # Needed when $XDG_ env vars have overridden, to persist the yarn
             # cache between builder and watcher, adapt according to the location
             # of $XDG_DATA_HOME
             # - "builder-yarn-data:/data/yarn"
-            - "${COMPOSER_CACHE_DIR}:/home/app/.composer/cache"
-            - "../..:/var/www:cached"
+        depends_on:
+            - postgres
         profiles:
             - default
