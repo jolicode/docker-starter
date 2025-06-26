@@ -46,6 +46,7 @@ COPY base/php-configuration /etc/php/${PHP_VERSION}
 
 ENV PHP_VERSION=${PHP_VERSION}
 ENV HOME=/home/app
+ENV COMPOSER_MEMORY_LIMIT=-1
 
 WORKDIR /var/www
 
