@@ -38,6 +38,8 @@ services:
         build:
             context: services/php
             target: frontend
+            cache_from:
+              - "type=registry,ref=${REGISTRY:-}/frontend:cache"
         user: "${USER_ID}:${USER_ID}"
         volumes:
             - "../..:/var/www:cached"
@@ -64,6 +66,8 @@ services:
         build:
             context: services/php
             target: builder
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/builder:cache"
         init: true
         user: "${USER_ID}:${USER_ID}"
         environment:
