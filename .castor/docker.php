@@ -550,7 +550,6 @@ function push(bool $dryRun = false): void
     }
 
     if ($dryRun) {
-        io()->title('Dry run: Displaying the generated bake file');
         io()->write($content);
 
         return;
