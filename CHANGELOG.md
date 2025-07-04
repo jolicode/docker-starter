@@ -2,25 +2,31 @@
 
 ## 4.0.0 (not released yet)
 
-* Upgrade Traefik from v2.7 to v3.0
-* Migrate from Invoke to Castor
-* Add a dockerfile linter
-* Do not store certificates in the router image
-* Upgrade to PostgreSQL v16
-* Do not hardcode a user in the Dockerfile (and so the image), map it dynamically
-* Replace maildev with Mailpit
-* Drop support for PHP < 8.2
-* Add support for PHP 8.3, 8.4
-* Add support for pie
-* Add some PHP tooling (PHP-CS-Fixer, PHPStan, Twig-CS-Fixer)
-* Add `castor init` command to initialize a new project
-* Add `castor symfony` to install a Symfony application
-* Mount the project in `/var/www` instead of `/home/app`
-* Update Composer to version 2.8
-* Update NodeJS to version 20.x LTS
-* Upgrade base to Debian Bookworm (12.5)
-* Add support for autocomplete (composer & symfony)
-* Add a `test` context
+* Tooling
+  * Migrate from Invoke to Castor
+  * Add `castor symfony` to install a Symfony application
+  * Add `castor init` command to initialize a new project
+  * Add a `test` context
+* Services
+  * Upgrade Traefik from v2.7 to v3.0
+  * Upgrade to PostgreSQL v16
+  * Replace maildev with Mailpit
+* PHP
+  * Drop support for PHP < 8.2
+  * Add support for PHP 8.3, 8.4
+  * Add support for pie
+  * Add some PHP tooling (PHP-CS-Fixer, PHPStan, Twig-CS-Fixer)
+  * Update Composer to version 2.8
+* Builder
+  * Update NodeJS to version 20.x LTS
+  * Add support for autocomplete (composer & symfony)
+* Docker:
+  * Add a dockerfile linter
+  * Do not store certificates in the router image
+  * Do not hardcode a user in the Dockerfile (and so the image), map it dynamically
+  * Mount the project in `/var/www` instead of `/home/app`
+  * Add support for caching image cache in a registry
+  * Upgrade base to Debian Bookworm (12.5)
 
 ## 3.11.0 (2023-05-30)
 
