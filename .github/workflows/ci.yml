@@ -10,11 +10,13 @@ name: Continuous Integration
 
 permissions:
     contents: read
+    packages: read
 
 env:
     # Fix for symfony/color detection. We know GitHub Actions can handle it
     ANSICON: 1
     CASTOR_CONTEXT: ci
+    DS_REGISTRY: "ghcr.io/jolicode/docker-starter"
 
 jobs:
     check-dockerfiles:
@@ -40,6 +42,10 @@ jobs:
             DS_PHP_VERSION: ${{ matrix.php-version }}
         steps:
             - uses: actions/checkout@v4
+
+            - name: Log in to registry
+              shell: bash
+              run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
             - name: setup-castor
               uses: castor-php/setup-castor@v0.1.0

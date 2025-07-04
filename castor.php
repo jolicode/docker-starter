@@ -33,7 +33,10 @@ function create_default_variables(): array
         'extra_domains' => [
             "www.{$projectName}.{$tld}",
         ],
+        // In order to test docker stater, we need a way to pass different values.
+        // You should remove the `$_SERVER` and hardcode your configuration.
         'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.4',
+        'registry' => $_SERVER['DS_REGISTRY'] ?? null,
     ];
 }
 

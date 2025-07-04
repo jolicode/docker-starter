@@ -343,18 +343,9 @@ function workers_stop(): void
 
     // So we find all services, in all profiles, and manually filter the one
     // that has the "worker" profile, then we stop it
-
-    $services = json_decode(
-        docker_compose(
-            ['config', '--format', 'json'],
-            context()->withQuiet(),
-            profiles: ['*'],
-        )->getOutput(),
-        true,
-    )['services'];
-
     $command = ['stop'];
-    foreach ($services as $name => $service) {
+
+    foreach (get_services() as $name => $service) {
         foreach ($service['profiles'] ?? [] as $profile) {
             if ('worker' === $profile) {
                 $command[] = $name;
@@ -385,6 +376,7 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
         'PROJECT_DOMAINS' => $domains,
         'USER_ID' => variable('user_id'),
         'PHP_VERSION' => variable('php_version'),
+        'REGISTRY' => variable('registry') ?? '',
     ]);
 
     $command = [
@@ -477,4 +469,105 @@ function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): 
     } else {
         docker_compose_run($command, c: $c);
     }
+}
+
+#[AsTask(description: 'Push images cache to the registry', namespace: 'docker', name: 'push', aliases: ['push'])]
+function push(): void
+{
+    $registry = variable('registry');
+
+    if (!$registry) {
+        throw new \RuntimeException('You must define a registry to push images.');
+    }
+
+    // Generate bake file
+    $targets = [];
+
+    foreach (get_services() as $service => $config) {
+        $cacheFrom = $config['build']['cache_from'][0] ?? null;
+
+        if (null === $cacheFrom) {
+            continue;
+        }
+
+        $cacheFrom = explode(',', $cacheFrom);
+        $reference = null;
+        $type = null;
+
+        if (1 === \count($cacheFrom)) {
+            $reference = $cacheFrom[0];
+            $type = 'registry';
+        } else {
+            foreach ($cacheFrom as $part) {
+                $from = explode('=', $part);
+
+                if (2 !== \count($from)) {
+                    continue;
+                }
+
+                if ('type' === $from[0]) {
+                    $type = $from[1];
+                }
+
+                if ('ref' === $from[0]) {
+                    $reference = $from[1];
+                }
+            }
+        }
+
+        $targets[] = [
+            'reference' => $reference,
+            'type' => $type,
+            'context' => $config['build']['context'],
+            'dockerfile' => $config['build']['dockerfile'] ?? 'Dockerfile',
+            'target' => $config['build']['target'] ?? null,
+        ];
+    }
+
+    $content = \sprintf(<<<'EOHCL'
+        group "default" {
+            targets = [%s]
+        }
+
+        EOHCL
+        , implode(', ', array_map(fn ($target) => \sprintf('"%s"', $target['target']), $targets)));
+
+    foreach ($targets as $target) {
+        $content .= \sprintf(<<<'EOHCL'
+            target "%s" {
+                context    = "%s"
+                dockerfile = "%s"
+                cache-from = ["%s"]
+                cache-to   = ["type=%s,ref=%s,mode=max"]
+                target     = "%s"
+                args = {
+                    PHP_VERSION = "%s"
+                }
+            }
+
+            EOHCL
+            , $target['target'], $target['context'], $target['dockerfile'], $target['reference'], $target['type'], $target['reference'], $target['target'], variable('php_version'));
+    }
+
+    // write bake file in tmp file
+    $bakeFile = tempnam(sys_get_temp_dir(), 'bake');
+    file_put_contents($bakeFile, $content);
+
+    // Run bake
+    run(['docker', 'buildx', 'bake', '-f', $bakeFile]);
+}
+
+/**
+ * @return array<string, array{profiles?: list<string>, build: array{context: string, dockerfile?: string, cache_from?: list<string>, target?: string}}>
+ */
+function get_services(): array
+{
+    return json_decode(
+        docker_compose(
+            ['config', '--format', 'json'],
+            context()->withQuiet(),
+            profiles: ['*'],
+        )->getOutput(),
+        true,
+    )['services'];
 }
