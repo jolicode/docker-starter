@@ -472,7 +472,7 @@ function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): 
 }
 
 #[AsTask(description: 'Push images cache to the registry', namespace: 'docker', name: 'push', aliases: ['push'])]
-function push(): void
+function push(bool $dryRun = false): void
 {
     $registry = variable('registry');
 
@@ -547,6 +547,13 @@ function push(): void
 
             EOHCL
             , $target['target'], $target['context'], $target['dockerfile'], $target['reference'], $target['type'], $target['reference'], $target['target'], variable('php_version'));
+    }
+
+    if ($dryRun) {
+        io()->title('Dry run: Displaying the generated bake file');
+        io()->write($content);
+
+        return;
     }
 
     // write bake file in tmp file
