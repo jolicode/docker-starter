@@ -707,25 +707,34 @@ RUN apt-get update \
 
 COPY --link cron/crontab /etc/cron.d/crontab
 COPY --link cron/entrypoint.sh /entrypoint.sh
-RUN crontab /etc/cron.d/crontab
-
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["cron", "-f"]
 ```
 
 And you can add all your crons in the `services/php/crontab` file:
 ```crontab
-* * * * * su app -c "/usr/local/bin/php -r 'echo time().PHP_EOL;'" > /proc/1/fd/1 2>&1
+* * * * * php -r 'echo time().PHP_EOL;' > /tmp/cron-stdout 2>&1
 ```
 
 And you can add the following content to the `services/php/entrypoint.sh` file:
 ```bash
-#!/usr/bin/env bash
+#!/bin/bash
+set -e
 
-if ! id -u ${USER_ID} &>/dev/null; then
-    useradd -u ${USER_ID} -o -m -s /bin/bash ${USER_ID}
-fi
+groupadd -g $USER_ID app
+useradd -M -u $USER_ID -g $USER_ID -s /bin/bash app
+
+crontab -u app /etc/cron.d/crontab
+
+# Wrapper for logs
+FIFO=/tmp/cron-stdout
+rm -f $FIFO
+mkfifo $FIFO
+chmod 0666 $FIFO
+while true; do
+  cat /tmp/cron-stdout
+done &
 
 exec "$@"
 ```
@@ -737,10 +746,17 @@ services:
         build:
             context: services/php
             target: cron
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/cron:cache"
+        # depends_on:
+        #     postgres:
+        #         condition: service_healthy
+        env_file: .env
         environment:
-            - "USER_ID=${USER_ID}"
+            USER_ID: ${USER_ID}
         volumes:
             - "../..:/var/www:cached"
+            - "../../.home:/home/app:cached"
         profiles:
             - default
 ```
