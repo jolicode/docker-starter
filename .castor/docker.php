@@ -68,6 +68,7 @@ function open_project(): void
 
 #[AsTask(description: 'Builds the infrastructure', aliases: ['build'])]
 function build(
+    #[AsOption(description: 'The service to build (default: all services)', autocomplete: 'docker\get_service_names')]
     ?string $service = null,
     ?string $profile = null,
 ): void {
@@ -103,6 +104,7 @@ function build(
  */
 #[AsTask(description: 'Builds and starts the infrastructure', aliases: ['up'])]
 function up(
+    #[AsOption(description: 'The service to start (default: all services)', autocomplete: 'docker\get_service_names')]
     ?string $service = null,
     #[AsOption(mode: InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED)]
     array $profiles = [],
@@ -133,6 +135,7 @@ function up(
  */
 #[AsTask(description: 'Stops the infrastructure', aliases: ['stop'])]
 function stop(
+    #[AsOption(description: 'The service to stop (default: all services)', autocomplete: 'docker\get_service_names')]
     ?string $service = null,
     #[AsOption(mode: InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED)]
     array $profiles = [],
@@ -576,4 +579,12 @@ function get_services(): array
         )->getOutput(),
         true,
     )['services'];
+}
+
+/**
+ * @return string[]
+ */
+function get_service_names(): array
+{
+    return array_keys(get_services());
 }
