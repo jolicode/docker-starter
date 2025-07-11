@@ -367,31 +367,31 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
     $c ??= context();
     $profiles = $profiles ?: ['default'];
 
-    $domains = [variable('root_domain'), ...variable('extra_domains')];
+    $domains = [$c['root_domain'], ...$c['extra_domains']];
     $domains = '`' . implode('`) || Host(`', $domains) . '`';
 
     $c = $c->withEnvironment([
-        'PROJECT_NAME' => variable('project_name'),
-        'PROJECT_ROOT_DOMAIN' => variable('root_domain'),
+        'PROJECT_NAME' => $c['project_name'],
+        'PROJECT_ROOT_DOMAIN' => $c['root_domain'],
         'PROJECT_DOMAINS' => $domains,
-        'USER_ID' => variable('user_id'),
-        'PHP_VERSION' => variable('php_version'),
-        'REGISTRY' => variable('registry') ?? '',
+        'USER_ID' => $c['user_id'],
+        'PHP_VERSION' => $c['php_version'],
+        'REGISTRY' => $c['registry'] ?? '',
     ]);
 
     $command = [
         'docker',
         'compose',
-        '-p', variable('project_name'),
+        '-p', $c['project_name'],
     ];
     foreach ($profiles as $profile) {
         $command[] = '--profile';
         $command[] = $profile;
     }
 
-    foreach (variable('docker_compose_files') as $file) {
+    foreach ($c['docker_compose_files'] as $file) {
         $command[] = '-f';
-        $command[] = variable('root_dir') . '/infrastructure/docker/' . $file;
+        $command[] = $c['root_dir'] . '/infrastructure/docker/' . $file;
     }
 
     $command = array_merge($command, $subCommand);
@@ -407,6 +407,8 @@ function docker_compose_run(
     ?string $workDir = null,
     bool $portMapping = false,
 ): Process {
+    $c ??= context();
+
     $command = [
         'run',
         '--rm',
@@ -425,7 +427,7 @@ function docker_compose_run(
         $command[] = $workDir;
     }
 
-    foreach (variable('docker_compose_run_environment') as $key => $value) {
+    foreach ($c['docker_compose_run_environment'] as $key => $value) {
         $command[] = '-e';
         $command[] = "{$key}={$value}";
     }
@@ -464,8 +466,8 @@ function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): 
 {
     $c ??= context();
 
-    if (variable('macos')) {
-        run($command, context: $c->withPath(variable('root_dir')));
+    if ($c['macos']) {
+        run($command, context: $c->withPath($c['root_dir']));
     } else {
         docker_compose_run($command, c: $c);
     }
