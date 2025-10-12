@@ -470,7 +470,7 @@ function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): 
     $c ??= context();
 
     if ($c['macos']) {
-        run($command, context: $c->withPath($c['root_dir']));
+        run($command, context: $c->withWorkingDirectory($c['root_dir']));
     } else {
         docker_compose_run($command, c: $c);
     }
