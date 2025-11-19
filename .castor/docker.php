@@ -3,6 +3,7 @@
 namespace docker;
 
 use Castor\Attribute\AsOption;
+use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 use Castor\Helper\PathHelper;
@@ -153,16 +154,21 @@ function stop(
     docker_compose($command, profiles: $profiles);
 }
 
-#[AsTask(description: 'Opens a shell (bash) into a builder container', aliases: ['builder'])]
-function builder(): void
+/**
+ * @param array<string> $params
+ */
+#[AsTask(description: 'Opens a shell (bash) or proxy any command to the builder container', aliases: ['builder'])]
+function builder(#[AsRawTokens] array $params = []): void
 {
+    if (0 === \count($params)) {
+        $params = ['bash'];
+    }
+
     $c = context()
-        ->withTimeout(null)
-        ->withTty()
+        ->toInteractive()
         ->withEnvironment($_ENV + $_SERVER)
-        ->withAllowFailure()
     ;
-    docker_compose_run('bash', c: $c);
+    docker_compose_run(implode(' ', $params), c: $c);
 }
 
 /**
