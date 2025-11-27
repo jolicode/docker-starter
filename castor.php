@@ -35,7 +35,7 @@ function create_default_variables(): array
         ],
         // In order to test docker stater, we need a way to pass different values.
         // You should remove the `$_SERVER` and hardcode your configuration.
-        'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.4',
+        'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.5',
         'registry' => $_SERVER['DS_REGISTRY'] ?? null,
     ];
 }

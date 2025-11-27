@@ -11,7 +11,7 @@ permissions:
 
 env:
   DS_REGISTRY: "ghcr.io/jolicode/docker-starter"
-  DS_PHP_VERSION: "8.4"
+  DS_PHP_VERSION: "8.5"
 
 jobs:
   push-images:
