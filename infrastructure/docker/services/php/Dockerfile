@@ -116,7 +116,7 @@ RUN phpenmod app-default \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.8.9 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.9.2 /usr/bin/composer /usr/bin/composer
 
 # Pie
 RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.0.0/pie.phar \
