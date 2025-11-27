@@ -12,8 +12,8 @@
   * Upgrade to PostgreSQL v16
   * Replace maildev with Mailpit
 * PHP
-  * Drop support for PHP < 8.2
-  * Add support for PHP 8.3, 8.4, 8.5
+  * Drop support for PHP < 8.3
+  * Add support for PHP 8.4, 8.5
   * Add support for pie
   * Add some PHP tooling (PHP-CS-Fixer, PHPStan, Twig-CS-Fixer)
   * Update Composer to version 2.8
