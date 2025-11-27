@@ -32,7 +32,7 @@ domain where the application will be available;
 * `extra_domains` (optional): This contains extra domains where the application
 will be available;
 
-* `php_version` (optional, default: `8.3`): This is PHP version.
+* `php_version` (optional, default: `8.5`): This is PHP version.
 
 For example:
 
