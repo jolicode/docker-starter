@@ -1,19 +1,17 @@
-<p align="center">
-    <img width="500" height="180" src="https://jolicode.com/media/original/docker-starter-logo.png" alt="Docker starter kit logo" />
-</p>
+<h1 align="center">
+  <a href="https://github.com/jolicode/docker-starter"><img src="https://jolicode.com/media/original/oss/headers/docker-starter.png" alt="Docker Starter"></a>
+  <br />
+  Docker Starter
+  <br />
+  <sub><em><h6>A docker-based infrastructure wrapped in an easy-to-use command line, oriented for PHP projects.</h6></em></sub>
+</h1>
 
-<p align="center">
-    <i>Collection of Dockerfile and docker-compose configurations wrapped in an easy-to-use command line, oriented for PHP projects.</i>
-</p>
-
-## What is Docker Starter Kit
-
-This repository provides a Docker infrastructure for your PHP projects with
-built-in support for HTTPS, custom domain, databases, workers... and is used as
-a foundation for our projects at [JoliCode](https://jolicode.com/).
+This repository contains a collection of Dockerfile and docker-compose configurations
+for your PHP projects with built-in support for HTTPS, custom domain, databases, workers...
+and is used as a foundation for our projects at [JoliCode](https://jolicode.com/).
 
 > [!WARNING]
-> You are reading the README of version 4 that uses [castor](https://github.com/jolicode/castor).
+> You are reading the README of version 4 that uses [Castor](https://castor.jolicode.com).
 
 * If you are using [Invoke](https://www.pyinvoke.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v3.11.0);
 * If you are using [Fabric](https://www.fabfile.org/), you can read the [dedicated README](https://github.com/jolicode/docker-starter/tree/v2.0.0);
@@ -1144,5 +1142,9 @@ the registry to pull the images:
 
 ## Credits
 
-- Created at [JoliCode](https://jolicode.com/)
-- Logo by [Caneco](https://twitter.com/caneco)
+Docker-starter logo was created by [Caneco](https://twitter.com/caneco).
+
+<br><br>
+<div align="center">
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v3" alt="JoliCode is sponsoring this project"></a>
+</div>
