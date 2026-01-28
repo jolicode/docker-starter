@@ -64,10 +64,8 @@ function create_test_context(): Context
     $c = create_default_context();
 
     return $c
-        ->withData([
-            'docker_compose_run_environment' => [
-                'APP_ENV' => 'test',
-            ],
+        ->withEnvironment([
+            'APP_ENV' => 'test',
         ])
     ;
 }
@@ -78,10 +76,8 @@ function create_ci_context(): Context
     $c = create_test_context();
 
     return $c
-        ->withData([
-            // override the default context here
-        ])
         ->withData(
+            // override the default context here
             [
                 'docker_compose_files' => [
                     'docker-compose.yml',

@@ -158,7 +158,7 @@ function stop(
  * @param array<string> $params
  */
 #[AsTask(description: 'Opens a shell (bash) or proxy any command to the builder container', aliases: ['builder'])]
-function builder(#[AsRawTokens] array $params = []): void
+function builder(#[AsRawTokens] array $params = []): int
 {
     if (0 === \count($params)) {
         $params = ['bash'];
@@ -168,7 +168,8 @@ function builder(#[AsRawTokens] array $params = []): void
         ->toInteractive()
         ->withEnvironment($_ENV + $_SERVER)
     ;
-    docker_compose_run(implode(' ', $params), c: $c);
+
+    return (int) docker_compose_run(implode(' ', $params), c: $c)->getExitCode();
 }
 
 /**
@@ -387,6 +388,12 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
         'PHP_VERSION' => $c['php_version'],
         'REGISTRY' => $c['registry'] ?? '',
     ]);
+
+    if ($c['APP_ENV'] ?? false) {
+        $c = $c->withEnvironment([
+            'APP_ENV' => $c['APP_ENV'] ?? '',
+        ]);
+    }
 
     $command = [
         'docker',
