@@ -5,6 +5,8 @@ x-templates:
             context: services/php
             target: worker
         user: "${USER_ID}:${USER_ID}"
+        environment:
+            - APP_ENV
         depends_on:
             postgres:
                 condition: service_healthy
@@ -41,6 +43,8 @@ services:
             cache_from:
               - "type=registry,ref=${REGISTRY:-}/frontend:cache"
         user: "${USER_ID}:${USER_ID}"
+        environment:
+            - APP_ENV
         volumes:
             - "../..:/var/www:cached"
             - "../../.home:/home/app:cached"
@@ -71,6 +75,7 @@ services:
         init: true
         user: "${USER_ID}:${USER_ID}"
         environment:
+            - APP_ENV
             # The following list contains the common environment variables exposed by CI platforms
             - GITHUB_ACTIONS
             - CI # Travis CI, CircleCI, Cirrus CI, Gitlab CI, Appveyor, CodeShip, dsari

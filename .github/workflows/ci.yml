@@ -83,9 +83,17 @@ jobs:
                   {
                       docker_compose_run('echo "Hello World"');
                   }
+
+                  #[AsTask()]
+                  function app_env()
+                  {
+                      docker_compose_run('php public/index.php');
+                  }
                   EOPHP
 
                   castor test | grep "Hello World"
+                  CASTOR_CONTEXT=default castor app-env | grep 'Environment: not set'"
+                  CASTOR_CONTEXT=test castor app-env | grep 'Environment: test'"
 
             - name: "Test communication with DB"
               run: |
