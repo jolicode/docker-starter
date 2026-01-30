@@ -41,7 +41,8 @@ jobs:
         env:
             DS_PHP_VERSION: ${{ matrix.php-version }}
         steps:
-            - uses: actions/checkout@v5
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
 
             - name: Log in to registry
               shell: bash
@@ -49,6 +50,8 @@ jobs:
 
             - name: setup-castor
               uses: castor-php/setup-castor@v0.1.0
+
+            - uses: actions/checkout@v5
 
             - name: "Build and start the infrastructure"
               run: "castor start"
