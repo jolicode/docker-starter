@@ -41,12 +41,12 @@ function create_default_context(): Context
 
     //                                                   2³² - 1
     if (false === $data['user_id'] || $data['user_id'] > 4294967295) {
-        $data['user_id'] = 1000;
+        $data['user_id'] = 999;
     }
 
     if (0 === $data['user_id']) {
         log('Running as root? Fallback to fake user id.', 'warning');
-        $data['user_id'] = 1000;
+        $data['user_id'] = 999;
     }
 
     return new Context(
