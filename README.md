@@ -154,6 +154,192 @@ Usually, there is three places where you need to do it:
 
 </details>
 
+### How to use MariaDB instead of PostgreSQL
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use MariaDB, you will need to apply this patch:
+
+```diff
+diff --git a/infrastructure/docker/docker-compose.builder.yml b/infrastructure/docker/docker-compose.builder.yml
+index d00f315..bdfdc65 100644
+--- a/infrastructure/docker/docker-compose.builder.yml
++++ b/infrastructure/docker/docker-compose.builder.yml
+@@ -10,7 +10,7 @@ services:
+     builder:
+         build: services/builder
+         depends_on:
+-            - postgres
++            - mariadb
+         environment:
+             - COMPOSER_MEMORY_LIMIT=-1
+         volumes:
+diff --git a/infrastructure/docker/docker-compose.worker.yml b/infrastructure/docker/docker-compose.worker.yml
+index 2eda814..59f8fed 100644
+--- a/infrastructure/docker/docker-compose.worker.yml
++++ b/infrastructure/docker/docker-compose.worker.yml
+@@ -5,7 +5,7 @@ x-services-templates:
+     worker_base: &worker_base
+         build: services/worker
+         depends_on:
+-            - postgres
++            - mariadb
+             #- rabbitmq
+         volumes:
+             - "../..:/var/www:cached"
+diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
+index 49a2661..1804a01 100644
+--- a/infrastructure/docker/docker-compose.yml
++++ b/infrastructure/docker/docker-compose.yml
+@@ -1,7 +1,7 @@
+ version: '3.7'
+
+ volumes:
+-    postgres-data: {}
++    mariadb-data: {}
+
+ services:
+     router:
+@@ -13,7 +13,7 @@ services:
+     frontend:
+         build: services/frontend
+         depends_on:
+-            - postgres
++            - mariadb
+         volumes:
+             - "../..:/var/www:cached"
+         labels:
+@@ -24,10 +24,7 @@ services:
+             # Comment the next line to be able to access frontend via HTTP instead of HTTPS
+             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
+
+-    postgres:
+-        image: postgres:16
+-        environment:
+-            - POSTGRES_USER=app
+-            - POSTGRES_PASSWORD=app
++    mariadb:
++        image: mariadb:11
++        environment:
++            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
++        healthcheck:
++            test: "mariadb-admin ping -h localhost"
++            interval: 5s
++            timeout: 5s
++            retries: 10
+         volumes:
+-            - postgres-data:/var/lib/postgresql/data
++            - mariadb-data:/var/lib/mysql
+diff --git a/infrastructure/docker/services/php/Dockerfile b/infrastructure/docker/services/php/Dockerfile
+index 56e1835..95fee78 100644
+--- a/infrastructure/docker/services/php/Dockerfile
++++ b/infrastructure/docker/services/php/Dockerfile
+@@ -24,7 +24,7 @@ RUN apk add --no-cache \
+     php${PHP_VERSION}-intl \
+     php${PHP_VERSION}-mbstring \
+-    php${PHP_VERSION}-pgsql \
++    php${PHP_VERSION}-mysql \
+     php${PHP_VERSION}-xml \
+     php${PHP_VERSION}-zip \
+```
+
+</details>
+
+### How to use MySQL instead of PostgreSQL
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+In order to use MySQL, you will need to apply this patch:
+
+```diff
+diff --git a/infrastructure/docker/docker-compose.builder.yml b/infrastructure/docker/docker-compose.builder.yml
+index d00f315..bdfdc65 100644
+--- a/infrastructure/docker/docker-compose.builder.yml
++++ b/infrastructure/docker/docker-compose.builder.yml
+@@ -10,7 +10,7 @@ services:
+     builder:
+         build: services/builder
+         depends_on:
+-            - postgres
++            - mysql
+         environment:
+             - COMPOSER_MEMORY_LIMIT=-1
+         volumes:
+diff --git a/infrastructure/docker/docker-compose.worker.yml b/infrastructure/docker/docker-compose.worker.yml
+index 2eda814..59f8fed 100644
+--- a/infrastructure/docker/docker-compose.worker.yml
++++ b/infrastructure/docker/docker-compose.worker.yml
+@@ -5,7 +5,7 @@ x-services-templates:
+     worker_base: &worker_base
+         build: services/worker
+         depends_on:
+-            - postgres
++            - mysql
+             #- rabbitmq
+         volumes:
+             - "../..:/var/www:cached"
+diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
+index 49a2661..1804a01 100644
+--- a/infrastructure/docker/docker-compose.yml
++++ b/infrastructure/docker/docker-compose.yml
+@@ -1,7 +1,7 @@
+ version: '3.7'
+
+ volumes:
+-    postgres-data: {}
++    mysql-data: {}
+
+ services:
+     router:
+@@ -13,7 +13,7 @@ services:
+     frontend:
+         build: services/frontend
+         depends_on:
+-            - postgres
++            - mysql
+         volumes:
+             - "../..:/var/www:cached"
+         labels:
+@@ -24,10 +24,7 @@ services:
+             # Comment the next line to be able to access frontend via HTTP instead of HTTPS
+             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
+
+-    postgres:
+-        image: postgres:16
+-        environment:
+-            - POSTGRES_USER=app
+-            - POSTGRES_PASSWORD=app
++    mysql:
++        image: mysql:8
++        environment:
++            - MYSQL_ALLOW_EMPTY_PASSWORD=1
++        healthcheck:
++            test: "mysqladmin ping -h localhost"
++            interval: 5s
++            timeout: 5s
++            retries: 10
+         volumes:
+-            - postgres-data:/var/lib/postgresql/data
++            - mysql-data:/var/lib/mysql
+diff --git a/infrastructure/docker/services/php/Dockerfile b/infrastructure/docker/services/php/Dockerfile
+index 56e1835..95fee78 100644
+--- a/infrastructure/docker/services/php/Dockerfile
++++ b/infrastructure/docker/services/php/Dockerfile
+@@ -24,7 +24,7 @@ RUN apk add --no-cache \
+     php${PHP_VERSION}-intl \
+     php${PHP_VERSION}-mbstring \
+-    php${PHP_VERSION}-pgsql \
++    php${PHP_VERSION}-mysql \
+     php${PHP_VERSION}-xml \
+     php${PHP_VERSION}-zip \
+```
+
+</details>
+
 ### How to use with Webpack Encore
 
 <details>
@@ -851,99 +1037,6 @@ Finally you can use the following command:
 
 ```
 castor app:db:pg-activity
-```
-
-</details>
-
-### How to use MySQL instead of PostgreSQL
-
-<details>
-
-<summary>Read the cookbook</summary>
-
-In order to use MySQL, you will need to apply this patch:
-
-```diff
-diff --git a/infrastructure/docker/docker-compose.builder.yml b/infrastructure/docker/docker-compose.builder.yml
-index d00f315..bdfdc65 100644
---- a/infrastructure/docker/docker-compose.builder.yml
-+++ b/infrastructure/docker/docker-compose.builder.yml
-@@ -10,7 +10,7 @@ services:
-     builder:
-         build: services/builder
-         depends_on:
--            - postgres
-+            - mysql
-         environment:
-             - COMPOSER_MEMORY_LIMIT=-1
-         volumes:
-diff --git a/infrastructure/docker/docker-compose.worker.yml b/infrastructure/docker/docker-compose.worker.yml
-index 2eda814..59f8fed 100644
---- a/infrastructure/docker/docker-compose.worker.yml
-+++ b/infrastructure/docker/docker-compose.worker.yml
-@@ -5,7 +5,7 @@ x-services-templates:
-     worker_base: &worker_base
-         build: services/worker
-         depends_on:
--            - postgres
-+            - mysql
-             #- rabbitmq
-         volumes:
-             - "../..:/var/www:cached"
-diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
-index 49a2661..1804a01 100644
---- a/infrastructure/docker/docker-compose.yml
-+++ b/infrastructure/docker/docker-compose.yml
-@@ -1,7 +1,7 @@
- version: '3.7'
-
- volumes:
--    postgres-data: {}
-+    mysql-data: {}
-
- services:
-     router:
-@@ -13,7 +13,7 @@ services:
-     frontend:
-         build: services/frontend
-         depends_on:
--            - postgres
-+            - mysql
-         volumes:
-             - "../..:/var/www:cached"
-         labels:
-@@ -24,10 +24,7 @@ services:
-             # Comment the next line to be able to access frontend via HTTP instead of HTTPS
-             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
-
--    postgres:
--        image: postgres:16
--        environment:
--            - POSTGRES_USER=app
--            - POSTGRES_PASSWORD=app
-+    mysql:
-+        image: mysql:8
-+        environment:
-+            - MYSQL_ALLOW_EMPTY_PASSWORD=1
-+        healthcheck:
-+            test: "mysqladmin ping -h localhost"
-+            interval: 5s
-+            timeout: 5s
-+            retries: 10
-         volumes:
--            - postgres-data:/var/lib/postgresql/data
-+            - mysql-data:/var/lib/mysql
-diff --git a/infrastructure/docker/services/php/Dockerfile b/infrastructure/docker/services/php/Dockerfile
-index 56e1835..95fee78 100644
---- a/infrastructure/docker/services/php/Dockerfile
-+++ b/infrastructure/docker/services/php/Dockerfile
-@@ -24,7 +24,7 @@ RUN apk add --no-cache \
-     php${PHP_VERSION}-intl \
-     php${PHP_VERSION}-mbstring \
--    php${PHP_VERSION}-pgsql \
-+    php${PHP_VERSION}-mysql \
-     php${PHP_VERSION}-xml \
-     php${PHP_VERSION}-zip \
 ```
 
 </details>
