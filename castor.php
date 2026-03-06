@@ -118,7 +118,7 @@ function migrate(): void
     // docker_compose_run('bin/console doctrine:migration:migrate -n --allow-no-migration --all-or-nothing');
 }
 
-#[AsTask(description: 'Loads fixtures', namespace: 'app:db', aliases: ['fixture'])]
+#[AsTask(description: 'Loads fixtures', namespace: 'app:db', aliases: ['fixtures'])]
 function fixtures(): void
 {
     // io()->title('Loads fixtures');
