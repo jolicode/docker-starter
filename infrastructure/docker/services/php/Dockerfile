@@ -82,7 +82,7 @@ FROM php-base AS builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG NODEJS_VERSION=20.x
+ARG NODEJS_VERSION=24.x
 RUN curl -s https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODEJS_VERSION} nodistro main" > /etc/apt/sources.list.d/nodesource.list
 
@@ -116,10 +116,10 @@ RUN phpenmod app-default \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.9.2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.9.5 /usr/bin/composer /usr/bin/composer
 
 # Pie
-RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.0.0/pie.phar \
+RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.3.9/pie.phar \
     && chmod +x /usr/local/bin/pie
 
 # Autocompletion
