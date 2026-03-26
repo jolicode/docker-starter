@@ -89,6 +89,18 @@ function install(): void
     qa\install();
 }
 
+#[AsTask(description: 'Update dependencies')]
+function update(bool $withTools = false): void
+{
+    io()->title('Updating dependencies...');
+
+    // docker_compose_run('composer update -o');
+
+    if ($withTools) {
+        qa\update();
+    }
+}
+
 #[AsTask(description: 'Clears the application cache', namespace: 'app', aliases: ['cache-clear'])]
 function cache_clear(bool $warm = true): void
 {
