@@ -24,10 +24,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
 
             - name: Check php/Dockerfile
-              uses: hadolint/hadolint-action@v3.1.0
+              uses: hadolint/hadolint-action@v3.3.0
               with:
                   dockerfile: infrastructure/docker/services/php/Dockerfile
 
@@ -42,16 +42,16 @@ jobs:
             DS_PHP_VERSION: ${{ matrix.php-version }}
         steps:
             - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v2
+              uses: docker/setup-buildx-action@v4
 
             - name: Log in to registry
               shell: bash
               run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
             - name: setup-castor
-              uses: castor-php/setup-castor@v0.1.0
+              uses: castor-php/setup-castor@v1.0.0
 
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v6
 
             - name: "Build and start the infrastructure"
               run: "castor start"
