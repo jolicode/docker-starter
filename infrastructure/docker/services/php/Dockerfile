@@ -1,6 +1,6 @@
 # hadolint global ignore=DL3008
 
-FROM debian:12.8-slim AS php-base
+FROM debian:12.14-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -116,10 +116,10 @@ RUN phpenmod app-default \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.9.5 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.9.8 /usr/bin/composer /usr/bin/composer
 
 # Pie
-RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.3.9/pie.phar \
+RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.4.4/pie.phar \
     && chmod +x /usr/local/bin/pie
 
 # Autocompletion
