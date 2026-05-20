@@ -70,18 +70,32 @@ function phpstan(
     return docker_exit_code($command, workDir: '/var/www');
 }
 
-#[AsTask(description: 'Runs Composer audit', aliases: ['audit'])]
-function audit(): int
+#[AsTask(description: 'Runs Security audit', aliases: ['security-audit'])]
+function securityAudit(): int
 {
     $basePath = \sprintf('%s/application', variable('root_dir'));
 
-    if (!is_file("{$basePath}/composer.lock")) {
-        return 0;
+    if (is_file("{$basePath}/composer.lock")) {
+        io()->text('Running Composer audit...');
+
+        $exitCode = docker_exit_code('composer audit');
+
+        if (0 !== $exitCode) {
+            return $exitCode;
+        }
     }
 
-    io()->section('Running Composer audit...');
+    if (is_file("{$basePath}/package-lock.json")) {
+        io()->text('Running NPM audit...');
 
-    return docker_exit_code('composer audit');
+        $exitCode = docker_exit_code('npm audit');
+
+        if (0 !== $exitCode) {
+            return $exitCode;
+        }
+    }
+
+    return 0;
 }
 
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]

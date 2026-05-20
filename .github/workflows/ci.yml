@@ -57,7 +57,7 @@ jobs:
               run: "castor start"
 
             - name: "Check Security issues"
-              run: "castor qa:audit"
+              run: "castor qa:security-audit"
 
             - name: "Check PHP coding standards"
               run: "castor qa:cs --dry-run"
