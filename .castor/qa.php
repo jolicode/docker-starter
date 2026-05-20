@@ -70,6 +70,14 @@ function phpstan(
     return docker_exit_code($command, workDir: '/var/www');
 }
 
+#[AsTask(description: 'Runs Composer audit', aliases: ['audit'])]
+function audit(): int
+{
+    io()->section('Running Composer audit...');
+
+    return docker_exit_code('composer audit');
+}
+
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
 function cs(bool $dryRun = false): int
 {
