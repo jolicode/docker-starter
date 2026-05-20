@@ -73,6 +73,12 @@ function phpstan(
 #[AsTask(description: 'Runs Composer audit', aliases: ['audit'])]
 function audit(): int
 {
+    $basePath = \sprintf('%s/application', variable('root_dir'));
+
+    if (!is_file("{$basePath}/composer.lock")) {
+        return 0;
+    }
+
     io()->section('Running Composer audit...');
 
     return docker_exit_code('composer audit');

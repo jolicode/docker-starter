@@ -56,8 +56,8 @@ jobs:
             - name: "Build and start the infrastructure"
               run: "castor start"
 
-#            - name: "Check Security issues"
-#              run: "castor qa:audit"
+            - name: "Check Security issues"
+              run: "castor qa:audit"
 
             - name: "Check PHP coding standards"
               run: "castor qa:cs --dry-run"
