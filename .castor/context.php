@@ -35,7 +35,7 @@ function create_default_context(): Context
     $platform = strtolower(php_uname('s'));
     if (str_contains($platform, 'darwin')) {
         $data['macos'] = true;
-    } elseif (\in_array($platform, ['win32', 'win64', 'windows nt'])) {
+    } elseif (\in_array($platform, ['win32', 'win64', 'windows nt'], true)) {
         $data['power_shell'] = true;
     }
 
