@@ -45,7 +45,7 @@ function symfony(bool $webApp = false): void
     build();
     docker_compose_run('composer create-project symfony/skeleton sf');
 
-    fs()->mirror($base . '/sf/', $base);
+    fs()->mirror($base . '/sf/', $base, options: ['override' => true]);
     fs()->remove([$base . '/sf', $base . '/var']);
 
     if ($webApp) {
