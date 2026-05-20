@@ -69,7 +69,7 @@ infrastructure.
 
 If you want to install a Symfony project, you can run (before `castor init`):
 
-```
+```bash
 castor symfony [--web-app]
 ```
 
@@ -498,39 +498,11 @@ In your application, you can use the following configuration:
 
 ### How to use with Sylius
 
-<details>
+If you want to install a Sylius project, you can run (before `castor init`):
 
-<summary>Read the cookbook</summary>
-
-Add the php extension `gd` to `infrastructure/docker/services/php/Dockerfile`
-
+```bash
+castor sylius
 ```
-php${PHP_VERSION}-gd \
-```
-
-If you want to create a new Sylius project, you need to enter a builder (`inv
-builder`) and run the following commands
-
-1. Remove the `application` folder:
-
-    ```bash
-    cd ..
-    rm -rf application/*
-    ```
-
-1. Create a new project:
-
-    ```bash
-    composer create-project sylius/sylius-standard application
-    ```
-
-1. Configure the `.env`
-
-    ```bash
-    sed -i 's#DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=12\&charset=utf8#' application/.env
-    ```
-
-</details>
 
 ### How to add RabbitMQ and its dashboard
 
