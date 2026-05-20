@@ -12,9 +12,6 @@ parameters:
     tmpDir: tools/phpstan/var
     inferPrivatePropertyTypeFromConstructor: true
 
-    # symfony:
-    #     containerXmlPath: 'application/var/cache/dev/App_KernelDevDebugContainer.xml'
-
     typeAliases:
         ContextData: '''
             array{
