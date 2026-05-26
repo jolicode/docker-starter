@@ -160,14 +160,12 @@ function stop(
 #[AsTask(description: 'Opens a shell (bash) or proxy any command to the builder container', aliases: ['builder'])]
 function builder(#[AsRawTokens] array $params = []): int
 {
+    $c = context()->withEnvironment($_ENV + $_SERVER);
+
     if (0 === \count($params)) {
         $params = ['bash'];
+        $c = $c->toInteractive();
     }
-
-    $c = context()
-        ->toInteractive()
-        ->withEnvironment($_ENV + $_SERVER)
-    ;
 
     return (int) docker_compose_run(implode(' ', $params), c: $c)->getExitCode();
 }
