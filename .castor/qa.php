@@ -70,7 +70,7 @@ function phpstan(
     return docker_exit_code($command, workDir: '/var/www');
 }
 
-#[AsTask(description: 'Runs Security audit', aliases: ['security-audit'])]
+#[AsTask(description: 'Runs Security audit')]
 function securityAudit(): int
 {
     $basePath = \sprintf('%s/application', variable('root_dir'));
@@ -88,11 +88,7 @@ function securityAudit(): int
     if (is_file("{$basePath}/package-lock.json")) {
         io()->text('Running NPM audit...');
 
-        $exitCode = docker_exit_code('npm audit');
-
-        if (0 !== $exitCode) {
-            return $exitCode;
-        }
+        return docker_exit_code('npm audit');
     }
 
     return 0;
