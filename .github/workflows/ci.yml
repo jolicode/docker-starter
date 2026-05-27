@@ -62,6 +62,9 @@ jobs:
             - name: "Check PHP coding standards"
               run: "castor qa:cs --dry-run"
 
+            - name: "Check Twig coding standards"
+              run: "castor qa:twig-cs --dry-run"
+
             - name: "Run PHPStan"
               run: "castor qa:phpstan"
 
