@@ -135,5 +135,8 @@ function fixtures(): void
 {
     // io()->title('Loads fixtures');
 
+    // Uncomment one of them...
     // docker_compose_run('bin/console doctrine:fixture:load -n');
+    // docker_compose_run('bin/console foundry:load-fixtures -n');
+    // docker_compose_run('bin/console sylius:fixture:load -n');
 }
