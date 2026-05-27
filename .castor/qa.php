@@ -70,6 +70,40 @@ function phpstan(
     return docker_exit_code($command, workDir: '/var/www');
 }
 
+#[AsTask(description: 'Runs Security audit')]
+function securityAudit(): int
+{
+    $basePath = \sprintf('%s/application', variable('root_dir'));
+
+    if (is_file("{$basePath}/composer.lock")) {
+        io()->text('Running Composer audit...');
+
+        $exitCode = docker_exit_code('composer audit');
+
+        if (0 !== $exitCode) {
+            return $exitCode;
+        }
+    }
+
+    if (is_file("{$basePath}/yarn.lock")) {
+        io()->text('Running Yarn audit...');
+
+        $exitCode = docker_exit_code('yarn audit');
+
+        if (0 !== $exitCode) {
+            return $exitCode;
+        }
+    }
+
+    if (is_file("{$basePath}/package-lock.json")) {
+        io()->text('Running NPM audit...');
+
+        return docker_exit_code('npm audit');
+    }
+
+    return 0;
+}
+
 #[AsTask(description: 'Fixes Coding Style', aliases: ['cs'])]
 function cs(bool $dryRun = false): int
 {
