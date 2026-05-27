@@ -165,6 +165,8 @@ function builder(#[AsRawTokens] array $params = []): int
     if (0 === \count($params)) {
         $params = ['bash'];
         $c = $c->toInteractive();
+    } else {
+        $c = $c->withTty(false)->withPty(false)->withAllowFailure();
     }
 
     return (int) docker_compose_run(implode(' ', $params), c: $c)->getExitCode();
