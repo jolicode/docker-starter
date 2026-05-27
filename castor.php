@@ -15,7 +15,7 @@ use function docker\up;
 // use function docker\workers_start;
 // use function docker\workers_stop;
 
-guard_min_version('0.26.0');
+guard_min_version('1.4.0');
 
 import(__DIR__ . '/.castor');
 
