@@ -498,11 +498,17 @@ In your application, you can use the following configuration:
 
 ### How to use with Sylius
 
+<details>
+
+<summary>Read the cookbook</summary>
+
 If you want to install a Sylius project, you can run (before `castor init`):
 
 ```bash
 castor sylius
 ```
+
+</details>
 
 ### How to add RabbitMQ and its dashboard
 
@@ -841,6 +847,29 @@ RUN phpenmod blackfire
 Here also, You can group this command with another one.
 
 </details>
+
+### How to add Chrome Headless
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+If you want to enable Headless Chrome in your project, run the following command (before `castor init`):
+
+```bash
+castor chrome
+```
+
+If your project is already initialized, you can manually update the `docker-compose.dev.yml` file:
+
+```yaml
+services:
+  # ...
+  chrome:
+    image: ghcr.io/browserless/chromium
+    ports:
+      - "9222:3000"
+```
 
 ### How to add support for crons?
 
