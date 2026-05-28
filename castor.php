@@ -71,7 +71,7 @@ function install(): void
     }
     if (is_file("{$basePath}/yarn.lock")) {
         io()->section('Installing Node.js dependencies');
-        docker_compose_run('yarn install --frozen-lockfile');
+        docker_compose_run('yarn install --immutable');
     } elseif (is_file("{$basePath}/package.json")) {
         io()->section('Installing Node.js dependencies');
 
