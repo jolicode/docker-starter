@@ -2,8 +2,8 @@
 
 namespace docker;
 
+use Castor\Attribute\AsArgsAfterOptionEnd;
 use Castor\Attribute\AsOption;
-use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 use Castor\Helper\PathHelper;
@@ -158,7 +158,7 @@ function stop(
  * @param array<string> $params
  */
 #[AsTask(description: 'Opens a shell (bash) or proxy any command to the builder container', aliases: ['builder'])]
-function builder(#[AsRawTokens] array $params = []): int
+function builder(#[AsArgsAfterOptionEnd] array $params = []): int
 {
     $c = context()->withEnvironment($_ENV + $_SERVER);
 
