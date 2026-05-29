@@ -346,26 +346,15 @@ function workers_start(): void
 function workers_stop(): void
 {
     io()->title('Stopping workers');
+    $workers = get_service_names(profile: 'worker');
 
-    // Docker compose cannot stop a single service in a profile, if it depends
-    // on another service in another profile. To make it work, we need to select
-    // both profiles, and so stop both services
+    if ([] === $workers) {
+        io()->error('No worker service found.');
 
-    // So we find all services, in all profiles, and manually filter the one
-    // that has the "worker" profile, then we stop it
-    $command = ['stop'];
-
-    foreach (get_services() as $name => $service) {
-        foreach ($service['profiles'] ?? [] as $profile) {
-            if ('worker' === $profile) {
-                $command[] = $name;
-
-                continue 2;
-            }
-        }
+        return;
     }
 
-    docker_compose($command, profiles: ['*']);
+    docker_compose(['stop', ...$workers], profiles: ['*']);
 }
 
 /**
@@ -588,22 +577,33 @@ function push(bool $dryRun = false): void
 /**
  * @return array<string, array{profiles?: list<string>, build: array{context: string, dockerfile?: string, cache_from?: list<string>, target?: string}}>
  */
-function get_services(): array
+function get_services(?string $profile = null): array
 {
-    return json_decode(
+    $services = json_decode(
         docker_compose(
             ['config', '--format', 'json'],
             context()->withQuiet(),
             profiles: ['*'],
         )->getOutput(),
         true,
+        flags: JSON_THROW_ON_ERROR,
     )['services'];
+
+    if (null === $profile) {
+        return $services;
+    }
+
+    // Docker compose cannot get the services config for a given profile if one of
+    // these services depends on another service in another profile.
+    // So we find all services, in all profiles, and manually filter the one
+    // that has the given profile, then we stop it
+    return array_filter($services, static fn ($service) => \in_array($profile, $service['profiles'] ?? [], true));
 }
 
 /**
- * @return string[]
+ * @return list<string>
  */
-function get_service_names(): array
+function get_service_names(?string $profile = null): array
 {
-    return array_keys(get_services());
+    return array_keys(get_services($profile));
 }
