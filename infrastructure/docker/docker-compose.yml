@@ -8,7 +8,7 @@ x-templates:
         environment:
             - APP_ENV
         depends_on:
-            postgres:
+            mariadb:
                 condition: service_healthy
         volumes:
             - "../..:/var/www:cached"
@@ -16,23 +16,25 @@ x-templates:
             - worker
 
 volumes:
-    postgres-data: {}
+    mariadb-data: {}
     # # Needed if $XDG_ env vars have been overridden
     # builder-yarn-data: {}
 
 services:
-    postgres:
-        image: postgres:16
+    mariadb:
+        image: mariadb:12
         environment:
-            - POSTGRES_USER=app
-            - POSTGRES_PASSWORD=app
-        volumes:
-            - postgres-data:/var/lib/postgresql/data
+            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
+            - MARIADB_USER=app
+            - MARIADB_PASSWORD=app
+            - MARIADB_DATABASE=app
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            test: "mariadb-admin ping -h localhost"
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 10
+        volumes:
+            - mariadb-data:/var/lib/mysql
         profiles:
             - default
 
@@ -49,7 +51,7 @@ services:
             - "../..:/var/www:cached"
             - "../../.home:/home/app:cached"
         depends_on:
-            postgres:
+            mariadb:
                 condition: service_healthy
         profiles:
             - default
@@ -90,6 +92,6 @@ services:
             # of $XDG_DATA_HOME
             # - "builder-yarn-data:/data/yarn"
         depends_on:
-            - postgres
+            - mariadb
         profiles:
             - builder

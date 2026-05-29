@@ -163,86 +163,84 @@ Usually, there is three places where you need to do it:
 In order to use MariaDB, you will need to apply this patch:
 
 ```diff
-diff --git a/infrastructure/docker/docker-compose.builder.yml b/infrastructure/docker/docker-compose.builder.yml
-index d00f315..bdfdc65 100644
---- a/infrastructure/docker/docker-compose.builder.yml
-+++ b/infrastructure/docker/docker-compose.builder.yml
-@@ -10,7 +10,7 @@ services:
-     builder:
-         build: services/builder
-         depends_on:
--            - postgres
-+            - mariadb
-         environment:
-             - COMPOSER_MEMORY_LIMIT=-1
-         volumes:
-diff --git a/infrastructure/docker/docker-compose.worker.yml b/infrastructure/docker/docker-compose.worker.yml
-index 2eda814..59f8fed 100644
---- a/infrastructure/docker/docker-compose.worker.yml
-+++ b/infrastructure/docker/docker-compose.worker.yml
-@@ -5,7 +5,7 @@ x-services-templates:
-     worker_base: &worker_base
-         build: services/worker
-         depends_on:
--            - postgres
-+            - mariadb
-             #- rabbitmq
-         volumes:
-             - "../..:/var/www:cached"
 diff --git a/infrastructure/docker/docker-compose.yml b/infrastructure/docker/docker-compose.yml
-index 49a2661..1804a01 100644
+index e891ada..a49a99d 100644
 --- a/infrastructure/docker/docker-compose.yml
 +++ b/infrastructure/docker/docker-compose.yml
-@@ -1,7 +1,7 @@
- version: '3.7'
+@@ -8,7 +8,7 @@ x-templates:
+         environment:
+             - APP_ENV
+         depends_on:
+-            postgres:
++            mariadb:
+                 condition: service_healthy
+         volumes:
+             - "../..:/var/www:cached"
+@@ -16,23 +16,25 @@ x-templates:
+             - worker
 
  volumes:
 -    postgres-data: {}
 +    mariadb-data: {}
+     # # Needed if $XDG_ env vars have been overridden
+     # builder-yarn-data: {}
 
  services:
-     router:
-@@ -13,7 +13,7 @@ services:
-     frontend:
-         build: services/frontend
+-    postgres:
+-        image: postgres:16
++    mariadb:
++        image: mariadb:12
+         environment:
+-            - POSTGRES_USER=app
+-            - POSTGRES_PASSWORD=app
+-        volumes:
+-            - postgres-data:/var/lib/postgresql/data
++            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
++            - MARIADB_USER=app
++            - MARIADB_PASSWORD=app
++            - MARIADB_DATABASE=app
+         healthcheck:
+-            test: ["CMD-SHELL", "pg_isready -U postgres"]
++            test: "mariadb-admin ping -h localhost"
+             interval: 5s
+             timeout: 5s
+-            retries: 5
++            retries: 10
++        volumes:
++            - mariadb-data:/var/lib/mysql
+         profiles:
+             - default
+
+@@ -49,7 +51,7 @@ services:
+             - "../..:/var/www:cached"
+             - "../../.home:/home/app:cached"
+         depends_on:
+-            postgres:
++            mariadb:
+                 condition: service_healthy
+         profiles:
+             - default
+@@ -90,6 +92,6 @@ services:
+             # of $XDG_DATA_HOME
+             # - "builder-yarn-data:/data/yarn"
          depends_on:
 -            - postgres
 +            - mariadb
-         volumes:
-             - "../..:/var/www:cached"
-         labels:
-@@ -24,10 +24,7 @@ services:
-             # Comment the next line to be able to access frontend via HTTP instead of HTTPS
-             - "traefik.http.routers.${PROJECT_NAME}-frontend-unsecure.middlewares=redirect-to-https@file"
-
--    postgres:
--        image: postgres:16
--        environment:
--            - POSTGRES_USER=app
--            - POSTGRES_PASSWORD=app
-+    mariadb:
-+        image: mariadb:11
-+        environment:
-+            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
-+        healthcheck:
-+            test: "mariadb-admin ping -h localhost"
-+            interval: 5s
-+            timeout: 5s
-+            retries: 10
-         volumes:
--            - postgres-data:/var/lib/postgresql/data
-+            - mariadb-data:/var/lib/mysql
+         profiles:
+             - builder
 diff --git a/infrastructure/docker/services/php/Dockerfile b/infrastructure/docker/services/php/Dockerfile
-index 56e1835..95fee78 100644
+index e9e95fd..8f00745 100644
 --- a/infrastructure/docker/services/php/Dockerfile
 +++ b/infrastructure/docker/services/php/Dockerfile
-@@ -24,7 +24,7 @@ RUN apk add --no-cache \
-     php${PHP_VERSION}-intl \
-     php${PHP_VERSION}-mbstring \
--    php${PHP_VERSION}-pgsql \
-+    php${PHP_VERSION}-mysql \
-     php${PHP_VERSION}-xml \
-     php${PHP_VERSION}-zip \
+@@ -35,7 +35,7 @@ RUN apt-get update \
+         "php${PHP_VERSION}-iconv" \
+         "php${PHP_VERSION}-intl" \
+         "php${PHP_VERSION}-mbstring" \
+-        "php${PHP_VERSION}-pgsql" \
++        "php${PHP_VERSION}-mysql" \
+         "php${PHP_VERSION}-uuid" \
+         "php${PHP_VERSION}-xml" \
+         "php${PHP_VERSION}-zip" \
 ```
 
 </details>

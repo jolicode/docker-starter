@@ -114,7 +114,7 @@ jobs:
 
                   cat > application/public/index.php <<'EOPHP'
                   <?php
-                  $pdo = new PDO('pgsql:host=postgres;dbname=app', 'app', 'app');
+                  $pdo = new PDO('mysql:host=mariadb;dbname=app', 'app', 'app');
                   $pdo->exec('CREATE TABLE test (id integer NOT NULL)');
                   $pdo->exec('INSERT INTO test VALUES (1)');
                   echo $pdo->query('SELECT * from test')->fetchAll() ? 'database OK' : 'database KO';
