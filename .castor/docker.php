@@ -542,29 +542,33 @@ function push(bool $dryRun = false): void
         ];
     }
 
-    $content = \sprintf(<<<'EOHCL'
-        group "default" {
-            targets = [%s]
-        }
-
-        EOHCL
-        , implode(', ', array_map(static fn ($target) => \sprintf('"%s"', $target['target']), $targets)));
-
-    foreach ($targets as $target) {
-        $content .= \sprintf(<<<'EOHCL'
-            target "%s" {
-                context    = "%s"
-                dockerfile = "%s"
-                cache-from = ["%s"]
-                cache-to   = ["type=%s,ref=%s,mode=max"]
-                target     = "%s"
-                args = {
-                    PHP_VERSION = "%s"
-                }
+    $content = \sprintf(
+        <<<'EOHCL'
+            group "default" {
+                targets = [%s]
             }
 
-            EOHCL
-            , $target['target'], $target['context'], $target['dockerfile'], $target['reference'], $target['type'], $target['reference'], $target['target'], variable('php_version'));
+            EOHCL,
+        implode(', ', array_map(static fn ($target) => \sprintf('"%s"', $target['target']), $targets))
+    );
+
+    foreach ($targets as $target) {
+        $content .= \sprintf(
+            <<<'EOHCL'
+                target "%s" {
+                    context    = "%s"
+                    dockerfile = "%s"
+                    cache-from = ["%s"]
+                    cache-to   = ["type=%s,ref=%s,mode=max"]
+                    target     = "%s"
+                    args = {
+                        PHP_VERSION = "%s"
+                    }
+                }
+
+                EOHCL,
+            $target['target'], $target['context'], $target['dockerfile'], $target['reference'], $target['type'], $target['reference'], $target['target'], variable('php_version')
+        );
     }
 
     if ($dryRun) {

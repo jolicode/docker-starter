@@ -23,6 +23,7 @@ return (new PhpCsFixer\Config())
         'concat_space' => ['spacing' => 'one'],
         'ordered_class_elements' => true, // Symfony(PSR12) override the default value, but we don't want
         'blank_line_before_statement' => true, // Symfony(PSR12) override the default value, but we don't want
+        'declare_strict_types' => false, // PhpCsFixer:risky override the default value, but we don't want
     ])
     ->setFinder($finder)
 ;

@@ -1,6 +1,6 @@
 # hadolint global ignore=DL3008
 
-FROM debian:12.14-slim AS php-base
+FROM debian:13.5-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -11,7 +11,7 @@ RUN apt-get update \
         gnupg \
     && curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb \
     && dpkg -i /tmp/debsuryorg-archive-keyring.deb \
-    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/sury.list \
+    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ trixie main" > /etc/apt/sources.list.d/sury.list \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
@@ -117,14 +117,14 @@ RUN phpenmod app-default \
     && phpenmod app-builder
 
 # Composer
-COPY --from=composer/composer:2.9.8 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:2.10.0 /usr/bin/composer /usr/bin/composer
 
 # Pie
-RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.4.4/pie.phar \
+RUN curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/download/1.4.5/pie.phar \
     && chmod +x /usr/local/bin/pie
 
 # Autocompletion
-ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.3/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
+ADD https://raw.githubusercontent.com/symfony/symfony/refs/heads/7.4/src/Symfony/Component/Console/Resources/completion.bash /tmp/completion.bash
 
 # Composer symfony/console version is too old, and doest not support "API version feature", so we remove it
 # Hey, while we are at it, let's add some more completion

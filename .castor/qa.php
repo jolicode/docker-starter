@@ -121,7 +121,7 @@ function cs(bool $dryRun = false): int
         return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/var/www');
     }
 
-    return docker_exit_code('php-cs-fixer fix', workDir: '/var/www');
+    return docker_exit_code('php-cs-fixer fix -v', workDir: '/var/www');
 }
 
 #[AsTask(description: 'Fixes Twig Coding Style', aliases: ['twig-cs'])]
