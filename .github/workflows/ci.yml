@@ -8,6 +8,10 @@ name: Continuous Integration
     schedule:
         - cron: "0 0 * * MON"
 
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 permissions:
     contents: read
     packages: read
