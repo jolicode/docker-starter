@@ -167,6 +167,7 @@ function builder(#[AsArgsAfterOptionEnd] array $params = []): int
         $c = $c->toInteractive();
     } else {
         $c = $c->withTty(false)->withPty(false)->withAllowFailure();
+        $params = array_map(escapeshellarg(...), $params);
     }
 
     return (int) docker_compose_run(implode(' ', $params), c: $c)->getExitCode();
