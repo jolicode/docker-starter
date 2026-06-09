@@ -37,6 +37,7 @@ jobs:
 
     ci:
         name: Test with PHP ${{ matrix.php-version }}
+        timeout-minutes: 30
         strategy:
             fail-fast: false
             matrix:
