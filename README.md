@@ -30,7 +30,7 @@ domain where the application will be available;
 * `extra_domains` (optional): This contains extra domains where the application
 will be available;
 
-* `php_version` (optional, default: `8.5`): This is PHP version.
+* `php_version` (optional, default: `8.5`): This is the PHP version installed inside the containers.
 
 For example:
 
@@ -48,7 +48,7 @@ function create_default_variables(): array
             "admin.{$projectName}.{$tld}",
             "api.{$projectName}.{$tld}",
         ],
-        'php_version' => 8.3,
+        'php_version' => 8.5,
     ];
 )
 ```
