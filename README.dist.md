@@ -86,6 +86,16 @@ You can run `castor docker:generate-certificates --force` to recreate new certif
 if some were already generated. Remember to restart the infrastructure to make
 use of the new certificates with `castor build && castor up` or `castor start`.
 
+### Git worktree support
+
+This stack supports [git worktrees](https://git-scm.com/docs/git-worktree)
+out of the box. If you run `castor start` inside a worktree, the infrastructure
+is fully isolated (project name, volumes, networks, ports) without any
+configuration. 
+
+Ports are displayed at the end of `castor start`, or run `castor docker:ports`
+to see them at any time.
+
 ### Builder
 
 Having some composer, yarn or other modifications to make on the project?

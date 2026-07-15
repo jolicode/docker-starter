@@ -7,6 +7,7 @@ use Castor\Context;
 use Symfony\Component\Process\Process;
 
 use function Castor\log;
+use function worktree\get_worktree_name;
 
 #[AsContext(default: true)]
 function create_default_context(): Context
@@ -47,6 +48,11 @@ function create_default_context(): Context
     if (0 === $data['user_id']) {
         log('Running as root? Fallback to fake user id.', 'warning');
         $data['user_id'] = 1000;
+    }
+
+    $worktreeName = get_worktree_name($data['root_dir']);
+    if (null !== $worktreeName) {
+        $data['project_name'] .= '-wt-' . $worktreeName;
     }
 
     return new Context(

@@ -61,6 +61,16 @@ Will give you `https://app.test`,  `https://www.app.test`,
 > Some castor tasks have been added for DX purposes. Checkout and adapt
 > the tasks `install`, `migrate` and `cache_clear` to your project.
 
+## Git worktree support
+
+When running `castor` commands inside a [git worktree](https://git-scm.com/docs/git-worktree),
+the stack is **automatically isolated** from other worktrees:
+
+- Docker Compose **project name**, **volumes**, and **networks** are suffixed with `-wt-<worktree-name>`
+- **Ports** are derived from the worktree name (use `castor docker:ports` to display them)
+
+This allows running multiple feature branches in parallel without conflicts.
+
 ## Usage documentation
 
 We provide a [README.dist.md](./README.dist.md) to bootstrap your project
