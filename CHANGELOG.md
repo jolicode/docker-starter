@@ -25,6 +25,7 @@
   * Do not store certificates in the router image
   * Do not hardcode a user in the Dockerfile (and so the image), map it dynamically
   * Mount the project in `/var/www` instead of `/home/app`
+  * Add git worktree support (auto-isolated project name, ports, volumes, networks)
   * Add support for caching image cache in a registry
   * Upgrade base to Debian Bookworm (12.5)
 
