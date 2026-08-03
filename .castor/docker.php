@@ -186,7 +186,7 @@ function builder(#[AsArgsAfterOptionEnd] array $params = []): int
         $params = ['bash'];
         $c = $c->toInteractive();
     } else {
-        $c = $c->withTty(false)->withPty(false)->withAllowFailure();
+        $c = $c->withTty(false)->withPty(false)->withInput(STDIN)->withAllowFailure();
         $params = array_map(escapeshellarg(...), $params);
     }
 
