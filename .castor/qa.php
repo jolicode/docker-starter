@@ -27,9 +27,9 @@ function install(): void
 {
     io()->title('Installing QA tooling');
 
-    docker_compose_run('composer install -o', workDir: '/var/www/tools/php-cs-fixer');
-    docker_compose_run('composer install -o', workDir: '/var/www/tools/phpstan');
-    docker_compose_run('composer install -o', workDir: '/var/www/tools/twig-cs-fixer');
+    docker_compose_run(['composer', 'install', '-o'], workDir: '/var/www/tools/php-cs-fixer');
+    docker_compose_run(['composer', 'install', '-o'], workDir: '/var/www/tools/phpstan');
+    docker_compose_run(['composer', 'install', '-o'], workDir: '/var/www/tools/twig-cs-fixer');
 }
 
 #[AsTask(description: 'Updates tooling')]
@@ -37,13 +37,13 @@ function update(): void
 {
     io()->title('Updating QA tooling');
 
-    docker_compose_run('composer update -o', workDir: '/var/www/tools/php-cs-fixer');
-    docker_compose_run('composer update -o', workDir: '/var/www/tools/phpstan');
-    docker_compose_run('composer update -o', workDir: '/var/www/tools/twig-cs-fixer');
+    docker_compose_run(['composer', 'update', '-o'], workDir: '/var/www/tools/php-cs-fixer');
+    docker_compose_run(['composer', 'update', '-o'], workDir: '/var/www/tools/phpstan');
+    docker_compose_run(['composer', 'update', '-o'], workDir: '/var/www/tools/twig-cs-fixer');
 }
 
 /**
- * @param string[] $rawTokens
+ * @param list<string> $rawTokens
  */
 #[AsTask(description: 'Runs PHPUnit', aliases: ['phpunit'])]
 function phpunit(#[AsRawTokens] array $rawTokens = []): int
@@ -54,7 +54,7 @@ function phpunit(#[AsRawTokens] array $rawTokens = []): int
 
     io()->section('Running PHPUnit...');
 
-    return docker_exit_code('vendor/bin/phpunit ' . implode(' ', $rawTokens));
+    return docker_exit_code(['vendor/bin/phpunit', ...$rawTokens]);
 }
 
 #[AsTask(description: 'Runs PHPStan', aliases: ['phpstan'])]
@@ -68,8 +68,10 @@ function phpstan(
 
     io()->section('Running PHPStan...');
 
-    $options = $baseline ? '--generate-baseline --allow-empty-baseline' : '';
-    $command = \sprintf('phpstan analyse --memory-limit=-1 %s -v', $options);
+    $command = ['phpstan', 'analyse', '--memory-limit=-1', '-v'];
+    if ($baseline) {
+        $command = [...$command, '--generate-baseline', '--allow-empty-baseline'];
+    }
 
     return docker_exit_code($command, workDir: '/var/www');
 }
@@ -82,7 +84,7 @@ function securityAudit(): int
     if (is_file("{$basePath}/composer.lock")) {
         io()->text('Running Composer audit...');
 
-        $exitCode = docker_exit_code('composer audit');
+        $exitCode = docker_exit_code(['composer', 'audit']);
 
         if (0 !== $exitCode) {
             return $exitCode;
@@ -92,7 +94,7 @@ function securityAudit(): int
     if (is_file("{$basePath}/yarn.lock")) {
         io()->text('Running Yarn audit...');
 
-        $exitCode = docker_exit_code('yarn audit');
+        $exitCode = docker_exit_code(['yarn', 'audit']);
 
         if (0 !== $exitCode) {
             return $exitCode;
@@ -102,7 +104,7 @@ function securityAudit(): int
     if (is_file("{$basePath}/package-lock.json")) {
         io()->text('Running NPM audit...');
 
-        return docker_exit_code('npm audit');
+        return docker_exit_code(['npm', 'audit']);
     }
 
     return 0;
@@ -118,10 +120,10 @@ function cs(bool $dryRun = false): int
     io()->section('Running PHP CS Fixer...');
 
     if ($dryRun) {
-        return docker_exit_code('php-cs-fixer fix --dry-run --diff', workDir: '/var/www');
+        return docker_exit_code(['php-cs-fixer', 'fix', '--dry-run', '--diff'], workDir: '/var/www');
     }
 
-    return docker_exit_code('php-cs-fixer fix -v', workDir: '/var/www');
+    return docker_exit_code(['php-cs-fixer', 'fix', '-v'], workDir: '/var/www');
 }
 
 #[AsTask(description: 'Fixes Twig Coding Style', aliases: ['twig-cs'])]
@@ -134,8 +136,8 @@ function twigCs(bool $dryRun = false): int
     io()->section('Running Twig CS Fixer...');
 
     if ($dryRun) {
-        return docker_exit_code('twig-cs-fixer', workDir: '/var/www');
+        return docker_exit_code(['twig-cs-fixer'], workDir: '/var/www');
     }
 
-    return docker_exit_code('twig-cs-fixer --fix', workDir: '/var/www');
+    return docker_exit_code(['twig-cs-fixer', '--fix'], workDir: '/var/www');
 }

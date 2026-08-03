@@ -67,23 +67,23 @@ function install(): void
 
     if (is_file("{$basePath}/composer.json")) {
         io()->section('Installing PHP dependencies');
-        docker_compose_run('composer install -n --prefer-dist --optimize-autoloader');
+        docker_compose_run(['composer', 'install', '-n', '--prefer-dist', '--optimize-autoloader']);
     }
     if (is_file("{$basePath}/yarn.lock")) {
         io()->section('Installing Node.js dependencies');
-        docker_compose_run('yarn install --immutable');
+        docker_compose_run(['yarn', 'install', '--immutable']);
     } elseif (is_file("{$basePath}/package.json")) {
         io()->section('Installing Node.js dependencies');
 
         if (is_file("{$basePath}/package-lock.json")) {
-            docker_compose_run('npm ci');
+            docker_compose_run(['npm', 'ci']);
         } else {
-            docker_compose_run('npm install');
+            docker_compose_run(['npm', 'install']);
         }
     }
     if (is_file("{$basePath}/importmap.php")) {
         io()->section('Installing importmap');
-        docker_compose_run('bin/console importmap:install');
+        docker_compose_run(['bin/console', 'importmap:install']);
     }
 
     qa\install();
@@ -94,7 +94,7 @@ function update(bool $withTools = false): void
 {
     io()->title('Updating dependencies...');
 
-    // docker_compose_run('composer update -o');
+    // docker_compose_run(['composer', 'update', '-o']);
 
     if ($withTools) {
         qa\update();
@@ -106,7 +106,7 @@ function cache_clear(bool $warm = true): void
 {
     // io()->title('Clearing the application cache');
 
-    // docker_compose_run('rm -rf var/cache/');
+    // docker_compose_run(['rm', '-rf', 'var/cache/']);
 
     // if ($warm) {
     //     cache_warmup();
@@ -118,7 +118,7 @@ function cache_warmup(): void
 {
     // io()->title('Warming the application cache');
 
-    // docker_compose_run('bin/console cache:warmup', c: context()->withAllowFailure());
+    // docker_compose_run(['bin/console', 'cache:warmup'], c: context()->withAllowFailure());
 }
 
 #[AsTask(description: 'Migrates database schema', namespace: 'app:db', aliases: ['migrate'])]
@@ -126,8 +126,8 @@ function migrate(): void
 {
     // io()->title('Migrating the database schema');
 
-    // docker_compose_run('bin/console doctrine:database:create --if-not-exists');
-    // docker_compose_run('bin/console doctrine:migration:migrate -n --allow-no-migration --all-or-nothing');
+    // docker_compose_run(['bin/console', 'doctrine:database:create', '--if-not-exists']);
+    // docker_compose_run(['bin/console', 'doctrine:migration:migrate', '-n', '--allow-no-migration', '--all-or-nothing']);
 }
 
 #[AsTask(description: 'Loads fixtures', namespace: 'app:db', aliases: ['fixtures'])]
@@ -136,7 +136,7 @@ function fixtures(): void
     // io()->title('Loads fixtures');
 
     // Uncomment one of them...
-    // docker_compose_run('bin/console doctrine:fixture:load -n');
-    // docker_compose_run('bin/console foundry:load-fixtures -n');
-    // docker_compose_run('bin/console sylius:fixture:load -n');
+    // docker_compose_run(['bin/console', 'doctrine:fixture:load', '-n']);
+    // docker_compose_run(['bin/console', 'foundry:load-fixtures', '-n']);
+    // docker_compose_run(['bin/console', 'sylius:fixture:load', '-n']);
 }
