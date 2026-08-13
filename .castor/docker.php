@@ -175,22 +175,14 @@ function stop(
 }
 
 /**
- * @param array<string> $params
+ * @param list<string> $params
  */
 #[AsTask(description: 'Opens a shell (bash) or proxy any command to the builder container', aliases: ['builder'])]
 function builder(#[AsArgsAfterOptionEnd] array $params = []): int
 {
-    $c = context()->withEnvironment($_ENV + $_SERVER);
+    $context = context()->withEnvironment($_ENV + $_SERVER);
 
-    if (0 === \count($params)) {
-        $params = ['bash'];
-        $c = $c->toInteractive();
-    } else {
-        $c = $c->withTty(false)->withPty(false)->withInput(STDIN)->withAllowFailure();
-        $params = array_map(escapeshellarg(...), $params);
-    }
-
-    return (int) docker_compose_run(implode(' ', $params), c: $c)->getExitCode();
+    return (int) docker_compose_run($params, $context)->getExitCode();
 }
 
 /**
@@ -435,8 +427,11 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
     return run($command, context: $c);
 }
 
+/**
+ * @param list<string> $params
+ */
 function docker_compose_run(
-    string $runCommand,
+    array $params,
     ?Context $c = null,
     string $service = 'builder',
     bool $noDeps = true,
@@ -469,16 +464,57 @@ function docker_compose_run(
         $command[] = "{$key}={$value}";
     }
 
+    if (0 === \count($params)) {
+        $params = ['bash'];
+        $c = $c->toInteractive();
+    } else {
+        $c = $c->withTty(false)->withPty(false)->withInput(STDIN)->withAllowFailure();
+        $params = array_map(escapeshellarg(...), $params);
+    }
+
     $command[] = $service;
     $command[] = '/bin/bash';
     $command[] = '-c';
-    $command[] = "{$runCommand}";
+    $command[] = implode(' ', $params);
 
     return docker_compose($command, c: $c, profiles: ['*']);
 }
 
+/**
+ * @param list<string> $params
+ */
+function docker_compose_exec(
+    array $params,
+    ?Context $context = null,
+    string $service = 'builder',
+): Process {
+    $context ??= context();
+
+    $command = [
+        'exec',
+    ];
+
+    if (0 === \count($params)) {
+        $params = ['bash'];
+        $context = $context->toInteractive();
+    } else {
+        $context = $context->withTty(false)->withPty(false)->withInput(STDIN)->withAllowFailure();
+        $params = array_map(escapeshellarg(...), $params);
+    }
+
+    $command[] = $service;
+    $command[] = '/bin/bash';
+    $command[] = '-c';
+    $command[] = implode(' ', $params);
+
+    return docker_compose($command, c: $context, profiles: ['*']);
+}
+
+/**
+ * @param list<string> $params
+ */
 function docker_exit_code(
-    string $runCommand,
+    array $params,
     ?Context $c = null,
     string $service = 'builder',
     bool $noDeps = true,
@@ -487,7 +523,7 @@ function docker_exit_code(
     $c = ($c ?? context())->withAllowFailure();
 
     $process = docker_compose_run(
-        runCommand: $runCommand,
+        params: $params,
         c: $c,
         service: $service,
         noDeps: $noDeps,
@@ -495,19 +531,6 @@ function docker_exit_code(
     );
 
     return $process->getExitCode() ?? 0;
-}
-
-// Mac users have a lot of problems running Yarn / Webpack on the Docker stack
-// so this func allow them to run these tools on their host
-function run_in_docker_or_locally_for_mac(string $command, ?Context $c = null): void
-{
-    $c ??= context();
-
-    if ($c['macos']) {
-        run($command, context: $c->withWorkingDirectory($c['root_dir']));
-    } else {
-        docker_compose_run($command, c: $c);
-    }
 }
 
 #[AsTask(description: 'Push images cache to the registry', namespace: 'docker', name: 'push', aliases: ['push'])]

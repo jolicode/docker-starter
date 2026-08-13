@@ -101,13 +101,13 @@ jobs:
                   #[AsTask()]
                   function test()
                   {
-                      docker_compose_run('echo "Hello World"');
+                      docker_compose_run(['echo', 'Hello World']);
                   }
 
                   #[AsTask()]
                   function app_env()
                   {
-                      docker_compose_run('php public/index.php');
+                      docker_compose_run(['php', 'public/index.php']);
                   }
                   EOPHP
 
