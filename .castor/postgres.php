@@ -11,6 +11,14 @@ use function docker\docker_compose;
 use function docker\docker_compose_exec;
 
 /**
+ * Same idea as "castor builder -- <command>": proxies anything after "--" to
+ * psql inside the postgres container, in a non-interactive way with the exit
+ * code propagated.
+ *
+ * castor pg                          # interactive psql
+ * castor pg -- "SELECT now();"       # one-shot query
+ * castor pg -- -c "\dt"              # raw psql arguments
+ *
  * @param list<string> $params
  */
 #[AsTask(description: 'Connect to the PostgreSQL database', aliases: ['postgres', 'pg'])]
