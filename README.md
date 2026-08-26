@@ -969,7 +969,7 @@ Then, you can add the following content to the `castor.php` file:
 #[AsTask(description: 'Monitor PostgreSQL', namespace: 'app:db')]
 function pg_activity(): void
 {
-    docker_compose('exec postgres pg_activity -U app');
+    docker_compose(['exec', 'postgres', 'pg_activity', '-U', 'app');
 }
 ```
 
