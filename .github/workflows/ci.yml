@@ -79,6 +79,9 @@ jobs:
             - name: "Run PHPUnit"
               run: "castor qa:phpunit"
 
+            - name: "Test docker:push"
+              run: "castor docker:test-push"
+
             - name: "Test HTTP server"
               run: |
                   set -e
