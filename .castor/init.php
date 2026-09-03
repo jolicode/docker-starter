@@ -13,6 +13,7 @@ function init(): void
 {
     fs()->remove([
         '.github/',
+        '.castor/docker-push-test.php',
         'README.md',
         'CHANGELOG.md',
         'CONTRIBUTING.md',

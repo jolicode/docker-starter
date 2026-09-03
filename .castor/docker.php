@@ -371,6 +371,24 @@ function workers_stop(): void
 }
 
 /**
+ * @return array<string, string>
+ */
+function get_compose_environment(Context $c): array
+{
+    $domains = [$c['root_domain'], ...$c['extra_domains']];
+    $domains = '`' . implode('`) || Host(`', $domains) . '`';
+
+    return [
+        'PROJECT_NAME' => $c['project_name'],
+        'PROJECT_ROOT_DOMAIN' => $c['root_domain'],
+        'PROJECT_DOMAINS' => $domains,
+        'USER_ID' => $c['user_id'],
+        'PHP_VERSION' => $c['php_version'],
+        'REGISTRY' => $c['registry'] ?? '',
+    ];
+}
+
+/**
  * @param list<string> $subCommand
  * @param list<string> $profiles
  */
@@ -379,17 +397,7 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
     $c ??= context();
     $profiles = $profiles ?: ['default'];
 
-    $domains = [$c['root_domain'], ...$c['extra_domains']];
-    $domains = '`' . implode('`) || Host(`', $domains) . '`';
-
-    $c = $c->withEnvironment([
-        'PROJECT_NAME' => $c['project_name'],
-        'PROJECT_ROOT_DOMAIN' => $c['root_domain'],
-        'PROJECT_DOMAINS' => $domains,
-        'USER_ID' => $c['user_id'],
-        'PHP_VERSION' => $c['php_version'],
-        'REGISTRY' => $c['registry'] ?? '',
-    ]);
+    $c = $c->withEnvironment(get_compose_environment($c));
 
     $worktreeName = get_worktree_name();
     if ($worktreeName) {
@@ -542,91 +550,37 @@ function push(bool $dryRun = false): void
         throw new \RuntimeException('You must define a registry to push images.');
     }
 
-    // Generate bake file
-    $targets = [];
+    // Only services with a cache_from can push their build cache back to the registry.
+    $cacheFroms = array_filter(array_map(
+        static fn (array $config) => $config['build']['cache_from'][0] ?? null,
+        get_services(),
+    ));
 
-    foreach (get_services() as $service => $config) {
-        $cacheFrom = $config['build']['cache_from'][0] ?? null;
+    $c = context()
+        ->withEnvironment(get_compose_environment(context()))
+        ->withWorkingDirectory(variable('root_dir') . '/infrastructure/docker')
+    ;
 
-        if (null === $cacheFrom) {
-            continue;
-        }
+    $command = ['docker', 'buildx', 'bake'];
 
-        $cacheFrom = explode(',', $cacheFrom);
-        $reference = null;
-        $type = null;
-
-        if (1 === \count($cacheFrom)) {
-            $reference = $cacheFrom[0];
-            $type = 'registry';
-        } else {
-            foreach ($cacheFrom as $part) {
-                $from = explode('=', $part);
-
-                if (2 !== \count($from)) {
-                    continue;
-                }
-
-                if ('type' === $from[0]) {
-                    $type = $from[1];
-                }
-
-                if ('ref' === $from[0]) {
-                    $reference = $from[1];
-                }
-            }
-        }
-
-        $targets[] = [
-            'reference' => $reference,
-            'type' => $type,
-            'context' => $config['build']['context'],
-            'dockerfile' => $config['build']['dockerfile'] ?? 'Dockerfile',
-            'target' => $config['build']['target'] ?? null,
-        ];
+    foreach ($c['docker_compose_files'] as $file) {
+        $command[] = '-f';
+        $command[] = $file;
     }
 
-    $content = \sprintf(
-        <<<'EOHCL'
-            group "default" {
-                targets = [%s]
-            }
+    $command[] = '--set';
+    $command[] = '*.args.PHP_VERSION=' . $c['php_version'];
 
-            EOHCL,
-        implode(', ', array_map(static fn ($target) => \sprintf('"%s"', $target['target']), $targets))
-    );
-
-    foreach ($targets as $target) {
-        $content .= \sprintf(
-            <<<'EOHCL'
-                target "%s" {
-                    context    = "%s"
-                    dockerfile = "%s"
-                    cache-from = ["%s"]
-                    cache-to   = ["type=%s,ref=%s,mode=max"]
-                    target     = "%s"
-                    args = {
-                        PHP_VERSION = "%s"
-                    }
-                }
-
-                EOHCL,
-            $target['target'], $target['context'], $target['dockerfile'], $target['reference'], $target['type'], $target['reference'], $target['target'], variable('php_version')
-        );
+    foreach ($cacheFroms as $service => $cacheFrom) {
+        $command[] = '--set';
+        $command[] = "{$service}.cache-to={$cacheFrom},mode=max";
     }
 
     if ($dryRun) {
-        io()->write($content);
-
-        return;
+        $command[] = '--print';
     }
 
-    // write bake file in tmp file
-    $bakeFile = tempnam(sys_get_temp_dir(), 'bake');
-    file_put_contents($bakeFile, $content);
-
-    // Run bake
-    run(['docker', 'buildx', 'bake', '-f', $bakeFile]);
+    run([...$command, ...array_keys($cacheFroms)], context: $c);
 }
 
 /**
