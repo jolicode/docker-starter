@@ -145,7 +145,7 @@ ENV PATH="$PATH:/var/www/tools/bin"
 RUN cat >> /etc/bash.bashrc <<EOF
 . /etc/bash_completion
 
-PS1='\[\e[01;33m\]\u \[\e[00;32m\]\w\[\e[0m\] '
+PS1='\[\e[01;33m\]builder \[\e[00;32m\]\w\[\e[0m\] '
 EOF
 
 WORKDIR /var/www/application
