@@ -141,11 +141,13 @@ RUN sed /tmp/completion.bash \
 # Third party tools
 ENV PATH="$PATH:/var/www/tools/bin"
 
-# Good default customization
-RUN cat >> /etc/bash.bashrc <<EOF
+# We can't rely on \u: the container runs as the host's raw UID, which has no
+# /etc/passwd entry, so bash would print "I have no name!" instead. Show
+# "builder" normally, and "root" once elevated (e.g. via the fake sudo).
+RUN cat >> /etc/bash.bashrc <<'EOF'
 . /etc/bash_completion
 
-PS1='\[\e[01;33m\]builder \[\e[00;32m\]\w\[\e[0m\] '
+PS1='\[\e[01;33m\]$([ "$EUID" = 0 ] && echo root || echo builder) \[\e[00;32m\]\w\[\e[0m\] '
 EOF
 
 WORKDIR /var/www/application
