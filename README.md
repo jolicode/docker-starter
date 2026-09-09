@@ -810,6 +810,8 @@ services:
       - "9222:3000"
 ```
 
+</details>
+
 ### How to add support for crons?
 
 <details>
