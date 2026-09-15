@@ -1159,7 +1159,7 @@ permissions:
 ```yaml
     - name: Log in to registry
       shell: bash
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 ```
 
 ##### Using the cached images in GitHub action
@@ -1170,7 +1170,7 @@ the registry to pull the images:
 ```yaml
     - name: Log in to registry
       shell: bash
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 ```
 
 </details>
