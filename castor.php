@@ -15,7 +15,9 @@ use function docker\up;
 // use function docker\workers_start;
 // use function docker\workers_stop;
 
-guard_min_version('1.5.0');
+defined('CASTOR_USE_CHDIR') || define('CASTOR_USE_CHDIR', true);
+
+guard_min_version('1.8.0');
 
 import(__DIR__ . '/.castor');
 
