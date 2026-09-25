@@ -7,6 +7,8 @@
   * Add `castor symfony` to install a Symfony application
   * Add `castor init` command to initialize a new project
   * Add a `test` context
+  * Add a `prod` context to build, run and push production images
+  * `castor docker:push --tag=...` also pushes the images
 * Services
   * Upgrade Traefik from v2.7 to v3.0
   * Upgrade to PostgreSQL v16
@@ -27,6 +29,9 @@
   * Mount the project in `/var/www` instead of `/home/app`
   * Add git worktree support (auto-isolated project name, ports, volumes, networks)
   * Add support for caching image cache in a registry
+  * Add production images (`php` and `nginx`): code baked in, non-root, php-fpm on a unix socket
+  * Share php-fpm and nginx configuration between the dev `frontend` container and the production images
+  * The `frontend` container now listens on port 8080 and php-fpm on a unix socket
   * Upgrade base to Debian Bookworm (12.5)
 
 ## 3.11.0 (2023-05-30)
