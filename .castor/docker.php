@@ -562,7 +562,10 @@ function push(bool $dryRun = false): void
         ->withWorkingDirectory(variable('root_dir') . '/infrastructure/docker')
     ;
 
-    $command = ['docker', 'buildx', 'bake'];
+    // Additional build contexts may live outside of the compose files directory (e.g. the
+    // repository root): grant bake the read access explicitly, or it asks for it interactively
+    // (and waits forever in the CI, castor running it with a pty)
+    $command = ['docker', 'buildx', 'bake', '--allow=fs.read=' . variable('root_dir')];
 
     foreach ($c['docker_compose_files'] as $file) {
         $command[] = '-f';
