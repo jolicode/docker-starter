@@ -11,6 +11,10 @@ use function docker\docker_compose_run;
 #[AsTask(description: 'Initialize the project')]
 function init(): void
 {
+    // The CI of docker-starter itself goes away, the production images workflow stays
+    $buildPushWorkflow = '.github/workflows/build-push.yml';
+    $buildPushWorkflowContent = file_get_contents($buildPushWorkflow);
+
     fs()->remove([
         '.github/',
         '.castor/docker-push-test.php',
@@ -21,6 +25,12 @@ function init(): void
         __FILE__,
     ]);
     fs()->rename('README.dist.md', 'README.md');
+
+    if (false !== $buildPushWorkflowContent) {
+        // Drop the "disabled" notice (first paragraph), then uncomment the workflow
+        $buildPushWorkflowContent = explode("\n\n", $buildPushWorkflowContent, 2)[1] ?? '';
+        fs()->dumpFile($buildPushWorkflow, (string) preg_replace('{^# ?}m', '', $buildPushWorkflowContent));
+    }
 
     $readMeContent = file_get_contents('README.md');
 

@@ -41,6 +41,7 @@ The context changes how tasks are executed (`APP_ENV`, compose files, etc.):
 ```bash
 castor --context=test qa:phpunit             # APP_ENV=test, for tests
 castor --context=ci ...                      # like test, tuned for CI
+castor --context=prod ...                    # production images on a dedicated local stack (docker-compose.prod.yml)
 ```
 
 Always run tests and anything touching the database with `--context=test`.
@@ -52,6 +53,10 @@ Without option, the `default` context applies.
 - PostgreSQL 16: user/pass/db = `app`/`app`, DATABASE_URL already configured
 - nginx + php-fpm (service `frontend`), Traefik router, HTTPS on `<root_domain>` (see `castor.php`)
 - Node/yarn only inside the `builder` container
+- Production ships as two images (`php` and `nginx`), built from the "Production stages" of
+  `infrastructure/docker/services/php/Dockerfile` and pushed by `.github/workflows/build-push.yml`.
+  php-fpm and nginx configuration (`services/php/php/`, `services/php/nginx/`) is shared with
+  the dev `frontend` container
 
 ## QA — before considering a task done
 
