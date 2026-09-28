@@ -55,22 +55,24 @@ FROM php-base AS frontend
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        nginx \
+        apache2 \
         "php${PHP_VERSION}-fpm" \
         runit \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
     && rm -r "/etc/php/${PHP_VERSION}/fpm/pool.d/"
 
-RUN useradd -s /bin/false nginx
+RUN useradd -s /bin/false www-data
 
 COPY frontend/php-configuration /etc/php/${PHP_VERSION}
-COPY frontend/etc/nginx/. /etc/nginx/
+COPY frontend/etc/apache2/. /etc/apache2/
 RUN rm -rf /etc/service/
 COPY frontend/etc/service/. /etc/service/
 RUN chmod 777 /etc/service/*/supervise/
 
-RUN phpenmod app-default \
+RUN a2enmod rewrite proxy_fcgi mpm_event \
+    && a2dismod mpm_prefork \
+    && phpenmod app-default \
     && phpenmod app-fpm
 
 EXPOSE 80
