@@ -1,0 +1,27 @@
+# Used by production builds (additional build context "app" pointing here, see
+# the "Production stages" of infrastructure/docker/services/php/Dockerfile).
+# Only source files needed at runtime should be sent to the build context.
+.git
+node_modules
+tests
+var
+vendor
+.env.dev
+.env.test
+*.md
+phpunit.dist.xml
+phpunit.xml.dist
+
+# Local/generated files that must never end up baked into the image (some
+# carry secrets, e.g. the prod secrets decryption key)
+.env.local
+.env.local.php
+.env.*.local
+.phpunit.cache
+.phpunit.result.cache
+phpunit.xml
+config/reference.php
+config/secrets/prod/prod.decrypt.private.php
+public/assets
+public/build
+public/bundles

@@ -1,0 +1,73 @@
+# Production images: self-contained (code baked in, no bind mounts), non-root,
+# see the "Production stages" of services/php/Dockerfile.
+#
+# This file is only meant for LOCAL TESTING of those images, through the "prod"
+# castor context: `castor build -c prod` and `castor docker:push -c prod --tag=...`
+# build and push the "php" and "nginx" images (the CI does it on every push to
+# main), `castor start -c prod` runs them in a minimal stack (dummy secrets, a
+# throwaway database). The real production is not run with this file: the
+# hosting orchestrator runs the images with its own database.
+
+x-php-build: &php-build
+    context: services/php
+    additional_contexts:
+        app: ../../application
+    args:
+        PHP_VERSION: "${PHP_VERSION:-8.5}"
+
+x-app-env: &app-env
+    APP_SECRET: "${APP_SECRET:-not-a-secret}"
+    DATABASE_URL: "postgresql://app:app@postgres:5432/app?serverVersion=16&charset=utf8"
+
+volumes:
+    postgres-data: {}
+    # php-fpm unix socket, shared between the php and nginx containers
+    php-socket: {}
+
+services:
+    postgres:
+        image: postgres:16
+        environment:
+            POSTGRES_USER: app
+            POSTGRES_PASSWORD: app
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U app"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    php:
+        build:
+            <<: *php-build
+            target: php
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/php:cache"
+        image: "${REGISTRY:-${PROJECT_NAME}}/php:${TAG:-latest}"
+        environment: *app-env
+        env_file:
+            # Optional, gitignored: real credentials for a local test.
+            # Variables of the "environment" block above take precedence.
+            - path: ../../application/.env.prod.local
+              required: false
+        volumes:
+            - php-socket:/var/run/php
+        depends_on:
+            postgres:
+                condition: service_healthy
+
+    nginx:
+        build:
+            <<: *php-build
+            target: nginx
+            cache_from:
+                - "type=registry,ref=${REGISTRY:-}/nginx:cache"
+        image: "${REGISTRY:-${PROJECT_NAME}}/nginx:${TAG:-latest}"
+        ports:
+            - "${HTTP_PORT:-8000}:8080"
+        volumes:
+            - php-socket:/var/run/php
+        depends_on:
+            php:
+                condition: service_healthy

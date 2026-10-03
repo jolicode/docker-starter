@@ -22,6 +22,8 @@ function create_default_context(): Context
             'docker-compose.dev.yml',
         ],
         'docker_compose_run_environment' => [],
+        // Service in which `docker_compose_run()` executes commands (composer, bin/console...)
+        'docker_compose_run_service' => 'builder',
         'macos' => false,
         'power_shell' => false,
         // check if posix_geteuid is available, if not, use getmyuid (windows)
@@ -61,6 +63,29 @@ function create_default_context(): Context
         environment: [
             'BUILDKIT_PROGRESS' => 'plain',
         ]
+    );
+}
+
+/**
+ * Production images (see the "Production stages" of the Dockerfile): the same tasks as in
+ * dev, on a dedicated compose stack. E.g. `castor start -c prod`, `castor docker:push -c prod`.
+ */
+#[AsContext(name: 'prod')]
+function create_prod_context(): Context
+{
+    $c = create_default_context();
+
+    return $c->withData(
+        [
+            // Dedicated compose project: never collides with the dev stack (containers, volumes)
+            'project_name' => $c['project_name'] . '-prod',
+            'docker_compose_files' => [
+                'docker-compose.prod.yml',
+            ],
+            // There is no builder service in this stack: commands run in the application image
+            'docker_compose_run_service' => 'php',
+        ],
+        recursive: false,
     );
 }
 

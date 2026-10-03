@@ -142,9 +142,9 @@ the root directory, you have to edit each reference to it. Theses references
 represent each application entry point, whether it be over HTTP or CLI.
 Usually, there is three places where you need to do it:
 
-* In Nginx configuration file:
-  `infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf`. You need
-  to update  `http.server.root` option to the new path. For example:
+* In Nginx configuration file (shared by the dev and production images):
+  `infrastructure/docker/services/php/nginx/conf.d/default.conf`. You need
+  to update  `server.root` option to the new path. For example:
   ```diff
   - root /var/www/application/public;
   + root /var/www/public;
@@ -161,6 +161,10 @@ Usually, there is three places where you need to do it:
   - WORKDIR /var/www/application
   + WORKDIR /var/www
   ```
+* In the production images: the `app` build context in
+  `infrastructure/docker/docker-compose.prod.yml` and the
+  `/var/www/application` paths of the "Production stages" of
+  `infrastructure/docker/services/php/Dockerfile`.
 
 </details>
 
@@ -342,16 +346,6 @@ at https://encore.app.test and click on accept.
 <summary>Read the cookbook</summary>
 
 1. Follow [instructions on symfony.com](https://symfony.com/doc/current/frontend/asset_mapper.html#installation) to install AssetMapper.
-
-1. Remove this block in the
-`infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf` file:
-
-    ```
-    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
-        access_log off;
-        add_header Cache-Control "no-cache";
-    }
-    ```
 
 1. Remove these lines in the `infrastructure/docker/services/php/Dockerfile` file:
 
@@ -715,7 +709,7 @@ RUN wget -q -O - https://packages.redirection.io/gpg.key | gpg --dearmor > /usr/
 ```
 
 Finally, you need to edit
-`infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf` to add the
+`infrastructure/docker/services/php/nginx/conf.d/default.conf` to add the
 following configuration in the `server` block:
 
 ```
@@ -918,17 +912,15 @@ services:
 
 If you want to use the [PHP FPM status
 page](https://www.php.net/manual/en/fpm.status.php) you need to remove a
-configuration block in the
-`infrastructure/docker/services/php/frontend/etc/nginx/nginx.conf` file:
+configuration line in the
+`infrastructure/docker/services/php/nginx/conf.d/default.conf` file:
 
 ```diff
--        # Remove this block if you want to access to PHP FPM monitoring
--        # dashboarsh (on URL: /php-fpm-status). WARNING: on production, you must
--        # secure this page (by user IP address, with a password, for example)
--        location ~ ^/php-fpm-status$ {
+         # Remove this block if you want to access to PHP FPM monitoring
+         # dashboard (on URL: /php-fpm-status). WARNING: on production, you must
+         # secure this page (by user IP address, with a password, for example)
+         location = /php-fpm-status {
 -            deny all;
--        }
--
 ```
 
 And if your application uses the front controller pattern, and you want to see
@@ -1084,6 +1076,65 @@ Finally, you must :
 Migrating to FrankenPHP involves a lot of changes. You can take inspiration from
 the following [repostory](https://github.com/lyrixx/async-messenger-mercure)
 and specifically [this commit](https://github.com/lyrixx/async-messenger-mercure/commit/9ac8776253f3950a6c57d457b3742923f9e096a7).
+
+</details>
+
+### How to build production images
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+The application can ship as two self-contained Docker images, built from the
+"Production stages" of `infrastructure/docker/services/php/Dockerfile`:
+
+* `php`: php-fpm listening on the unix socket `/var/run/php/php-fpm.sock`,
+  with the code and the vendors baked in, `APP_ENV=prod`, running as a
+  non-root user. It is also the CLI image: database migrations, cron jobs and
+  workers run with it;
+* `nginx`: the official nginx image, the `public/` directory and the site
+  configuration, forwarding PHP requests to that socket.
+
+The application code comes from the `application/` directory
+(`application/.dockerignore` lists what must not be baked in). Each build step
+(`composer install`, `yarn build` / `npm run build`, AssetMapper compilation,
+cache warmup) only runs when the application needs it: adapt the `app-build`
+stage to your project.
+
+Both images use the php-fpm and nginx configuration of the dev `frontend`
+container (`services/php/php/` and `services/php/nginx/`); what production does
+differently is in `services/php/php/mods-available/app-prod.ini`. Everything
+else (secrets, database, ...) is provided through environment variables at
+runtime.
+
+The `prod` castor context runs the usual tasks on a dedicated compose stack
+(`docker-compose.prod.yml`: postgres + the two images, no bind mount, no
+router), independent from the development one:
+
+```bash
+castor build -c prod       # builds the php and nginx images
+castor start -c prod       # starts the stack (and runs the migrations)
+# -> http://127.0.0.1:8000 (HTTP_PORT=18000 castor start -c prod to change the port)
+castor builder -c prod     # opens a shell in the php image
+castor destroy -c prod     # removes the containers and the volumes
+```
+
+It uses dummy secrets: to test with real ones, put them in an
+`application/.env.prod.local` file (ignored by git, loaded by the php
+container).
+
+`castor docker:push --tag=...` also pushes the images themselves (not only
+their build cache). On every push to `main` (and on every git tag), the
+`.github/workflows/build-push.yml` workflow (commented in docker-starter,
+enabled by `castor init`) pushes both images to
+`ghcr.io/<repository>/php` and `ghcr.io/<repository>/nginx`, tagged with the
+short commit sha, `latest` on `main`, and the tag name when there is one. To
+push from your machine (you need to be logged in to the registry, and a buildx
+builder able to export a registry cache, e.g. `docker buildx create --use`):
+
+```bash
+DS_REGISTRY=ghcr.io/<org>/<repo> castor docker:push -c prod --tag=my-test
+```
 
 </details>
 

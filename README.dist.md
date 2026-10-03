@@ -106,6 +106,18 @@ tools available:
 castor builder
 ```
 
+### Production images
+
+The application ships as two images, `php` and `nginx`, built from the
+"Production stages" of `infrastructure/docker/services/php/Dockerfile` and
+pushed to the registry by `.github/workflows/build-push.yml`. To test them
+locally, on a stack independent from the development one:
+
+```bash
+castor start -c prod       # -> http://127.0.0.1:8000
+castor destroy -c prod
+```
+
 ### Other tasks
 
 Checkout `castor` to have the list of available tasks.
