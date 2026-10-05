@@ -16,7 +16,7 @@
 #   # Fix for symfony/color detection. We know GitHub Actions can handle it
 #   ANSICON: 1
 #   CASTOR_CONTEXT: prod
-#   DS_REGISTRY: "ghcr.io/${{ github.repository }}"
+#   REGISTRY: "ghcr.io/${{ github.repository }}"
 #
 # jobs:
 #   build-push:

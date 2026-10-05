@@ -1133,7 +1133,7 @@ push from your machine (you need to be logged in to the registry, and a buildx
 builder able to export a registry cache, e.g. `docker buildx create --use`):
 
 ```bash
-DS_REGISTRY=ghcr.io/<org>/<repo> castor docker:push -c prod --tag=my-test
+REGISTRY=ghcr.io/<org>/<repo> castor docker:push -c prod --tag=my-test
 ```
 
 </details>
