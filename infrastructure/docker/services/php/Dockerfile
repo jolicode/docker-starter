@@ -198,7 +198,7 @@ RUN if [ -f composer.json ]; then \
     fi \
     && if [ -f yarn.lock ]; then \
         yarn install --immutable && yarn build; \
-    elif [ -f package.json ]; then \
+    elif [ -f package-lock.json ]; then \
         npm ci && npm run build; \
     fi \
     && rm -rf node_modules \

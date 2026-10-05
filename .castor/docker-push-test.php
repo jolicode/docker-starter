@@ -70,7 +70,7 @@ function test_push(): void
 
             io()->section('Running docker:push against it');
             run(['castor', 'docker:push'], context: context()->withEnvironment([
-                'DS_REGISTRY' => "{$registryName}:5000/{$namespace}",
+                'REGISTRY' => "{$registryName}:5000/{$namespace}",
                 'BUILDX_BUILDER' => $builderName,
             ]));
         } finally {
