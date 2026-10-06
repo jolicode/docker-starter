@@ -1125,7 +1125,7 @@ container).
 
 `castor docker:push --tag=...` also pushes the images themselves (not only
 their build cache). On every push to `main` (and on every git tag), the
-`.github/workflows/build-push.yml` workflow (commented in docker-starter,
+`.github/workflows/build-push.yml` workflow (skipped in docker-starter,
 enabled by `castor init`) pushes both images to
 `ghcr.io/<repository>/php` and `ghcr.io/<repository>/nginx`, tagged with the
 short commit sha, `latest` on `main`, and the tag name when there is one. To

@@ -27,9 +27,8 @@ function init(): void
     fs()->rename('README.dist.md', 'README.md');
 
     if (false !== $buildPushWorkflowContent) {
-        // Drop the "disabled" notice (first paragraph), then uncomment the workflow
-        $buildPushWorkflowContent = explode("\n\n", $buildPushWorkflowContent, 2)[1] ?? '';
-        fs()->dumpFile($buildPushWorkflow, (string) preg_replace('{^# ?}m', '', $buildPushWorkflowContent));
+        // Enable the workflow: drop the condition skipping it in docker-starter itself
+        fs()->dumpFile($buildPushWorkflow, (string) preg_replace("{^ *# Nothing to deploy in docker-starter itself.*\n^ *if: github\\.event\\.repository\\.name != 'docker-starter'\n}m", '', $buildPushWorkflowContent));
     }
 
     $readMeContent = file_get_contents('README.md');
