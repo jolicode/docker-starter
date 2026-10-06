@@ -96,6 +96,10 @@ jobs:
               with:
                 persist-credentials: false
 
+            # Exposes the GitHub Actions cache to buildx, see docker-compose.ci.yml
+            - name: Expose GitHub runtime
+              uses: ./.github/actions/expose-github-runtime
+
             - name: "Build and start the infrastructure"
               run: "castor start"
 
