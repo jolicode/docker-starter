@@ -29,6 +29,7 @@
   * Mount the project in `/var/www` instead of `/home/app`
   * Add git worktree support (auto-isolated project name, ports, volumes, networks)
   * Add support for caching image cache in a registry
+  * Give the build contexts files their git permissions before building, so the registry cache is reused whatever the umask
   * Also use the GitHub Actions cache (`type=gha`) in the CI, through `docker-compose.ci.yml`
   * Add production images (`php` and `nginx`): code baked in, non-root, php-fpm on a unix socket
   * Share php-fpm and nginx configuration between the dev `frontend` container and the production images
