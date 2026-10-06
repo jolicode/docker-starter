@@ -110,7 +110,9 @@ castor builder
 
 The application ships as two images, `php` and `nginx`, built from the
 "Production stages" of `infrastructure/docker/services/php/Dockerfile` and
-pushed to the registry by `.github/workflows/build-push.yml`. To test them
+pushed to the registry by `.github/workflows/build-push.yml`, when the
+`PUSH_PRODUCTION_IMAGES` repository variable is `true` (Settings > Secrets and
+variables > Actions > Variables, disabled by default). To test them
 locally, on a stack independent from the development one:
 
 ```bash
@@ -126,7 +128,7 @@ The GitHub Actions workflows live in `.github/workflows/`:
    the production images: add there some checks of your application
  * `cache.yml` pushes the Docker build cache to the registry, on `main`
  * `build-push.yml` builds and pushes the production images, on `main` and on
-   tags
+   tags, when the `PUSH_PRODUCTION_IMAGES` repository variable is `true`
 
 ### Other tasks
 

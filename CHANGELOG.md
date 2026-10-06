@@ -32,6 +32,7 @@
   * Add support for caching image cache in a registry
   * Build (and push the cache of) each service separately, in parallel, so services sharing a stage all reuse their cache
   * Add production images (`php` and `nginx`): code baked in, non-root, php-fpm on a unix socket
+  * Push the production images from the CI only when the `PUSH_PRODUCTION_IMAGES` repository variable is `true`
   * Share php-fpm and nginx configuration between the dev `frontend` container and the production images
   * The `frontend` container now listens on port 8080 and php-fpm on a unix socket
   * Keep the port of the `Host` header in `HTTP_HOST`, dropped by Debian's nginx (absolute URLs on a git worktree stack)
