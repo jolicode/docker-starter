@@ -6,6 +6,7 @@
   * Migrate from Invoke to Castor
   * Add `castor symfony` to install a Symfony application
   * Add `castor init` command to initialize a new project
+  * `castor init` keeps the CI (GitHub Actions) for the project, without what only tests docker-starter
   * Add a `test` context
   * Add a `prod` context to build, run and push production images
   * `castor docker:push --tag=...` also pushes the images

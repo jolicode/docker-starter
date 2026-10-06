@@ -14,3 +14,39 @@ updates:
                   - '*'
       cooldown:
           default-days: 7
+
+    - package-ecosystem: 'composer'
+      directories:
+          # Add '/application' once the application has a composer.json
+          - '/tools/php-cs-fixer'
+          - '/tools/phpstan'
+          - '/tools/twig-cs-fixer'
+      schedule:
+          interval: 'monthly'
+      groups:
+          composer:
+              patterns:
+                  - '*'
+          composer-security:
+              applies-to: security-updates
+              patterns:
+                  - '*'
+      cooldown:
+          default-days: 7
+
+    - package-ecosystem: 'docker'
+      directories:
+          - '/infrastructure/docker/services/php'
+          - '/infrastructure/docker/services/router'
+      schedule:
+          interval: 'monthly'
+      groups:
+          docker:
+              patterns:
+                  - '*'
+          docker-security:
+              applies-to: security-updates
+              patterns:
+                  - '*'
+      cooldown:
+          default-days: 7

@@ -93,6 +93,10 @@ castor init
 > [!NOTE]
 > This command can be run only once
 
+The GitHub Actions workflows of `.github/` are kept as the CI of your project:
+`castor init` only removes their "docker-starter only" blocks, which test
+docker-starter itself (PHP versions matrix, demo application...).
+
 Also, in order to improve your usage of castor scripts, you can install console
 autocompletion script.
 
