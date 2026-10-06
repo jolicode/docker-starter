@@ -22,6 +22,7 @@ use function Castor\fs;
 use function Castor\http_client;
 use function Castor\io;
 use function Castor\open;
+use function Castor\parallel;
 use function Castor\run;
 use function Castor\variable;
 use function worktree\get_worktree_name;
@@ -105,27 +106,31 @@ function build(
 
     io()->title('Building infrastructure');
 
-    $command = [];
-
-    $command[] = '--profile';
-    if ($profile) {
-        $command[] = $profile;
-    } else {
-        $command[] = '*';
-    }
-
     $command = [
-        ...$command,
+        '--profile', $profile ?: '*',
         'build',
         '--build-arg', 'PHP_VERSION=' . variable('php_version'),
         '--build-arg', 'PROJECT_NAME=' . variable('project_name'),
     ];
 
     if ($service) {
-        $command[] = $service;
+        docker_compose([...$command, $service]);
+
+        return;
     }
 
-    docker_compose($command);
+    // One build per service, in parallel, rather than all of them at once: in a single
+    // BuildKit session, services sharing a stage (e.g. php-base) lose the cache of all
+    // but one of them, see https://github.com/moby/buildkit/issues/6418
+    $services = array_keys(array_filter(
+        $profile ? get_services($profile) : get_services(),
+        static fn (array $config) => isset($config['build']),
+    ));
+
+    parallel(...array_map(
+        static fn (string $service) => static fn () => docker_compose([...$command, $service]),
+        $services,
+    ));
 }
 
 /**
@@ -614,35 +619,47 @@ function push(
     $command[] = '--set';
     $command[] = '*.args.PHP_VERSION=' . $c['php_version'];
 
-    foreach ($cacheFroms as $service => $cacheFrom) {
-        $command[] = '--set';
-        $command[] = "{$service}.cache-to={$cacheFrom},mode=max";
-
-        if (!$tag) {
-            continue;
-        }
-
-        // Image name without its tag, e.g. "ghcr.io/jolicode/docker-starter/php"
-        $image = isset($services[$service]['image']) ? preg_replace('{:[^/]+$}', '', $services[$service]['image']) : "{$registry}/{$service}";
-
-        foreach ($tag as $t) {
-            $command[] = '--set';
-            $command[] = "{$service}.tags={$image}:{$t}";
-        }
-
-        $command[] = '--set';
-        $command[] = "{$service}.output=type=registry";
-    }
-
     if ($dryRun) {
         $command[] = '--print';
     }
 
-    run([...$command, ...array_keys($cacheFroms)], context: $c);
+    // One bake per service, see build()
+    $commands = [];
+    foreach ($cacheFroms as $service => $cacheFrom) {
+        $serviceCommand = [...$command, '--set', "{$service}.cache-to={$cacheFrom},mode=max"];
+
+        if ($tag) {
+            // Image name without its tag, e.g. "ghcr.io/jolicode/docker-starter/php"
+            $image = isset($services[$service]['image']) ? preg_replace('{:[^/]+$}', '', $services[$service]['image']) : "{$registry}/{$service}";
+
+            foreach ($tag as $t) {
+                $serviceCommand[] = '--set';
+                $serviceCommand[] = "{$service}.tags={$image}:{$t}";
+            }
+
+            $serviceCommand[] = '--set';
+            $serviceCommand[] = "{$service}.output=type=registry";
+        }
+
+        $commands[] = [...$serviceCommand, $service];
+    }
+
+    if ($dryRun) {
+        foreach ($commands as $serviceCommand) {
+            run($serviceCommand, context: $c);
+        }
+
+        return;
+    }
+
+    parallel(...array_map(
+        static fn (array $serviceCommand) => static fn () => run($serviceCommand, context: $c),
+        $commands,
+    ));
 }
 
 /**
- * @return array<string, array{image?: string, profiles?: list<string>, build: array{context: string, dockerfile?: string, cache_from?: list<string>, target?: string, additional_contexts?: array<string, string>}}>
+ * @return array<string, array{image?: string, profiles?: list<string>, build?: array{context: string, dockerfile?: string, cache_from?: list<string>, target?: string, additional_contexts?: array<string, string>}}>
  */
 function get_services(?string $profile = null): array
 {
