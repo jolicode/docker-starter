@@ -1174,6 +1174,12 @@ castor docker:push
 > depending on your environment. It is recommended to push the cache from the CI
 > environment.
 
+> [!NOTE]
+> The build cache depends on the permissions of the files of the build context.
+> With a `002` umask, a checkout gets `664` files instead of the `644` ones of
+> the CI, and would never reuse its cache: `castor docker:build` and `castor
+> docker:push` give the files tracked by git their git permissions first.
+
 This command will generate a bake file with the images to push from the
 `cache_from` directive of the `docker-compose.yml` file. If you want to add more
 images to push, you can add the `cache_from` directive to them.

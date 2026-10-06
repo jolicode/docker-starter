@@ -102,6 +102,7 @@ function build(
     ?string $profile = null,
 ): void {
     generate_certificates(force: false);
+    normalize_build_contexts_permissions();
 
     io()->title('Building infrastructure');
 
@@ -590,6 +591,10 @@ function push(
 
     $services = get_services();
 
+    if (!$dryRun) {
+        normalize_build_contexts_permissions($services);
+    }
+
     // Only services with a cache_from can push their build cache back to the registry.
     $cacheFroms = array_filter(array_map(
         static fn (array $config) => $config['build']['cache_from'][0] ?? null,
@@ -639,6 +644,75 @@ function push(
     }
 
     run([...$command, ...array_keys($cacheFroms)], context: $c);
+}
+
+/**
+ * The build cache depends on the permissions of the files of the build context: a
+ * checkout made with a 002 umask (664 files) never reuses the cache pushed by the CI
+ * (644 files). Gives the files tracked by git their git permissions (644 or 755, and
+ * 755 for their directories), whatever the umask.
+ *
+ * Untracked files (certificates...) and additional build contexts (e.g. the
+ * application of the production images) are left untouched.
+ *
+ * @param array<string, array{build?: array{context?: string}}>|null $services
+ */
+function normalize_build_contexts_permissions(?array $services = null): void
+{
+    if (variable('power_shell')) {
+        return;
+    }
+
+    $rootDir = variable('root_dir');
+
+    $contexts = [];
+    foreach ($services ?? get_services() as $service) {
+        $buildContext = $service['build']['context'] ?? null;
+
+        // Only local directories of the project (not a git URL, for instance)
+        if ($buildContext && str_starts_with($buildContext, $rootDir . '/') && is_dir($buildContext)) {
+            $contexts[$buildContext] = true;
+        }
+    }
+
+    if (!$contexts) {
+        return;
+    }
+
+    $process = run(
+        ['git', 'ls-files', '--stage', '-z', '--', ...array_keys($contexts)],
+        context: context()->withQuiet()->withAllowFailure()->withWorkingDirectory($rootDir),
+    );
+
+    // Not a git repository
+    if (!$process->isSuccessful()) {
+        return;
+    }
+
+    $directories = [];
+    foreach (explode("\0", trim($process->getOutput(), "\0")) as $entry) {
+        // "<mode> <object> <stage>\t<file>"
+        [$metadata, $file] = explode("\t", $entry, 2) + [1 => ''];
+        $mode = substr($metadata, 0, 6);
+        $path = "{$rootDir}/{$file}";
+
+        // Symbolic links and submodules have no permissions of their own
+        if (!\in_array($mode, ['100644', '100755'], true) || !is_file($path)) {
+            continue;
+        }
+
+        chmod($path, '100755' === $mode ? 0o755 : 0o644);
+
+        foreach (array_keys($contexts) as $buildContext) {
+            for ($directory = \dirname($path); str_starts_with($directory . '/', $buildContext . '/'); $directory = \dirname($directory)) {
+                $directories[$directory] = true;
+            }
+        }
+    }
+
+    foreach (array_keys($directories) as $directory) {
+        chmod($directory, 0o755);
+    }
 }
 
 /**
