@@ -1224,6 +1224,27 @@ the registry to pull the images:
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 ```
 
+##### The GitHub Actions cache
+
+The registry cache is regularly missed for some layers in the CI (see
+[#430](https://github.com/jolicode/docker-starter/issues/430)). So the `ci`
+context also loads `docker-compose.ci.yml`, which adds the GitHub Actions cache
+backend (`type=gha`) to the images: each CI build reads it and writes it back.
+The registry cache is still needed for local development.
+
+buildx needs the GitHub runtime to reach this cache, which GitHub only gives to
+JavaScript actions: the local `.github/actions/expose-github-runtime` action
+exposes it to the next steps (without it, the `type=gha` entries are silently
+ignored). It runs after the checkout:
+
+```yaml
+    - name: Expose GitHub runtime
+      uses: ./.github/actions/expose-github-runtime
+```
+
+When you add a `cache_from` to a service, add it to `docker-compose.ci.yml`
+too, with its own `scope`.
+
 </details>
 
 ## Credits
