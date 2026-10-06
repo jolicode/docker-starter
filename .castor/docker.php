@@ -9,6 +9,7 @@ use Castor\Context;
 use Castor\Helper\PathHelper;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
@@ -127,9 +128,60 @@ function build(
         static fn (array $config) => isset($config['build']),
     ));
 
-    parallel(...array_map(
-        static fn (string $service) => static fn () => docker_compose([...$command, $service]),
+    $c = context()->withPty(false)->withTty(false);
+
+    run_builds_in_parallel(array_combine($services, array_map(
+        static fn (string $service) => static fn (callable $callback) => docker_compose([...$command, $service], $c, callback: $callback),
         $services,
+    )));
+}
+
+/**
+ * Runs the builds in parallel, prefixing each line of their output with the name of
+ * their service: their outputs are mixed otherwise.
+ *
+ * @param array<string, \Closure(callable(string, string, Process): void): Process> $builds
+ */
+function run_builds_in_parallel(array $builds): void
+{
+    if (!$builds) {
+        return;
+    }
+
+    $width = max(array_map(strlen(...), array_keys($builds)));
+
+    parallel(...array_map(
+        static fn (string $service, \Closure $build) => static function () use ($service, $build, $width): void {
+            $prefix = str_pad("[{$service}]", $width + 2) . ' ';
+            $write = static function (string $lines) use ($prefix): void {
+                foreach (explode("\n", $lines) as $line) {
+                    // BuildKit separates its steps with empty lines, useless once prefixed
+                    if ('' !== trim($line)) {
+                        io()->write($prefix . $line . "\n", false, OutputInterface::OUTPUT_RAW);
+                    }
+                }
+            };
+
+            // Only complete lines are written, the end of each stream is kept until its next chunk
+            $buffers = [Process::OUT => '', Process::ERR => ''];
+
+            try {
+                $build(static function (string $type, string $bytes) use (&$buffers, $write): void {
+                    $buffers[$type] .= str_replace("\r\n", "\n", $bytes);
+
+                    if (false !== $position = strrpos($buffers[$type], "\n")) {
+                        $write(substr($buffers[$type], 0, $position));
+                        $buffers[$type] = substr($buffers[$type], $position + 1);
+                    }
+                });
+            } finally {
+                foreach (array_filter($buffers) as $buffer) {
+                    $write($buffer);
+                }
+            }
+        },
+        array_keys($builds),
+        $builds,
     ));
 }
 
@@ -413,10 +465,11 @@ function get_compose_environment(Context $c): array
 }
 
 /**
- * @param list<string> $subCommand
- * @param list<string> $profiles
+ * @param list<string>                                   $subCommand
+ * @param list<string>                                   $profiles
+ * @param (callable(string, string, Process): void)|null $callback   Receives the output instead of the console
  */
-function docker_compose(array $subCommand, ?Context $c = null, array $profiles = []): Process
+function docker_compose(array $subCommand, ?Context $c = null, array $profiles = [], ?callable $callback = null): Process
 {
     $c ??= context();
     $profiles = $profiles ?: ['default'];
@@ -456,7 +509,7 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
 
     $command = array_merge($command, $subCommand);
 
-    return run($command, context: $c);
+    return run($command, context: $c, callback: $callback);
 }
 
 /**
@@ -641,7 +694,7 @@ function push(
             $serviceCommand[] = "{$service}.output=type=registry";
         }
 
-        $commands[] = [...$serviceCommand, $service];
+        $commands[$service] = [...$serviceCommand, $service];
     }
 
     if ($dryRun) {
@@ -652,8 +705,10 @@ function push(
         return;
     }
 
-    parallel(...array_map(
-        static fn (array $serviceCommand) => static fn () => run($serviceCommand, context: $c),
+    $c = $c->withPty(false)->withTty(false);
+
+    run_builds_in_parallel(array_map(
+        static fn (array $serviceCommand) => static fn (callable $callback) => run($serviceCommand, context: $c, callback: $callback),
         $commands,
     ));
 }
