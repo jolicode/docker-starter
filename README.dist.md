@@ -118,6 +118,16 @@ castor start -c prod       # -> http://127.0.0.1:8000
 castor destroy -c prod
 ```
 
+### Continuous integration
+
+The GitHub Actions workflows live in `.github/workflows/`:
+
+ * `ci.yml` checks the Dockerfile, runs the QA tools and the tests, and checks
+   the production images: add there some checks of your application
+ * `cache.yml` pushes the Docker build cache to the registry, on `main`
+ * `build-push.yml` builds and pushes the production images, on `main` and on
+   tags
+
 ### Other tasks
 
 Checkout `castor` to have the list of available tasks.

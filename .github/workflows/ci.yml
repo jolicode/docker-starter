@@ -20,8 +20,12 @@ env:
     # Fix for symfony/color detection. We know GitHub Actions can handle it
     ANSICON: 1
     CASTOR_CONTEXT: ci
-    REGISTRY: "ghcr.io/jolicode/docker-starter"
+    REGISTRY: "ghcr.io/${{ github.repository }}"
 
+# >>> docker-starter only
+# The "docker-starter only" blocks test docker-starter itself: `castor init`
+# removes them, the rest is the CI of your project.
+# <<< docker-starter only
 jobs:
     check-dockerfiles:
         name: Check Dockerfile
@@ -60,27 +64,33 @@ jobs:
             - name: "Build and start the production images"
               run: "castor start"
 
+            # Add some checks of your application, e.g. the status code of the homepage
             - name: "Test HTTP server"
               run: |
                   set -e
                   set -o pipefail
 
+                  # >>> docker-starter only
                   curl --fail --silent http://127.0.0.1:8000 | grep "Hello world"
                   curl --fail --silent http://127.0.0.1:8000 | grep "Environment: prod"
+                  # <<< docker-starter only
                   test "$(curl --silent -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/index.php)" = 404
 
             - name: "Test the php image runs as a non-root user"
               run: "castor builder -- id -u | grep -x 1000"
 
     ci:
-        name: Test with PHP ${{ matrix.php-version }}
+        # >>> docker-starter only: every supported PHP version is tested (`castor
+        # init` also removes the PHP version from the job name)
         strategy:
             fail-fast: false
             matrix:
                 php-version: ["8.3", "8.4", "8.5"]
-        runs-on: ubuntu-latest
         env:
             DS_PHP_VERSION: ${{ matrix.php-version }}
+        # <<< docker-starter only
+        name: Test with PHP ${{ matrix.php-version }}
+        runs-on: ubuntu-latest
         steps:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
@@ -114,6 +124,7 @@ jobs:
             - name: "Run PHPUnit"
               run: "castor qa:phpunit"
 
+            # >>> docker-starter only
             - name: "Test docker:push"
               run: "castor docker:test-push"
 
@@ -170,3 +181,4 @@ jobs:
                   sleep 3
 
                   curl --fail --insecure --silent -H "Host: app.test" https://127.0.0.1 | grep "database OK"
+            # <<< docker-starter only
