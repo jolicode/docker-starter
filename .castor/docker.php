@@ -9,6 +9,7 @@ use Castor\Context;
 use Castor\Helper\PathHelper;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
@@ -22,6 +23,7 @@ use function Castor\fs;
 use function Castor\http_client;
 use function Castor\io;
 use function Castor\open;
+use function Castor\parallel;
 use function Castor\run;
 use function Castor\variable;
 use function worktree\get_worktree_name;
@@ -105,27 +107,90 @@ function build(
 
     io()->title('Building infrastructure');
 
-    $command = [];
-
-    $command[] = '--profile';
-    if ($profile) {
-        $command[] = $profile;
-    } else {
-        $command[] = '*';
-    }
-
     $command = [
-        ...$command,
+        '--profile', $profile ?: '*',
         'build',
         '--build-arg', 'PHP_VERSION=' . variable('php_version'),
         '--build-arg', 'PROJECT_NAME=' . variable('project_name'),
     ];
 
     if ($service) {
-        $command[] = $service;
+        docker_compose([...$command, $service]);
+
+        return;
     }
 
-    docker_compose($command);
+    // One build per service, in parallel, rather than all of them at once: in a single
+    // BuildKit session, services sharing a stage (e.g. php-base) lose the cache of all
+    // but one of them, see https://github.com/moby/buildkit/issues/6418
+    $services = array_filter(get_services($profile), static fn (array $config) => isset($config['build']));
+
+    // The services with a cache first, the others once they are built: a service
+    // without cache sharing their stages (e.g. a worker) would build these stages from
+    // scratch meanwhile, and these local layers prevent the others from finding the
+    // next steps in their imported cache
+    $waves = [
+        array_keys(array_filter($services, static fn (array $config) => isset($config['build']['cache_from']))),
+        array_keys(array_filter($services, static fn (array $config) => !isset($config['build']['cache_from']))),
+    ];
+
+    $c = context()->withPty(false)->withTty(false);
+
+    foreach ($waves as $wave) {
+        run_builds_in_parallel(array_combine($wave, array_map(
+            static fn (string $service) => static fn (callable $callback) => docker_compose([...$command, $service], $c, callback: $callback),
+            $wave,
+        )));
+    }
+}
+
+/**
+ * Runs the builds in parallel, prefixing each line of their output with the name of
+ * their service: their outputs are mixed otherwise.
+ *
+ * @param array<string, \Closure(callable(string, string, Process): void): Process> $builds
+ */
+function run_builds_in_parallel(array $builds): void
+{
+    if (!$builds) {
+        return;
+    }
+
+    $width = max(array_map(strlen(...), array_keys($builds)));
+
+    parallel(...array_map(
+        static fn (string $service, \Closure $build) => static function () use ($service, $build, $width): void {
+            $prefix = str_pad("[{$service}]", $width + 2) . ' ';
+            $write = static function (string $lines) use ($prefix): void {
+                foreach (explode("\n", $lines) as $line) {
+                    // BuildKit separates its steps with empty lines, useless once prefixed
+                    if ('' !== trim($line)) {
+                        io()->write($prefix . $line . "\n", false, OutputInterface::OUTPUT_RAW);
+                    }
+                }
+            };
+
+            // Only complete lines are written, the end of each stream is kept until its next chunk
+            $buffers = [Process::OUT => '', Process::ERR => ''];
+
+            try {
+                $build(static function (string $type, string $bytes) use (&$buffers, $write): void {
+                    $buffers[$type] .= str_replace("\r\n", "\n", $bytes);
+
+                    if (false !== $position = strrpos($buffers[$type], "\n")) {
+                        $write(substr($buffers[$type], 0, $position));
+                        $buffers[$type] = substr($buffers[$type], $position + 1);
+                    }
+                });
+            } finally {
+                foreach (array_filter($buffers) as $buffer) {
+                    $write($buffer);
+                }
+            }
+        },
+        array_keys($builds),
+        $builds,
+    ));
 }
 
 /**
@@ -408,10 +473,11 @@ function get_compose_environment(Context $c): array
 }
 
 /**
- * @param list<string> $subCommand
- * @param list<string> $profiles
+ * @param list<string>                                   $subCommand
+ * @param list<string>                                   $profiles
+ * @param (callable(string, string, Process): void)|null $callback   Receives the output instead of the console
  */
-function docker_compose(array $subCommand, ?Context $c = null, array $profiles = []): Process
+function docker_compose(array $subCommand, ?Context $c = null, array $profiles = [], ?callable $callback = null): Process
 {
     $c ??= context();
     $profiles = $profiles ?: ['default'];
@@ -451,7 +517,7 @@ function docker_compose(array $subCommand, ?Context $c = null, array $profiles =
 
     $command = array_merge($command, $subCommand);
 
-    return run($command, context: $c);
+    return run($command, context: $c, callback: $callback);
 }
 
 /**
@@ -614,35 +680,49 @@ function push(
     $command[] = '--set';
     $command[] = '*.args.PHP_VERSION=' . $c['php_version'];
 
-    foreach ($cacheFroms as $service => $cacheFrom) {
-        $command[] = '--set';
-        $command[] = "{$service}.cache-to={$cacheFrom},mode=max";
-
-        if (!$tag) {
-            continue;
-        }
-
-        // Image name without its tag, e.g. "ghcr.io/jolicode/docker-starter/php"
-        $image = isset($services[$service]['image']) ? preg_replace('{:[^/]+$}', '', $services[$service]['image']) : "{$registry}/{$service}";
-
-        foreach ($tag as $t) {
-            $command[] = '--set';
-            $command[] = "{$service}.tags={$image}:{$t}";
-        }
-
-        $command[] = '--set';
-        $command[] = "{$service}.output=type=registry";
-    }
-
     if ($dryRun) {
         $command[] = '--print';
     }
 
-    run([...$command, ...array_keys($cacheFroms)], context: $c);
+    // One bake per service, see build()
+    $commands = [];
+    foreach ($cacheFroms as $service => $cacheFrom) {
+        $serviceCommand = [...$command, '--set', "{$service}.cache-to={$cacheFrom},mode=max"];
+
+        if ($tag) {
+            // Image name without its tag, e.g. "ghcr.io/jolicode/docker-starter/php"
+            $image = isset($services[$service]['image']) ? preg_replace('{:[^/]+$}', '', $services[$service]['image']) : "{$registry}/{$service}";
+
+            foreach ($tag as $t) {
+                $serviceCommand[] = '--set';
+                $serviceCommand[] = "{$service}.tags={$image}:{$t}";
+            }
+
+            $serviceCommand[] = '--set';
+            $serviceCommand[] = "{$service}.output=type=registry";
+        }
+
+        $commands[$service] = [...$serviceCommand, $service];
+    }
+
+    if ($dryRun) {
+        foreach ($commands as $serviceCommand) {
+            run($serviceCommand, context: $c);
+        }
+
+        return;
+    }
+
+    $c = $c->withPty(false)->withTty(false);
+
+    run_builds_in_parallel(array_map(
+        static fn (array $serviceCommand) => static fn (callable $callback) => run($serviceCommand, context: $c, callback: $callback),
+        $commands,
+    ));
 }
 
 /**
- * @return array<string, array{image?: string, profiles?: list<string>, build: array{context: string, dockerfile?: string, cache_from?: list<string>, target?: string, additional_contexts?: array<string, string>}}>
+ * @return array<string, array{image?: string, profiles?: list<string>, build?: array{context: string, dockerfile?: string, cache_from?: list<string>, target?: string, additional_contexts?: array<string, string>}}>
  */
 function get_services(?string $profile = null): array
 {
