@@ -1,6 +1,0 @@
-name: Expose GitHub runtime
-description: Exposes the GitHub Actions cache variables to the next steps of the job, for buildx (type=gha cache)
-
-runs:
-    using: node24
-    main: index.cjs
