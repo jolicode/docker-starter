@@ -123,17 +123,28 @@ function build(
     // One build per service, in parallel, rather than all of them at once: in a single
     // BuildKit session, services sharing a stage (e.g. php-base) lose the cache of all
     // but one of them, see https://github.com/moby/buildkit/issues/6418
-    $services = array_keys(array_filter(
+    $services = array_filter(
         $profile ? get_services($profile) : get_services(),
         static fn (array $config) => isset($config['build']),
-    ));
+    );
+
+    // The services with a cache first, the others once they are built: a service
+    // without cache sharing their stages (e.g. a worker) would build these stages from
+    // scratch meanwhile, and these local layers prevent the others from finding the
+    // next steps in their imported cache
+    $waves = [
+        array_keys(array_filter($services, static fn (array $config) => isset($config['build']['cache_from']))),
+        array_keys(array_filter($services, static fn (array $config) => !isset($config['build']['cache_from']))),
+    ];
 
     $c = context()->withPty(false)->withTty(false);
 
-    run_builds_in_parallel(array_combine($services, array_map(
-        static fn (string $service) => static fn (callable $callback) => docker_compose([...$command, $service], $c, callback: $callback),
-        $services,
-    )));
+    foreach ($waves as $wave) {
+        run_builds_in_parallel(array_combine($wave, array_map(
+            static fn (string $service) => static fn (callable $callback) => docker_compose([...$command, $service], $c, callback: $callback),
+            $wave,
+        )));
+    }
 }
 
 /**
