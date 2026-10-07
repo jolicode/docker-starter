@@ -114,7 +114,7 @@ function create_ci_context(): Context
                     'docker-compose.yml',
                     // Usually, the following service is not be needed in the CI
                     'docker-compose.dev.yml',
-                    'docker-compose.ci.yml',
+                    // 'docker-compose.ci.yml',
                 ],
             ],
             recursive: false
