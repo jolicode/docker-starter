@@ -123,10 +123,7 @@ function build(
     // One build per service, in parallel, rather than all of them at once: in a single
     // BuildKit session, services sharing a stage (e.g. php-base) lose the cache of all
     // but one of them, see https://github.com/moby/buildkit/issues/6418
-    $services = array_filter(
-        $profile ? get_services($profile) : get_services(),
-        static fn (array $config) => isset($config['build']),
-    );
+    $services = array_filter(get_services($profile), static fn (array $config) => isset($config['build']));
 
     // The services with a cache first, the others once they are built: a service
     // without cache sharing their stages (e.g. a worker) would build these stages from
