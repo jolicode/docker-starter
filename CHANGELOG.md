@@ -6,6 +6,7 @@
   * Migrate from Invoke to Castor
   * Add `castor symfony` to install a Symfony application
   * Add `castor init` command to initialize a new project
+  * `castor init` keeps the CI (GitHub Actions) for the project, without what only tests docker-starter
   * Add a `test` context
   * Add a `prod` context to build, run and push production images
   * `castor docker:push --tag=...` also pushes the images
@@ -30,6 +31,7 @@
   * Add git worktree support (auto-isolated project name, ports, volumes, networks)
   * Add support for caching image cache in a registry
   * Add production images (`php` and `nginx`): code baked in, non-root, php-fpm on a unix socket
+  * Push the production images from the CI only when the `PUSH_PRODUCTION_IMAGES` repository variable is `true`
   * Share php-fpm and nginx configuration between the dev `frontend` container and the production images
   * The `frontend` container now listens on port 8080 and php-fpm on a unix socket
   * Upgrade base to Debian Bookworm (12.5)
