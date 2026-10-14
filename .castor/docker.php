@@ -255,6 +255,12 @@ function builder(#[AsArgsAfterOptionEnd] array $params = []): int
 {
     $context = context()->withEnvironment($_ENV + $_SERVER);
 
+    // Behave like the command run by hand: a TTY in a terminal (colors,
+    // prompts), the forwarded stdin otherwise (CI, pipes, redirections)
+    $context = $context->supportsInteraction()
+        ? $context->toInteractive()
+        : $context->withInput(STDIN)->withAllowFailure();
+
     return (int) docker_compose_run($params, $context)->getExitCode();
 }
 
@@ -562,7 +568,6 @@ function docker_compose_run(
         $params = ['bash'];
         $c = $c->toInteractive();
     } else {
-        $c = $c->withTty(false)->withPty(false)->withInput(STDIN)->withAllowFailure();
         $params = array_map(escapeshellarg(...), $params);
     }
 
@@ -592,7 +597,6 @@ function docker_compose_exec(
         $params = ['bash'];
         $context = $context->toInteractive();
     } else {
-        $context = $context->withTty(false)->withPty(false)->withInput(STDIN)->withAllowFailure();
         $params = array_map(escapeshellarg(...), $params);
     }
 
