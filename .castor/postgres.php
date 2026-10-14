@@ -40,5 +40,5 @@ function client(#[AsArgsAfterOptionEnd] array $params = []): int
         $params = ['-c', implode(' ', $params)];
     }
 
-    return (int) docker_compose_exec([...$command, ...$params], service: 'postgres')->getExitCode();
+    return (int) docker_compose_exec([...$command, ...$params], context()->withInput(STDIN)->withAllowFailure(), service: 'postgres')->getExitCode();
 }
