@@ -39,7 +39,9 @@ function create_default_variables(): array
         // In order to test docker stater, we need a way to pass different values.
         // You should remove the `$_SERVER` and hardcode your configuration.
         'php_version' => $_SERVER['DS_PHP_VERSION'] ?? '8.5',
-        'registry' => $_SERVER['REGISTRY'] ?? null,
+        // Docker requires lowercase image names, but `${{ github.repository }}`
+        // (GitHub Actions) keeps the case of the owner and of the repository
+        'registry' => isset($_SERVER['REGISTRY']) ? strtolower($_SERVER['REGISTRY']) : null,
     ];
 }
 
