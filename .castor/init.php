@@ -2,6 +2,7 @@
 
 use Castor\Attribute\AsTask;
 
+use function Castor\finder;
 use function Castor\fs;
 use function Castor\io;
 use function Castor\variable;
@@ -11,12 +12,15 @@ use function docker\docker_compose_run;
 #[AsTask(description: 'Initialize the project')]
 function init(): void
 {
-    // The CI of docker-starter itself goes away, the production images workflow stays
-    $buildPushWorkflow = '.github/workflows/build-push.yml';
-    $buildPushWorkflowContent = file_get_contents($buildPushWorkflow);
+    // The CI is kept for the project, without what only tests docker-starter itself
+    foreach (finder()->files()->in('.github')->name('*.yml') as $file) {
+        $content = preg_replace('{^[ \t]*# >>> docker-starter only.*?^[ \t]*# <<< docker-starter only\n}ms', '', $file->getContents());
+        // The PHP versions matrix is gone
+        $content = str_replace(' with PHP ${{ matrix.php-version }}', '', (string) $content);
+        fs()->dumpFile($file->getPathname(), rtrim($content) . "\n");
+    }
 
     fs()->remove([
-        '.github/',
         '.castor/docker-push-test.php',
         'README.md',
         'CHANGELOG.md',
@@ -25,12 +29,6 @@ function init(): void
         __FILE__,
     ]);
     fs()->rename('README.dist.md', 'README.md');
-
-    if (false !== $buildPushWorkflowContent) {
-        // Drop the "disabled" notice (first paragraph), then uncomment the workflow
-        $buildPushWorkflowContent = explode("\n\n", $buildPushWorkflowContent, 2)[1] ?? '';
-        fs()->dumpFile($buildPushWorkflow, (string) preg_replace('{^# ?}m', '', $buildPushWorkflowContent));
-    }
 
     $readMeContent = file_get_contents('README.md');
 

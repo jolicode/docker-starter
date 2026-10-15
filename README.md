@@ -93,6 +93,10 @@ castor init
 > [!NOTE]
 > This command can be run only once
 
+The GitHub Actions workflows of `.github/` are kept as the CI of your project:
+`castor init` only removes their "docker-starter only" blocks, which test
+docker-starter itself (PHP versions matrix, demo application...).
+
 Also, in order to improve your usage of castor scripts, you can install console
 autocompletion script.
 
@@ -1125,11 +1129,12 @@ container).
 
 `castor docker:push --tag=...` also pushes the images themselves (not only
 their build cache). On every push to `main` (and on every git tag), the
-`.github/workflows/build-push.yml` workflow (commented in docker-starter,
-enabled by `castor init`) pushes both images to
+`.github/workflows/build-push.yml` workflow pushes both images to
 `ghcr.io/<repository>/php` and `ghcr.io/<repository>/nginx`, tagged with the
-short commit sha, `latest` on `main`, and the tag name when there is one. To
-push from your machine (you need to be logged in to the registry, and a buildx
+short commit sha, `latest` on `main`, and the tag name when there is one. This
+workflow is disabled by default (and in docker-starter itself): set the
+`PUSH_PRODUCTION_IMAGES` repository variable to `true` to enable it (Settings >
+Secrets and variables > Actions > Variables). To push from your machine (you need to be logged in to the registry, and a buildx
 builder able to export a registry cache, e.g. `docker buildx create --use`):
 
 ```bash
