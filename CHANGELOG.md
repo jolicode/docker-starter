@@ -33,6 +33,7 @@
   * Add production images (`php` and `nginx`): code baked in, non-root, php-fpm on a unix socket
   * Share php-fpm and nginx configuration between the dev `frontend` container and the production images
   * The `frontend` container now listens on port 8080 and php-fpm on a unix socket
+  * Keep the port of the `Host` header in `HTTP_HOST`, dropped by Debian's nginx (absolute URLs on a git worktree stack)
   * Upgrade base to Debian Bookworm (12.5)
 
 ## 3.11.0 (2023-05-30)
