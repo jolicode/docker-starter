@@ -1,6 +1,6 @@
 # hadolint global ignore=DL3008
 
-FROM debian:13.5-slim AS php-base
+FROM debian:13.7-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -245,7 +245,7 @@ HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
 
 CMD ["sh", "-c", "exec /usr/sbin/php-fpm${PHP_VERSION}"]
 
-FROM nginx:1.28-alpine AS nginx
+FROM nginx:1.29-alpine AS nginx
 
 COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 
