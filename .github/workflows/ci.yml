@@ -166,8 +166,8 @@ jobs:
                   EOPHP
 
                   castor test | grep "Hello World"
-                  CASTOR_CONTEXT=default castor app-env | grep 'Environment: not set'"
-                  CASTOR_CONTEXT=test castor app-env | grep 'Environment: test'"
+                  CASTOR_CONTEXT=default castor app-env | grep 'Environment: not set'
+                  CASTOR_CONTEXT=test castor app-env | grep 'Environment: test'
 
             - name: "Test communication with DB"
               run: |
