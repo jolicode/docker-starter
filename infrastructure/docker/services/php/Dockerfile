@@ -26,7 +26,7 @@ ARG PHP_VERSION
 # Minimal patch version of each PHP branch, to bump after a security release: it
 # invalidates the build cache (local and registry) of the PHP packages, which would
 # keep the vulnerable version otherwise, and the build fails until Sury publishes it
-ARG PHP_MIN_VERSIONS="8.3.35 8.4.26 8.5.11"
+ARG PHP_MIN_VERSIONS="8.3.36 8.4.27 8.5.12"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
