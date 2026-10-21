@@ -19,6 +19,7 @@
   * Add support for pie
   * Add some PHP tooling (PHP-CS-Fixer, PHPStan, Twig-CS-Fixer)
   * Update Composer to version 2.8
+  * Require a minimal patch version of PHP, to force the upgrade after a security release
 * Builder
   * Update NodeJS to version 20.x LTS
   * Add support for autocomplete (composer & symfony)
