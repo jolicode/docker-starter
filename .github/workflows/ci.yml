@@ -126,23 +126,10 @@ jobs:
 
             # >>> docker-starter only
             - name: "Test docker:push"
-              run: "castor docker:test-push"
+              run: "castor test:push"
 
-            - name: "Test the TTY of builder commands"
-              run: |
-                  set -e
-                  set -o pipefail
-
-                  # In a terminal (emulated by script), the command gets a TTY (for colors).
-                  # CI is unset, as Castor never considers it as interactive
-                  env -u CI script -qec "castor builder -- php -r 'exit(stream_isatty(STDOUT) ? 0 : 1);'" /dev/null
-                  # Even in a terminal, a pipe on stdout or stdin reaches the container
-                  env -u CI script -qec "castor builder -- php -r 'echo stream_isatty(STDOUT) ? \"tty\" : \"pipe\";' | cat" /dev/null | grep -w pipe
-                  env -u CI script -qec "echo hello | castor builder -- cat" /dev/null | grep -w hello
-
-                  # Without a terminal
-                  castor builder -- php -r 'exit(stream_isatty(STDOUT) ? 1 : 0);' | cat
-                  echo hello | castor builder -- cat | grep -x hello
+            - name: "Test commands with and without a terminal"
+              run: "castor test:terminal"
 
             - name: "Test HTTP server"
               run: |
