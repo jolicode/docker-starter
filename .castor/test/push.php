@@ -5,7 +5,7 @@
 // drop it from a project generated from this template, just delete this file
 // (and, if it was wired there, the corresponding step in .github/workflows/ci.yml).
 
-namespace docker;
+namespace test;
 
 use Castor\Attribute\AsTask;
 
@@ -15,9 +15,10 @@ use function Castor\http_client;
 use function Castor\io;
 use function Castor\run;
 use function Castor\wait_for_http_status;
+use function docker\get_services;
 
-#[AsTask(description: 'Tests "docker:push" against a throwaway local registry', namespace: 'docker', name: 'test-push')]
-function test_push(): void
+#[AsTask(description: 'Tests "docker:push" against a throwaway local registry')]
+function push(): void
 {
     io()->title('Testing docker:push against a throwaway registry');
 

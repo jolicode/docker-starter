@@ -21,7 +21,7 @@ function init(): void
     }
 
     fs()->remove([
-        '.castor/docker-push-test.php',
+        '.castor/test',
         'README.md',
         'CHANGELOG.md',
         'CONTRIBUTING.md',
