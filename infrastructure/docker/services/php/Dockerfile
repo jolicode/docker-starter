@@ -1,5 +1,13 @@
 # hadolint global ignore=DL3008
 
+# The build cache depends on the permissions of the build context files, which
+# depend on the umask of the checkout (664 files with a 002 umask, 644 on the CI).
+# Every stage copies its files from this one instead of the build context: its
+# content doesn't depend on the umask, so the registry cache of the CI is reused.
+# A COPY --chmod alone doesn't help, its cache key is computed before the chmod.
+FROM scratch AS files
+COPY --chmod=u=rwX,go=rX . /
+
 FROM debian:13.7-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -53,7 +61,7 @@ RUN apt-get update \
     done
 
 # Every PHP setting of every image: each stage enables its own ones with phpenmod
-COPY php/mods-available/ /etc/php/${PHP_VERSION}/mods-available/
+COPY --from=files php/mods-available/ /etc/php/${PHP_VERSION}/mods-available/
 
 ENV PHP_VERSION=${PHP_VERSION}
 ENV HOME=/home/app
@@ -76,12 +84,12 @@ RUN useradd -s /bin/false nginx
 
 # Same php-fpm pool and nginx site as the production images (see "Production stages"), the
 # container runs as the host user so the socket directory must be writable by anyone
-COPY php/fpm/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/conf.d/ /etc/nginx/conf.d/
+COPY --from=files php/fpm/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+COPY --from=files nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --from=files nginx/conf.d/ /etc/nginx/conf.d/
 RUN mkdir -p /var/run/php && chmod 1777 /var/run/php
 RUN rm -rf /etc/service/
-COPY runit/ /etc/service/
+COPY --from=files runit/ /etc/service/
 RUN mkdir -p /etc/service/nginx/supervise /etc/service/php-fpm/supervise \
     && chmod 777 /etc/service/*/supervise/
 
@@ -234,7 +242,7 @@ RUN apt-get update \
     && rm -r "/etc/php/${PHP_VERSION}/fpm/pool.d/"
 
 # Same php-fpm pool as the dev "frontend" stage, plus the production-only settings
-COPY php/fpm/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+COPY --from=files php/fpm/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
 RUN phpenmod app-default \
     && phpenmod -s fpm app-fpm \
     && phpenmod app-prod
@@ -257,7 +265,7 @@ CMD ["sh", "-c", "exec /usr/sbin/php-fpm${PHP_VERSION}"]
 
 FROM nginx:1.29-alpine AS nginx
 
-COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=files nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=app-build /var/www/application/public /var/www/application/public
 
