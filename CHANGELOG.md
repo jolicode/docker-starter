@@ -32,6 +32,7 @@
   * Add git worktree support (auto-isolated project name, ports, volumes, networks)
   * Add support for caching image cache in a registry
   * Build (and push the cache of) each service separately, in parallel, so services sharing a stage all reuse their cache
+  * Copy the build context files as late as possible, so a checkout with another umask than the CI only rebuilds cheap steps
   * Add production images (`php` and `nginx`): code baked in, non-root, php-fpm on a unix socket
   * Push the production images from the CI only when the `PUSH_PRODUCTION_IMAGES` repository variable is `true`
   * Share php-fpm and nginx configuration between the dev `frontend` container and the production images

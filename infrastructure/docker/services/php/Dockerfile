@@ -1,5 +1,9 @@
 # hadolint global ignore=DL3008
 
+# The build cache depends on the permissions of the build context files, which
+# depend on the umask of the checkout (664 files with a 002 umask, 644 on the CI).
+# They are copied as late as possible, so that a cache miss only rebuilds cheap steps.
+
 FROM debian:13.7-slim AS php-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -52,9 +56,6 @@ RUN apt-get update \
         fi; \
     done
 
-# Every PHP setting of every image: each stage enables its own ones with phpenmod
-COPY php/mods-available/ /etc/php/${PHP_VERSION}/mods-available/
-
 ENV PHP_VERSION=${PHP_VERSION}
 ENV HOME=/home/app
 ENV COMPOSER_MEMORY_LIMIT=-1
@@ -85,6 +86,7 @@ COPY runit/ /etc/service/
 RUN mkdir -p /etc/service/nginx/supervise /etc/service/php-fpm/supervise \
     && chmod 777 /etc/service/*/supervise/
 
+COPY php/mods-available/ /etc/php/${PHP_VERSION}/mods-available/
 RUN phpenmod app-default \
     && phpenmod -s fpm app-fpm
 
@@ -127,10 +129,6 @@ RUN apt-get update \
 #     && chmod +x /usr/local/bin/gosu \
 #     && chmod +x /usr/local/bin/sudo
 
-# Config
-RUN phpenmod app-default \
-    && phpenmod app-builder
-
 # Composer
 COPY --from=composer/composer:2.10.0 /usr/bin/composer /usr/bin/composer
 
@@ -164,6 +162,11 @@ RUN cat >> /etc/bash.bashrc <<'EOF'
 
 PS1='\[\e[01;33m\]$([ "$EUID" = 0 ] && echo root || echo builder) \[\e[00;32m\]\w\[\e[0m\] '
 EOF
+
+# Config
+COPY php/mods-available/ /etc/php/${PHP_VERSION}/mods-available/
+RUN phpenmod app-default \
+    && phpenmod app-builder
 
 WORKDIR /var/www/application
 
@@ -235,6 +238,7 @@ RUN apt-get update \
 
 # Same php-fpm pool as the dev "frontend" stage, plus the production-only settings
 COPY php/fpm/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+COPY php/mods-available/ /etc/php/${PHP_VERSION}/mods-available/
 RUN phpenmod app-default \
     && phpenmod -s fpm app-fpm \
     && phpenmod app-prod
