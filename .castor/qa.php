@@ -61,6 +61,8 @@ function phpunit(#[AsRawTokens] array $rawTokens = []): int
 function phpstan(
     #[AsOption(description: 'Generate baseline file', shortcut: 'b')]
     bool $baseline = false,
+    #[AsOption(description: 'Fix auto-fixable errors (experimental)', shortcut: 'f')]
+    bool $fix = false,
 ): int {
     if (!is_dir(variable('root_dir') . '/tools/phpstan/vendor')) {
         install();
@@ -71,6 +73,9 @@ function phpstan(
     $command = ['phpstan', 'analyse', '--memory-limit=-1', '-v'];
     if ($baseline) {
         $command = [...$command, '--generate-baseline', '--allow-empty-baseline'];
+    }
+    if ($fix) {
+        $command[] = '--fix';
     }
 
     return docker_exit_code($command, workDir: '/var/www');
