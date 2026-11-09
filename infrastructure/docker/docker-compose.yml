@@ -22,12 +22,12 @@ volumes:
 
 services:
     postgres:
-        image: postgres:16
+        image: postgres:18
         environment:
             - POSTGRES_USER=app
             - POSTGRES_PASSWORD=app
         volumes:
-            - postgres-data:/var/lib/postgresql/data
+            - postgres-data:/var/lib/postgresql
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U app"]
             interval: 5s

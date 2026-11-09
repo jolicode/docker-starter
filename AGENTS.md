@@ -50,7 +50,7 @@ Without option, the `default` context applies.
 ## Stack
 
 - Symfony in `application/` (docroot = `application/public`)
-- PostgreSQL 16: user/pass/db = `app`/`app`, DATABASE_URL already configured
+- PostgreSQL 18: user/pass/db = `app`/`app`, DATABASE_URL already configured
 - nginx + php-fpm (service `frontend`), Traefik router, HTTPS on `<root_domain>` (see `castor.php`)
 - Node/yarn only inside the `builder` container
 - Production ships as two images (`php` and `nginx`), built from the "Production stages" of

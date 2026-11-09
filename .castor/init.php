@@ -62,7 +62,7 @@ function symfony(bool $webApp = false): void
         docker_compose_run(['composer', 'require', 'webapp']);
     }
 
-    docker_compose_run(['sed', '-i', 's#^DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=16\&charset=utf8#', '.env']);
+    docker_compose_run(['sed', '-i', 's#^DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=18\&charset=utf8#', '.env']);
     file_put_contents($gitIgnore, $gitIgnoreContent, \FILE_APPEND);
 }
 
@@ -83,7 +83,7 @@ function sylius(): void
     fs()->mirror($base . '/sylius/', $base, options: ['override' => true]);
     fs()->remove([$base . '/sylius', $base . '/var']);
 
-    docker_compose_run(['sed', '-i', 's#^DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=16\&charset=utf8#', '.env']);
+    docker_compose_run(['sed', '-i', 's#^DATABASE_URL.*#DATABASE_URL=postgresql://app:app@postgres:5432/app\?serverVersion=18\&charset=utf8#', '.env']);
     file_put_contents($gitIgnore, $gitIgnoreContent, \FILE_APPEND);
 
     chrome();

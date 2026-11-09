@@ -12,7 +12,8 @@
   * `castor docker:push --tag=...` also pushes the images
 * Services
   * Upgrade Traefik from v2.7 to v3.0
-  * Upgrade to PostgreSQL v16
+  * Upgrade to PostgreSQL v18
+    * The official image now keeps the data in `/var/lib/postgresql/<major>/docker`: the volume must be mounted at `/var/lib/postgresql` (not `/var/lib/postgresql/data`), and existing databases must be migrated (dump/restore or `pg_upgrade`)
   * Replace maildev with Mailpit
 * PHP
   * Drop support for PHP < 8.3
