@@ -205,14 +205,14 @@ index e891ada..a49a99d 100644
 
  services:
 -    postgres:
--        image: postgres:16
+-        image: postgres:18
 +    mariadb:
 +        image: mariadb:12
          environment:
 -            - POSTGRES_USER=app
 -            - POSTGRES_PASSWORD=app
 -        volumes:
--            - postgres-data:/var/lib/postgresql/data
+-            - postgres-data:/var/lib/postgresql
 +            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
 +            - MARIADB_USER=app
 +            - MARIADB_PASSWORD=app

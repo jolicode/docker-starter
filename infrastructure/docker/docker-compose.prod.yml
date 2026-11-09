@@ -17,7 +17,7 @@ x-php-build: &php-build
 
 x-app-env: &app-env
     APP_SECRET: "${APP_SECRET:-not-a-secret}"
-    DATABASE_URL: "postgresql://app:app@postgres:5432/app?serverVersion=16&charset=utf8"
+    DATABASE_URL: "postgresql://app:app@postgres:5432/app?serverVersion=18&charset=utf8"
 
 volumes:
     postgres-data: {}
@@ -26,12 +26,12 @@ volumes:
 
 services:
     postgres:
-        image: postgres:16
+        image: postgres:18
         environment:
             POSTGRES_USER: app
             POSTGRES_PASSWORD: app
         volumes:
-            - postgres-data:/var/lib/postgresql/data
+            - postgres-data:/var/lib/postgresql
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U app"]
             interval: 5s
