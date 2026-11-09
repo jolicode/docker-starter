@@ -65,7 +65,7 @@ Tools run inside the builder.
 ```bash
 castor qa                                    # everything: cs + phpstan + twig-cs + phpunit
 castor qa:cs [--dry-run]                     # PHP-CS-Fixer (.php-cs-fixer.php)
-castor qa:phpstan [-b]                       # PHPStan level 8 (phpstan.neon)
+castor qa:phpstan [-b] [--fix]               # PHPStan level 8 (phpstan.neon)
 castor qa:twig-cs                            # Twig-CS-Fixer
 castor qa:phpunit                            # PHPUnit (if present in application/)
 ```
