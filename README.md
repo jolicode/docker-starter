@@ -374,6 +374,127 @@ at https://encore.app.test and click on accept.
     ```
 </details>
 
+### How to use with Symfony Reprise (Vite)
+
+<details>
+
+<summary>Read the cookbook</summary>
+
+[Symfony Reprise](https://github.com/symfony/reprise) builds the assets with
+Vite (or Rsbuild) and renders their tags in Twig, like Webpack Encore. In dev, a
+dedicated container runs the Vite dev server, with Hot Module Replacement.
+
+1. Install the bundle and the Vite plugin, and add the `dev` and `build`
+   scripts to `application/package.json` (the production image runs
+   `npm run build` or `yarn build`):
+
+    ```bash
+    castor builder -- composer require symfony/reprise
+    castor builder -- npm install --save-dev vite @symfony/reprise
+    castor builder -- npm pkg set scripts.dev=vite scripts.build="vite build"
+    ```
+
+2. Create the `application/vite.config.mjs` file:
+
+    ```js
+    import { defineConfig } from 'vite'
+    import Symfony from '@symfony/reprise/vite'
+
+    export default defineConfig({
+        input: {
+            app: './assets/app.js',
+        },
+        plugins: [
+            Symfony({
+                // Enable the Stimulus controllers and Symfony UX, if you use them
+                // stimulus: './assets/controllers.json',
+
+                // The browser reaches the dev server on the port published on
+                // the host, which differs for each git worktree
+                devServerOrigin: `http://localhost:${process.env.PROJECT_VITE_PORT ?? 5173}`,
+            }),
+        ],
+        server: {
+            host: true,
+            port: 5173,
+            strictPort: true,
+            cors: true,
+            watch: {
+                // The project is mounted in /var/www: a "**/var/**" pattern
+                // would match every file and silently disable HMR
+                ignored: ['**/vendor/**', '**/application/var/**', '**/public/**'],
+            },
+        },
+    })
+    ```
+
+3. Render the tags of the entry in your layout. The `templates/base.html.twig`
+   file of the Twig recipe already does it:
+
+    ```twig
+    {% block stylesheets %}
+        {{ reprise_entry_link_tags('app') }}
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ reprise_entry_script_tags('app') }}
+    {% endblock %}
+    ```
+
+4. Add the dev server to the `infrastructure/docker/docker-compose.dev.yml`
+   file:
+
+    ```yaml
+    services:
+        vite:
+            image: "${PROJECT_NAME}-builder"
+            user: "${USER_ID}:${USER_ID}"
+            restart: unless-stopped
+            command: bash -c "until [ -d node_modules/.bin ]; do echo 'Waiting for node_modules' && sleep 2; done; npm run dev"
+            environment:
+                - "PROJECT_VITE_PORT=${PROJECT_VITE_PORT:-5173}"
+            volumes:
+                - "../..:/var/www:cached"
+            ports:
+                - "127.0.0.1:${PROJECT_VITE_PORT:-5173}:5173"
+            # Healthy once the dev server answers: it has then written
+            # public/build/entrypoints.json, that "castor start" waits for
+            healthcheck:
+                test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:5173/build/@vite/client"]
+                interval: 5s
+                timeout: 3s
+                retries: 3
+                start_period: 60s
+                start_interval: 1s
+            profiles:
+                - default
+    ```
+
+    The service reuses the image of the `builder` service, and its working
+    directory, `/var/www/application`.
+
+5. Declare its port in the `get_port_specs()` function of the
+   `.castor/docker.php` file, so that each git worktree gets its own:
+
+    ```diff
+            'admin' => ['env' => 'PROJECT_ADMIN_PORT', 'default' => 8080, 'label' => 'Traefik admin'],
+    +       'vite' => ['env' => 'PROJECT_VITE_PORT', 'default' => 5173, 'label' => 'Vite dev server'],
+    ```
+
+Run `castor start`: the pages load their assets from the dev server, at
+http://localhost:5173.
+
+> [!NOTE]
+> The dev server writes `application/public/build/entrypoints.json` when it
+> starts, and a build replaces it. So do not run `vite build` in `castor start`,
+> and to try a production build:
+>
+> 1. stop the dev server: `castor stop --service=vite`
+> 2. build the assets: `castor builder -- npm run build`
+> 3. go back to the dev server: `castor up --service=vite`
+
+</details>
+
 ### How to add Elasticsearch and Kibana
 
 <details>
