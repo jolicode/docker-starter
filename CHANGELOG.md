@@ -40,6 +40,8 @@
   * The `frontend` container now listens on port 8080 and php-fpm on a unix socket
   * Keep the port of the `Host` header in `HTTP_HOST`, dropped by Debian's nginx (absolute URLs on a git worktree stack)
   * Upgrade base to Debian Bookworm (12.5)
+* Documentation
+  * Add a cookbook to use Symfony Reprise (Vite), with Hot Module Replacement
 
 ## 3.11.0 (2023-05-30)
 
